@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Vladimir Savkin",
+  "classifications": ["Microservice", "Solution"],
+  "identity": "Sawking.DotNetSolutionKit",
+  "name": "DotNet Solution Kit",
+  "shortName": "DotNetSolutionKit",
+  "preferNameDirectory": false,
+
+  "symbols": {
+    "NamespaceRoot": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "MyCompany",
+      "description": "Root namespace token, usually the organization name",
+      "replaces": "NamespaceRoot",
+      "fileRename": "NamespaceRoot",
+      "_comment": "Токен корневого пространства имён, обычно указывается название организации"
+    },
+    "ProductName": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "Product",
+      "description": "Product name",
+      "replaces": "ProductName",
+      "fileRename": "ProductName",
+      "_comment": "Токен продукта"
+    },
+    "ServiceNameOrCustom": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "Service",
+      "description": "Token for service name or custom value, e.g. domain and service like Domain.Service",
+      "replaces": "ServiceNameOrCustom",
+      "fileRename": "ServiceNameOrCustom",
+      "_comment": "Токен для имени сервиса или произвольного значения, например, можно указать домен и сервис в формате Domain.Service"
+    }
+  },
+
+  "sources": [
+    {
+      "exclude": [
+        ".git",
+        ".idea",
+        ".vs",
+        "bin",
+        "obj",
+        ".template.config",
+        "test"
+      ]
+    }
+  ],
+  "manualInstructions": [
+    {
+      "text": "Run `dotnet restore` to restore all project dependencies."
+    },
+    {
+      "text": "Before first run, check and edit configuration files (e.g., appsettings.json) if necessary."
+    }
+  ]
+}
