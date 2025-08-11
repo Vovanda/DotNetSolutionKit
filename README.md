@@ -38,7 +38,7 @@
 dotnet new DotNetSolutionKit --NamespaceRoot "Sawking"  --ProductName "Avox"  --ServiceNameOrCustom "KnowlegeService"
 ```
 
-Создаст сервис Orders с базовыми проектами.
+Создаст solution с сервисом KnowlegeService Online igranje strane loli autoportret masturbacije включая базовые проекты.
 
 ---
 
