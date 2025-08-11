@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NamespaceRoot.ProductName.Common", "NamespaceRoot.ProductName.Common\NamespaceRoot.ProductName.Common.csproj", "{A9C0F473-2F7D-4D5C-A77F-F5B4B982FE1C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NamespaceRoot.ProductName.Common.Contracts", "NamespaceRoot.ProductName.Common.Contracts\NamespaceRoot.ProductName.Common.Contracts.csproj", "{28AFCEBD-14CE-4AE9-94AF-31CA3C0AF11D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A9C0F473-2F7D-4D5C-A77F-F5B4B982FE1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9C0F473-2F7D-4D5C-A77F-F5B4B982FE1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9C0F473-2F7D-4D5C-A77F-F5B4B982FE1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9C0F473-2F7D-4D5C-A77F-F5B4B982FE1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28AFCEBD-14CE-4AE9-94AF-31CA3C0AF11D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28AFCEBD-14CE-4AE9-94AF-31CA3C0AF11D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28AFCEBD-14CE-4AE9-94AF-31CA3C0AF11D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28AFCEBD-14CE-4AE9-94AF-31CA3C0AF11D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
