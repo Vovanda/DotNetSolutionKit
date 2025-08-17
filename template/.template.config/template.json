@@ -12,50 +12,88 @@
       "type": "parameter",
       "datatype": "text",
       "defaultValue": "MyCompany",
-      "description": "Root namespace token, usually the organization name",
       "replaces": "NamespaceRoot",
       "fileRename": "NamespaceRoot",
-      "_comment": "Токен корневого пространства имён, обычно указывается название организации"
+      "description": "Root namespace token, usually the organization name"
     },
     "ProductName": {
       "type": "parameter",
       "datatype": "text",
       "defaultValue": "Product",
-      "description": "Product name",
-      "replaces": "ProductName",
       "fileRename": "ProductName",
-      "_comment": "Токен продукта"
+      "replaces": "ProductName",
+      "description": "Product name"
     },
     "ServiceNameOrCustom": {
       "type": "parameter",
       "datatype": "text",
       "defaultValue": "Service",
-      "description": "Token for service name or custom value, e.g. domain and service like Domain.Service",
       "replaces": "ServiceNameOrCustom",
       "fileRename": "ServiceNameOrCustom",
-      "_comment": "Токен для имени сервиса или произвольного значения, например, можно указать домен и сервис в формате Domain.Service"
+      "description": "Service name or custom (e.g. Domain.Service)"
+    },
+    "Minimal": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "true = only microservice; false = full multi-solution kit"
     }
   },
 
   "sources": [
     {
-      "exclude": [
-        ".git",
-        ".idea",
-        ".vs",
-        "bin",
-        "obj",
-        ".template.config",
-        "test"
+      "source": ".",
+      "target": ".",
+      "modifiers": [
+        {
+          "condition": "Minimal",
+          "exclude": ["**/*"]
+        },
+        {
+          "rename": {
+            ".gitignore.template": ".gitignore"
+          }
+        },
+        {
+          "exclude": [
+            ".git/**",
+            ".idea/**",
+            ".vs/**",
+            "bin/**",
+            "obj/**",
+            ".template.config/**"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "src/services",
+      "target": "src/services",
+      "modifiers": [
+        {
+          "condition": "(!Minimal)",
+          "exclude": ["**/*"]
+        },
+        {
+          "exclude": [
+            ".idea/**",
+            ".vs/**",
+            "manual-add-projects.sh",
+            "NamespaceRoot.ProductName.All.sln"
+          ]
+        }
       ]
     }
   ],
-  "manualInstructions": [
+
+  "postActions": [
     {
-      "text": "Run `dotnet restore` to restore all project dependencies."
-    },
-    {
-      "text": "Before first run, check and edit configuration files (e.g., appsettings.json) if necessary."
+      "condition": "true",
+      "actionId": "D1F2E3C4-B5A6-7890-1234-56789ABCDEF0",
+      "description": "После генерации сервисов необходимо проверить и подключить проекты в All.sln",
+      "manualInstructions": [
+        { "text": "1. Перейдите в папку с сервисами: cd ./src/services\n2. Запустите скрипт: ./manual-add-projects.sh\n3. Скрипт проверит все проекты сервисов и добавит их в All.sln, пропуская уже добавленные." }
+      ]
     }
   ]
 }

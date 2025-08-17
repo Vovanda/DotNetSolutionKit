@@ -10,14 +10,25 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="coverlet.collector" Version="6.0.0"/>
+        <PackageReference Include="FluentAssertions" Version="8.6.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.8" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
-        <PackageReference Include="xunit" Version="2.5.3"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3"/>
+        <PackageReference Include="MockQueryable.Core" Version="8.0.0" />
+        <PackageReference Include="NUnit" Version="4.4.0" />
+        <PackageReference Include="coverlet.collector" Version="6.0.0"/>
+        <PackageReference Include="Testcontainers.PostgreSql" Version="4.6.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <Using Include="Xunit"/>
+        <Using Include="NUnit.Framework"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Misc\Mocks\" />
+      <Folder Include="Tests\" />
     </ItemGroup>
 
 </Project>
