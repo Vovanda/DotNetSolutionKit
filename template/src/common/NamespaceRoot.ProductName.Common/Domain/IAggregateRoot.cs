@@ -1,6 +1,6 @@
 namespace NamespaceRoot.ProductName.Common.Domain;
 
 /// <summary>
-/// Интерфейс-маркер для пометки корня агрегата. Через корень должны выполняться все бизнес-действия с агрегатом.
+/// Marker interface for aggregate root. All business actions with aggregate should be performed through the root.
 /// </summary>
 public interface IAggregateRoot;

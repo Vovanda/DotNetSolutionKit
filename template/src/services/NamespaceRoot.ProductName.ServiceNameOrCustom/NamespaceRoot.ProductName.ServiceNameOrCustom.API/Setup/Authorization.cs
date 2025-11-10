@@ -8,10 +8,10 @@ internal static class Authorization
         return app;
     }
     
-    public static WebApplicationBuilder SetupApplicationAuthorization(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder SetupAppAuthorization(this WebApplicationBuilder builder)
     {
-        builder.Services.AddAuthorization(/* Можно добавить политики */);
-
+        // UseAuthorization must be called after UseAuthentication
+        builder.Services.AddAuthorization();
         return builder;
     }
 }

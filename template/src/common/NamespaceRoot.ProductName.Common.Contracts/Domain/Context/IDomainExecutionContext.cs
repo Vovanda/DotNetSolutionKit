@@ -1,17 +1,17 @@
 namespace NamespaceRoot.ProductName.Common.Contracts.Domain.Context;
 
 /// <summary>
-/// Контекст выполнения любого действия в домене
+/// Execution context for any action in domain
 /// </summary>
 public interface IDomainExecutionContext
 {
     /// <summary>
-    /// Действующие лицо
+    /// Actor performing the action
     /// </summary>
-    public IUserContext Actor { get; }
+    IUserContext Actor { get; }
 
     /// <summary>
-    /// Текущие дата, время
+    /// Current date, time
     /// </summary>
-    public TimeProvider TimeProvider { get; }
+    TimeProvider TimeProvider { get; }
 }

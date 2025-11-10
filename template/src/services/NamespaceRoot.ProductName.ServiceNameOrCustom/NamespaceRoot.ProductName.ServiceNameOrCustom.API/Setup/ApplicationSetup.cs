@@ -1,3 +1,4 @@
+using NamespaceRoot.ProductName.Common.Application.Configuration;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Application;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure;
 
@@ -5,22 +6,23 @@ namespace NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup;
 
 internal static class ApplicationSetup
 {
-    public static WebApplicationBuilder SetupWebApi(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddControllers();
-        builder.Services.AddEndpointsApiExplorer();
-        return builder;
-    }
-
     public static WebApplicationBuilder SetupAppServices(this WebApplicationBuilder builder)
     {
-        // Регистрация MediatR обработчиков только из Application сборки
-        var applicationAssembly = typeof(ApplicationMarker).Assembly; 
-        builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(applicationAssembly));
+        var configuration = builder.Configuration;
+        var services = builder.Services;
+        
+        // services.AddJwtConfiguration(configuration);
+        services.AddInternalApiConfiguration(configuration);
+        services.AddAuthValidationConfiguration(configuration);
 
-        // Регистрация инфраструктурных сервисов
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
-        builder.Services.AddInfrastructureServices(connectionString);
+        // Register Domain Layer services
+        services.AddDomainServices();
+        
+        // Register Application Layer services
+        services.AddApplicationServices();
+        
+        // Register Infrastructure Layer services
+        services.AddInfrastructureServices(builder.Configuration);
 
         return builder;
     }

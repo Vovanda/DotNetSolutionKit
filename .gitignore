@@ -207,6 +207,9 @@ UpgradeLog*.htm
 *.mdf
 *.ldf
 
+# Postgress volume in Docker
+*/data/postgres/
+
 # Business Intelligence projects
 *.rdl.data
 *.bim.layout
@@ -254,7 +257,8 @@ ModelManifest.xml
 #ignore secrets
 *secret*
 *certificates*
+*.env
 
 #ignore local files (for developers)
-TestController.Local.cs
+*.Local.cs
 .env.local

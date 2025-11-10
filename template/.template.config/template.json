@@ -90,9 +90,9 @@
     {
       "condition": "true",
       "actionId": "D1F2E3C4-B5A6-7890-1234-56789ABCDEF0",
-      "description": "После генерации сервисов необходимо проверить и подключить проекты в All.sln",
+      "description": "After generating services, verify and add projects to All.sln",
       "manualInstructions": [
-        { "text": "1. Перейдите в папку с сервисами: cd ./src/services\n2. Запустите скрипт: ./manual-add-projects.sh\n3. Скрипт проверит все проекты сервисов и добавит их в All.sln, пропуская уже добавленные." }
+        { "text": "1. Navigate to services folder: cd ./src/services\n2. Run script: ./manual-add-projects.sh\n3. The script will check all service projects and add them to All.sln, skipping already added ones." }
       ]
     }
   ]

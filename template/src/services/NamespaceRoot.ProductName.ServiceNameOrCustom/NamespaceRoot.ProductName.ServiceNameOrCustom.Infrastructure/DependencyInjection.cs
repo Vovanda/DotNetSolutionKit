@@ -1,38 +1,128 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics.CodeAnalysis;
+using Hangfire;
+using Hangfire.PostgreSql;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NamespaceRoot.ProductName.Common.Application.Repositories;
-using NamespaceRoot.ProductName.Common.DependencyInjection;
+using Microsoft.Extensions.Options;
+using NamespaceRoot.ProductName.Common.Domain.Persistence;
+using NamespaceRoot.ProductName.Common.Domain.Specifications;
+using NamespaceRoot.ProductName.Common.Infrastructure.Configuration;
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
+using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework.DataSeeding;
+using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework.Specifications;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure;
 
 /// <summary>
-/// Расширения для регистрации инфраструктурных сервисов в DI контейнере.
+/// Extensions for registering infrastructure services in DI container.
 /// </summary>
+[SuppressMessage("ReSharper", "UnusedMethodReturnValue.Local")]
 public static class DependencyInjection
 {
     /// <summary>
-    /// Регистрация сервисов инфраструктуры.
+    /// Register infrastructure services.
     /// </summary>
-    /// <param name="services">Коллекция сервисов.</param>
-    /// <param name="connectionString">Строка подключения к базе данных.</param>
-    /// <returns>Обновленная коллекция сервисов.</returns>
-    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, string connectionString)
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services,
+        IConfiguration configuration)
     {
-        // Регистрация сервисов поиска с учётом регистра
-
-        // Регистрация DbContext
-        services.AddDbContextFactory<ServiceDbContext>(options =>
-            options.UseNpgsql(connectionString, x =>
-            {
-                x.MigrationsHistoryTable("__EFMigrationsHistory", ServiceDbContext.DefaultSchemaName);
-            })
-        );
-        services.AddDbContext<ServiceDbContext>(ServiceLifetime.Scoped);
-        services.AddScoped<ServiceDbContext>().Aka<IUnitOfWork>();
+        // Database
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        if (string.IsNullOrEmpty(connectionString))
+            throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
         
+        // Unique name for this microservice (used for schema ownership)
+        var serviceName = typeof(DomainMarker).Namespace!;
 
-        // Регистрация репозиториев
+        // 1. Guard for Main Database Schema
+        PostgresSchemaGuard.EnsureExclusiveSchema(connectionString, ServiceNameOrCustomDbContext.DefaultSchemaName, serviceName);
+
+        services.AddDbContextPool<ServiceNameOrCustomDbContext>(options =>
+                options.UseNpgsql(connectionString,
+                    x => { x.MigrationsHistoryTable("__EFMigrationsHistory", ServiceNameOrCustomDbContext.DefaultSchemaName); }),
+            poolSize: 1024
+        );
+
+        services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<ServiceNameOrCustomDbContext>());
+
+        // Repositories
+        
+        // Specifications
+        services.AddScoped<ICaseInsensitiveSearch, PostgresCaseInsensitiveSearch>();
+        
+        // Configurations
+        services.AddInfrastructureConfiguration();
+        
+        // Background jobs
+        services.AddBackgroundJobs(connectionString);
+
+        // Data Seeding
+        services.AddScoped<DataSeeder>();
+        
+        // Polly Policies
+
+        return services;
+    }
+
+    /// <summary>
+    /// Register Hangfire and background job services.
+    /// </summary>
+    private static IServiceCollection AddBackgroundJobs(this IServiceCollection services, string connectionString)
+    {
+        var serviceName = typeof(DomainMarker).Namespace!;
+        var hangfireSchemaName = $"{ServiceNameOrCustomDbContext.DefaultSchemaName}_hangfire";
+
+        // Guard for Hangfire Schema
+        PostgresSchemaGuard.EnsureExclusiveSchema(connectionString, hangfireSchemaName, serviceName);
+
+        services.AddHangfire(config => config
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UsePostgreSqlStorage(c => 
+                c.UseNpgsqlConnection(connectionString), new PostgreSqlStorageOptions
+            {
+                SchemaName = hangfireSchemaName,
+                PrepareSchemaIfNecessary = true
+            }));
+    
+        services.AddHangfireServer((sp, options) =>
+        {
+            var settings = sp.GetRequiredService<IHangfireSettings>();
+            options.WorkerCount = settings.WorkerCount;
+        });
+
+        return services;
+    }
+    
+    /// <summary>
+    /// Register and validate infrastructure configuration settings.
+    /// </summary>
+    /// <param name="services">Service collection.</param>
+    private static void AddInfrastructureConfiguration(this IServiceCollection services)
+    {
+        services
+            .AddValidatedOptions<ICorsSettings, CorsSettings>(CorsSettings.SectionName)
+            .AddValidatedOptions<IHangfireSettings, HangfireSettings>(HangfireSettings.SectionName);
+    }
+    
+    /// <summary>
+    /// Helper method to register validated options with interface.
+    /// </summary>
+    private static IServiceCollection AddValidatedOptions<TInterface, TSettings>(
+        this IServiceCollection services, 
+        string sectionName)
+        where TInterface : class
+        where TSettings : class, TInterface, new()
+    {
+        services.AddOptions<TSettings>()
+            .BindConfiguration(sectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+    
+        services.AddSingleton<TInterface>(sp => 
+            sp.GetRequiredService<IOptions<TSettings>>().Value);
 
         return services;
     }

@@ -4,23 +4,23 @@ internal static class ApplicationConfiguration
 {
     public static IConfigurationBuilder SetupAppConfiguration(this IConfigurationBuilder builder, IHostEnvironment env)
     {
-        // Всегда базовый конфиг
+        // Always base config
         builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-        // Конфигурация для конкретного окружения
+        // Environment-specific configuration
         if (!string.IsNullOrWhiteSpace(env.EnvironmentName))
         {
             var envConfigFile = $"appsettings.{env.EnvironmentName}.json";
             builder.AddJsonFile(envConfigFile, optional: true, reloadOnChange: true);
         }
 
-        // секретные файлы только для Local
+        // Secret files only for Local
         if (env.IsEnvironment("Local"))
         {
             builder.AddJsonFile("appsettings.Secrets.json", optional: true, reloadOnChange: true);
         }
 
-        // Всегда подключаем переменные окружения (секреты, динамические параметры)
+        // Always connect environment variables (secrets, dynamic parameters)
         builder.AddEnvironmentVariables();
 
         return builder;

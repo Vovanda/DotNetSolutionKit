@@ -11,10 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.8" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.8" />
-      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.4.0" />
+      <PackageReference Include="LinqSpecs" Version="3.2.0" />
     </ItemGroup>
-
 </Project>

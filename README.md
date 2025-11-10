@@ -1,99 +1,97 @@
 # DotNetSolutionKit
 
-Шаблон решения для микросервисной архитектуры на платформе .NET. 
+A high-performance solution template for building microservices on .NET 8+.
 
-Включает:
-- реализацию микросервиса по принципам чистой архитектуры и DDD
-- общие проекты для бизнес-логики и контрактов
-- инфраструктуру и вспомогательные инструменты.
+This toolkit is engineered to accelerate development by providing a production-ready foundation based on Clean Architecture, DDD, and Zero-Trust Security principles.
 
----
-## Цель
+## 1. Installation
 
-Создать удобный и расширяемый шаблон для быстрого старта новых проектов с готовой структурой и настройками.
-
-
-## 1. Установка
-
-1. Убедитесь, что у вас установлен **.NET 8 SDK** или выше:
+Navigate to the folder containing .template.config and run:
 
 ```bash
-dotnet --version
+dotnet new install .
 ```
 
-2. Установите шаблон в глобальные шаблоны `dotnet`:
+Or specify the absolute path to the template folder:
 
 ```bash
-dotnet new --install path/to/DotNetSolutionKit
+dotnet new install /path/to/DotNetSolutionKit
 ```
 
-> После этого шаблон будет доступен через команду `dotnet new DotNetSolutionKit`.
----
-
-## 2. Структура
-
-* `e2e/` — проекты для end-to-end тестирования
-* `docker/`, `.helm/`, `grafana/` — DevOps и инфраструктурные конфигурации
-* `src/common/` — проекты с общей бизнес-логикой и контрактами
-* `src/services/` — микросервисы (API, Application, Infrastructure, Tests)
-* `src/framework/` — проектный framework для конфигурации, логирования и общих сервисов
----
-
-## 3. Параметры шаблона
-
-* `NamespaceRoot` — корень пространства имён, обычно название организации (по умолчанию `MyCompany`)
-* `ProductName` — имя продукта (по умолчанию `Product`)
-* `ServiceNameOrCustom` — имя сервиса или произвольное значение, например, домен и сервис в формате `Domain.Service` (по умолчанию `Service`)
-* `Minimal` — true = только микросервис; false = полный multi-solution kit. По умолчанию `true`.
-
-Эти параметры подставляются в имена файлов, папок и содержимое, формируя namespace и структуру проекта.
-
----
-
-## 4. Примеры использования
-
-### 4.1 Создание полного решения с APIGateway и набором сервисов
+To update the template:
 
 ```bash
-dotnet new DotNetSolutionKit \
-  --NamespaceRoot "Sawking" \
-  --ProductName "Avox" \
-  --ServiceNameOrCustom "APIGateway" \
-  --Minimal false
+dotnet new uninstall /path/to/DotNetSolutionKit
+dotnet new install /path/to/DotNetSolutionKit
 ```
 
-**Результат:**
+## 2. Usage
 
-* Полный multi-solution, включающий общий `.sln` файл (`All.sln`)
-* APIGateway сервис в `src/services/APIGateway`
-* Все необходимые проекты (`Common`, `Framework`) добавлены и подключены
-* Можно добавлять новые микросервисы и подключать их через общий `.sln`
+**Create a Full Solution (Infrastructure + First Service)**
 
-**После добавления новых микросервисов:**
-
-* Используйте скрипт `manual-add-projects.sh` (в `src/services`) для автоматического добавления проектов в `All.sln`.
-* Скрипт проверяет, какие проекты ещё не подключены, и добавляет их, пропуская уже существующие.
-
----
-
-### 4.2 Создание одного микросервиса Knowledge (по умолчанию Minimal = true)
+Use the `-M false` flag for the initial setup to generate shared Common projects and the root solution file.
 
 ```bash
-dotnet new DotNetSolutionKit \
-  --NamespaceRoot "Sawking" \
-  --ProductName "Avox" \
-  --ServiceNameOrCustom "KnowledgeService"
+dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Auth -M false
 ```
 
-**Результат:**
+**Add Additional Microservices**
 
-* Папка `src/services/KnowledgeService` с API, Application, Infrastructure и тестами
-* Стартовый микросервис без генерации инфрасттруктурных папок/проектов (Common, Framework)
-* Можно интегрировать в полный solution позже с помощью скрипта `manual-add-projects.sh`
+For all subsequent services, use the default settings (Minimal mode):
 
----
+```bash
+dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
+```
 
-## 5. После генерации
+**Parameters:**
 
-* Выполните `dotnet restore` для восстановления всех зависимостей
-* При необходимости проверьте и отредактируйте конфигурационные файлы (например, `appsettings.json`)
+- `-N` (NamespaceRoot) — Organization name (root namespace).
+- `-P` (ProductName) — Product or ecosystem name.
+- `-S` (ServiceNameOrCustom) — Specific service name (supports Domain.Service format).
+- `-M` (Minimal) — `false` to generate the full kit (Common projects + All.sln); `true` (default) to generate only the service folder.
+
+## 3. Core Features
+
+### 🛡️ Security & IAM
+
+**Dual Authentication:** Out-of-the-box support for JWT Bearer and API Key (X-API-Key) pipelines.
+
+### 🏗️ Architecture
+
+**Clean Architecture:** Strict separation into API, Application, Infrastructure, and Domain layers.
+**Domain Purity:** Shared logic isolated in Common.Domain to ensure zero infrastructure leakage.
+
+### 🛠️ Developer Experience (DX)
+
+**Smart Swagger:** Dynamic API version discovery, persistent authorization, and XML documentation support.
+**Advanced Testing:** TestExecutionContext for isolated integration testing with hybrid DI support.
+**Automated Versioning:** Built-in Nerdbank.GitVersioning for git-height-based semantic versions.
+**Global Error Handling:** Centralized IExceptionHandler for 100% consistent error reporting.
+
+### 🚀 DevOps
+
+**Health Checks:** Advanced diagnostics including Service Identity, Build Version, and Git Commit Hash.
+**Docker Ready:** Multi-stage Dockerfiles optimized for .NET 8 LTS runtime.
+**Configuration Validation:** Fail-fast startup with ValidateOnStart for all infrastructure settings.
+
+## 4. Post-Generation Steps
+
+**Synchronize Solution:**
+
+Register new projects in the global solution file:
+
+```bash
+cd src/services
+chmod +x manual-add-projects.sh # If on Linux/Mac
+./manual-add-projects.sh
+```
+
+**Restore Dependencies:**
+
+```bash
+dotnet restore
+```
+
+**Configure & Run:**
+
+Update connection strings in `appsettings.json` and build your solution.

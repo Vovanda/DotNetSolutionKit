@@ -7,18 +7,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Context\" />
-      <Folder Include="Domain\" />
-      <Folder Include="Exceptions\" />
+      <Folder Include="Domain\Entities\" />
+      <Folder Include="Domain\Models\" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-            <_Parameter1>$(AssemblyName).Tests</_Parameter1>
+            <_Parameter1>NamespaceRoot.ProductName.ServiceNameOrCustom.Tests</_Parameter1>
         </AssemblyAttribute>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Annotations" Version="2025.2.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
     </ItemGroup>
     
     <ItemGroup>
-      <PackageReference Include="JetBrains.Annotations" Version="2025.2.0" />
+      <ProjectReference Include="..\..\..\common\NamespaceRoot.ProductName.Common\NamespaceRoot.ProductName.Common.csproj" />
     </ItemGroup>
 </Project>

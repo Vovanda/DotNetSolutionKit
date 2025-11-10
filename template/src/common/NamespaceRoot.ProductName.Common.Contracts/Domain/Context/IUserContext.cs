@@ -1,41 +1,52 @@
 namespace NamespaceRoot.ProductName.Common.Contracts.Domain.Context;
 
 /// <summary>
-/// Контекст пользователя, единый для всех сервисов приложения.
+/// User context, unified for all application services.
 /// </summary>
 public interface IUserContext
 {
     /// <summary>
-    /// Имя пользователя (для хранения в Data или логах)
+    /// User unique identifier
     /// </summary>
-    public static readonly string DisplayNamePropName = "DisplayName";
+    Guid UserId { get; }
+    
+    /// <summary>
+    /// Partner unique identifier
+    /// </summary>
+    Guid? PartnerId  { get; }
 
     /// <summary>
-    /// Идентификатор пользователя
+    /// User login/email
     /// </summary>
-    string Login { get; }
+    string? Login { get; }
 
     /// <summary>
-    /// Роли пользователя
+    /// User display name
     /// </summary>
-    List<Role> Roles { get; }
+    string? DisplayName { get; }
 
     /// <summary>
-    /// Дополнительные данные пользователя
+    /// API Key identifier (if authenticated via API Key)
     /// </summary>
-    Dictionary<string, object>? Data { get; }
+    Guid? ApiKeyId { get; }
 
     /// <summary>
-    /// Роли, доступные в приложении
+    /// Check if user authenticated via JWT
     /// </summary>
-    public enum Role
-    {
-        User = 1,
-        System
-    }
+    bool IsJwtAuthenticated => AuthContext.Type == AuthMethod.Jwt;
 
     /// <summary>
-    /// Проверка принадлежности к определённой роли.
+    /// Check if user authenticated via API Key
     /// </summary>
-    bool InRole(Role role) => Roles.Contains(role);
+    bool IsApiKeyAuthenticated => AuthContext.Type == AuthMethod.ApiKey;
+
+    /// <summary>
+    /// Check if user is system user
+    /// </summary>
+    bool IsSystemCall => AuthContext.Type == AuthMethod.System;
+
+    /// <summary>
+    /// Current authentication context data
+    /// </summary>
+    IAuthContext AuthContext { get; }
 }

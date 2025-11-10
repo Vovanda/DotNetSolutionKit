@@ -3,20 +3,20 @@ using JetBrains.Annotations;
 namespace NamespaceRoot.ProductName.Common.Contracts.FeatureManagement;
 
 /// <summary>
-/// Имена флагов
+/// Feature flag names
 /// </summary>
 [PublicAPI]
 public enum FeatureFlags
 {
     /// <summary>
-    /// Тестовый флаг
-    /// К каждому фф добавляем номер pbi с описанием:
-    /// PBI xxxxxx: Заголовок pbi
+    /// Test flag
+    /// Add PBI number with description for each feature flag:
+    /// PBI xxxxxx: PBI title
     /// </summary>
     TestFlag,
 
     /// <summary>
-    /// Делает видимым тестовый контроллер сервиса
+    /// Makes test service controller visible
     /// </summary>
     AllowTestController
 }
