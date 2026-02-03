@@ -32,7 +32,7 @@ dotnet new install /path/to/DotNetSolutionKit
 Use the `-M false` flag for the initial setup to generate shared Common projects and the root solution file.
 
 ```bash
-dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Auth -M false
+dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S IAM -M false
 ```
 
 **Add Additional Microservices**
