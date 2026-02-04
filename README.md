@@ -58,21 +58,21 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 
 ### 🏗️ Architecture
 
-**Clean Architecture:** Strict separation into API, Application, Infrastructure, and Domain layers.
-**Domain Purity:** Shared logic isolated in Common.Domain to ensure zero infrastructure leakage.
+- **Clean Architecture:** Strict separation into API, Application, Infrastructure, and Domain layers.
+- **Domain Purity:** Shared logic isolated in Common.Domain to ensure zero infrastructure leakage.
 
 ### 🛠️ Developer Experience (DX)
 
-**Smart Swagger:** Dynamic API version discovery, persistent authorization, and XML documentation support.
-**Advanced Testing:** TestExecutionContext for isolated integration testing with hybrid DI support.
-**Automated Versioning:** Built-in Nerdbank.GitVersioning for git-height-based semantic versions.
-**Global Error Handling:** Centralized IExceptionHandler for 100% consistent error reporting.
+- **Smart Swagger:** Dynamic API version discovery, persistent authorization, and XML documentation support.
+- **Advanced Testing:** TestExecutionContext for isolated integration testing with hybrid DI support.
+- **Automated Versioning:** Built-in Nerdbank.GitVersioning for git-height-based semantic versions.
+- **Global Error Handling:** Centralized IExceptionHandler for 100% consistent error reporting.
 
 ### 🚀 DevOps
 
-**Health Checks:** Advanced diagnostics including Service Identity, Build Version, and Git Commit Hash.
-**Docker Ready:** Multi-stage Dockerfiles optimized for .NET 8 LTS runtime.
-**Configuration Validation:** Fail-fast startup with ValidateOnStart for all infrastructure settings.
+- **Health Checks:** Advanced diagnostics including Service Identity, Build Version, and Git Commit Hash.
+- **Docker Ready:** Multi-stage Dockerfiles optimized for .NET 8 LTS runtime.
+- **Configuration Validation:** Fail-fast startup with ValidateOnStart for all infrastructure settings.
 
 ## 4. Post-Generation Steps
 
