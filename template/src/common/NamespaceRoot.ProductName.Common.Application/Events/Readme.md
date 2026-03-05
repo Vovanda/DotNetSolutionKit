@@ -1,6 +1,6 @@
 # Domain Events System (3-Phase Pipeline)
 
-A robust domain event orchestration engine integrated with the Entity Framework Core transaction lifecycle. It provides a clean separation between synchronous domain logic, reliable messaging, and post-commit background tasks.
+A robust domain event orchestration engine integrated with the **Entity Framework Core** transaction lifecycle via **IUnitOfWork**. It provides a clean separation between synchronous domain logic, reliable messaging, and post-commit background tasks.
 
 ### Core Architecture Principles
 
@@ -41,41 +41,42 @@ The pipeline automatically dispatches events across three distinct execution win
 
 ### Implementation Example
 
-Managing a complex lifecycle (Validation + Outbox + Background Job) in a single handler:
+Each handler class must implement **exactly one phase interface**. One class = one phase.
+
+> ⚠️ **Known limitation:** A class implementing multiple phase interfaces for the same event type
+> will have its `Handle` method called in every matched phase (same logic runs twice).
+> The dispatcher resolves handlers via `IDomainEventHandler.Handle` (non-generic bridge),
+> which always calls the public `Handle(TEvent, ...)` — explicit `IDomainEventHandler<T>.Handle`
+> overloads are unreachable. See TODO in `DomainEventDispatcher`.
+
 ```C#
-public class PasswordResetHandler :
-IDomainPreSaveHandler<PasswordResetRequestedEvent>,   // Phase 1
-IDomainPostCommitHandler<PasswordResetRequestedEvent>, // Phase 2
-IDomainRollbackHandler<PasswordResetRequestedEvent>   // Phase 3
+// Phase 1 — publish to Outbox inside transaction
+public class PasswordResetOutboxHandler : IDomainPreSaveHandler<PasswordResetRequestedEvent>
 {
-private readonly IUnitOfWork _uow;
-private readonly IPublishEndpoint _publishEndpoint;
-
-    public PasswordResetHandler(IUnitOfWork uow, IPublishEndpoint publishEndpoint) 
+    public async Task Handle(PasswordResetRequestedEvent @event, CancellationToken ct, object? data = null)
     {
-        _uow = uow;
-        _publishEndpoint = publishEndpoint;
-    }
-
-    // Phase 1: Inside Transaction
-    public async Task Handle(PasswordResetRequestedEvent @event, CancellationToken ct, object? data)
-    {
-        // Reliability: Message and DB changes are bound to the same transaction
         await _publishEndpoint.Publish(@event, ct);
     }
+}
 
-    // Phase 2: After Successful Commit
-    async Task IDomainEventHandler<PasswordResetRequestedEvent>.Handle(PasswordResetRequestedEvent @event, CancellationToken ct, object? data)
+// Phase 2 — enqueue background job after commit
+public class PasswordResetNotificationHandler : IDomainPostCommitHandler<PasswordResetRequestedEvent>
+{
+    public Task Handle(PasswordResetRequestedEvent @event, CancellationToken ct, object? data = null)
     {
-        // Enqueue long-running background task via Hangfire
-        BackgroundJob.Enqueue<IEmailService>(x => 
+        BackgroundJob.Enqueue<IEmailService>(x =>
             x.SendPasswordResetEmailAsync(@event.Email, @event.Link, @event.TokenLifetime, CancellationToken.None));
+        return Task.CompletedTask;
     }
+}
 
-    // Phase 3: On Failure
-    public async Task HandleRollback(PasswordResetRequestedEvent @event, Exception? exception, CancellationToken ct)
+// Phase 3 — compensation on failure
+public class PasswordResetRollbackHandler : IDomainRollbackHandler<PasswordResetRequestedEvent>
+{
+    public Task HandleRollback(PasswordResetRequestedEvent @event, Exception? exception, CancellationToken ct)
     {
-        // Log detailed error or perform cleanup
+        // Log or compensate
+        return Task.CompletedTask;
     }
 }
 ```
