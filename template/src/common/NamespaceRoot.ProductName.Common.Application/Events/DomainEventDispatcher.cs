@@ -22,6 +22,14 @@ public sealed class DomainEventDispatcher(IServiceProvider serviceProvider) : ID
     public Task DispatchRollbackAsync(IEnumerable<IDomainEvent> events, Exception? exception, CancellationToken ct = default)
         => DispatchAsync(typeof(IDomainRollbackHandler<>), events, ct, exception);
 
+    // TODO: Known limitation — a class implementing both IDomainPreSaveHandler<T> and IDomainPostCommitHandler<T>
+    //       for the same event type will be resolved and called in BOTH phases (same Handle method twice).
+    //       DI registers it under both interfaces via .AsImplementedInterfaces().
+    //       Fix options:
+    //       a) Enforce single-phase per class at registration time (scan + guard).
+    //       b) Deduplicate resolved instances per dispatch call by checking implemented interfaces.
+    //       Until fixed: one class = one phase only.
+
     /// <summary>
     /// Dispatches events to handlers matching the specific phase interface and event type.
     /// </summary>

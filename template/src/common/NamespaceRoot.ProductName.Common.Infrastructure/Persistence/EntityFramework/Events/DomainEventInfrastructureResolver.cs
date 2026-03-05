@@ -49,22 +49,28 @@ internal static class DomainEventInfrastructureResolver
             return false;
         }
 
-        var finalProvider = httpAccessor?.HttpContext?.RequestServices ?? contextSp ?? appSp;
+        // 5. Try providers in priority order until both services are found.
+        IServiceProvider?[] candidates =
+        [
+            httpAccessor?.HttpContext?.RequestServices,
+            contextSp,
+            appSp
+        ];
 
-        if (finalProvider is null) return false;
-
-        // 5. Resolve infrastructure services.
-        storage = finalProvider.GetService<IDomainEventStorage>()!;
-        dispatcher = finalProvider.GetService<IDomainEventDispatcher>()!;
-
-        // 6. Logging for missing registrations (ensures we don't "swallow" misconfigurations).
-        if (storage is null || dispatcher is null)
+        foreach (var candidate in candidates)
         {
-            diagLogger?.Logger.LogWarning(
-                "DomainEvent infrastructure (Storage/Dispatcher) not found in the current scope for {Context}.", 
-                context.GetType().Name);
-            return false;
+            if (candidate is null) continue;
+            storage = candidate.GetService<IDomainEventStorage>()!;
+            dispatcher = candidate.GetService<IDomainEventDispatcher>()!;
+            if (storage is not null && dispatcher is not null)
+                return true;
         }
+
+        diagLogger?.Logger.LogWarning(
+            "DomainEvent infrastructure (Storage/Dispatcher) not found in the current scope for {Context}.",
+            context.GetType().Name);
+        storage = null!;
+        dispatcher = null!;
 
         return true;
     }
