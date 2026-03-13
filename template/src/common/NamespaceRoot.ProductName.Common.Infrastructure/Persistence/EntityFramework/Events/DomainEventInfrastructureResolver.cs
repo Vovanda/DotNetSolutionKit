@@ -37,24 +37,17 @@ internal static class DomainEventInfrastructureResolver
             ?.Extensions.OfType<CoreOptionsExtension>().FirstOrDefault()
             ?.ApplicationServiceProvider;
 
-        // 4. Determine the best available Scope.
-        var httpAccessor = (appSp ?? internalSp).GetService<IHttpContextAccessor>();
-        var contextSp = internalSp.GetService<IServiceProvider>();
-
-        // GUARD: Prevent InvalidOperationException when trying to resolve Scoped services from Root.
-        // This commonly happens during Seeding or Migrations if no manual Scope is created.
-        if (contextSp == appSp && httpAccessor?.HttpContext is null)
-        {
-            diagLogger?.Logger.LogDebug("DomainEvent resolution skipped: Root Provider detected without an active Scope.");
-            return false;
-        }
+        // 4. Determine the best available scope.
+        // HTTP requests: IHttpContextAccessor.HttpContext.RequestServices
+        // MassTransit/Hangfire: DomainEventScopeContext set by DomainEventScopeFilter
+        // Seeding/Migrations: no scope → returns false, events are silently skipped.
+        var httpAccessor = appSp?.GetService<IHttpContextAccessor>();
 
         // 5. Try providers in priority order until both services are found.
         IServiceProvider?[] candidates =
         [
             httpAccessor?.HttpContext?.RequestServices,
-            contextSp,
-            appSp
+            DomainEventScopeContext.Current,
         ];
 
         foreach (var candidate in candidates)
@@ -66,12 +59,12 @@ internal static class DomainEventInfrastructureResolver
                 return true;
         }
 
-        diagLogger?.Logger.LogWarning(
-            "DomainEvent infrastructure (Storage/Dispatcher) not found in the current scope for {Context}.",
+        diagLogger?.Logger.LogDebug(
+            "DomainEvent resolution skipped: no active scope found for {Context}. Expected in background workers (Outbox delivery, Hangfire).",
             context.GetType().Name);
         storage = null!;
         dispatcher = null!;
 
-        return true;
+        return false;
     }
 }
