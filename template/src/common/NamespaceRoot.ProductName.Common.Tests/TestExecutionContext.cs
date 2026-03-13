@@ -8,6 +8,20 @@ namespace NamespaceRoot.ProductName.Common.Tests;
 
 public class TestExecutionContext : IDisposable, IAsyncDisposable
 {
+    // WHY these dictionaries exist:
+    // A typical test calls ActAsync() then AssertAsync() — each creates its own DI scope.
+    // Plain AddScoped would produce a different instance per scope, so mocks registered
+    // in one scope wouldn't be visible in another, and factory-built services would be
+    // recreated on every call.
+    //
+    // The dictionaries give us "singleton-within-test" semantics while keeping the DI
+    // lifetime as Scoped (AddScoped(_ => instance / GetOrCreateInstance)).
+    // Scoped lifetime is intentional: it prevents DI scope-validation errors when
+    // the registered service is injected into other Scoped services (e.g. repositories
+    // injected into a service-under-test that also holds a DbContext).
+    //
+    // DO NOT replace with AddSingleton — that breaks scope validation.
+    // DO NOT remove the dictionaries — that breaks cross-scope mock visibility.
     private readonly Dictionary<Type, Func<object>> _instanceFactories = new();
     private readonly Dictionary<Type, object> _cachedInstances = new();
 
@@ -224,6 +238,10 @@ public class ServiceDbTestExecutionContext<TService, TDbContext> : DbTestExecuti
 
 /// <summary>
 /// InMemory variant for unit tests.
+/// Automatically sets <see cref="DomainEventScopeContext"/> per ActAsync call when domain event
+/// interceptors are registered — this allows <see cref="DomainEventInfrastructureResolver"/>
+/// to resolve scoped storage/dispatcher from within singleton EF interceptors.
+/// Without this, interceptors silently skip domain events (no HTTP context, no ambient scope).
 /// </summary>
 public class InMemoryTestExecutionContext<TService, TDbContext> : ServiceDbTestExecutionContext<TService, TDbContext>
     where TService : class
@@ -240,4 +258,36 @@ public class InMemoryTestExecutionContext<TService, TDbContext> : ServiceDbTestE
 
     public override Task EnsureDatabaseCreatedAsync() => Task.CompletedTask;
     public override Task EnsureDatabaseDeletedAsync() => Task.CompletedTask;
+
+    public new Task ActAsync(Func<TService, Task> act, Action<IServiceProvider>? configure = null)
+    {
+        IServiceProvider? scopeSp = null;
+        return ExecuteAsync<TService>(
+            async svc =>
+            {
+                using (DomainEventScopeContext.Use(scopeSp!))
+                    await act(svc);
+            },
+            configure: sp =>
+            {
+                scopeSp = sp;
+                configure?.Invoke(sp);
+            });
+    }
+
+    public new Task<TResult> ActAsync<TResult>(Func<TService, Task<TResult>> act, Action<IServiceProvider>? configure = null)
+    {
+        IServiceProvider? scopeSp = null;
+        return ExecuteAsync<TService, TResult>(
+            async svc =>
+            {
+                using (DomainEventScopeContext.Use(scopeSp!))
+                    return await act(svc);
+            },
+            configure: sp =>
+            {
+                scopeSp = sp;
+                configure?.Invoke(sp);
+            });
+    }
 }
