@@ -2,7 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NamespaceRoot.ProductName.Common.Application.Configuration;
 
-public class JwtConfiguration : IJwtConfiguration
+/// <summary>
+/// JWT configuration for services that only validate tokens (API Gateway, Core, Billing, etc.).
+/// </summary>
+public class JwtPublicConfiguration : IJwtPublicConfiguration
 {
     public const string SectionName = "Jwt";
 
@@ -15,11 +18,17 @@ public class JwtConfiguration : IJwtConfiguration
     [Range(1, 1440, ErrorMessage = "JWT lifetime must be between 1 and 1440 minutes (24 hours)")]
     public int LifetimeMinutes { get; init; } = 60;
 
-    [Required(ErrorMessage = "Private key path is required")]
-    public string PrivateKeyPath { get; init; } = string.Empty;
-
     [Required(ErrorMessage = "Public key path is required")]
     public string PublicKeyPath { get; init; } = string.Empty;
+}
+
+/// <summary>
+/// Full JWT configuration for the Auth service (signs and validates tokens).
+/// </summary>
+public class JwtConfiguration : JwtPublicConfiguration, IJwtConfiguration
+{
+    [Required(ErrorMessage = "Private key path is required")]
+    public string PrivateKeyPath { get; init; } = string.Empty;
 }
 
 public class RefreshTokenConfiguration : IRefreshTokenConfiguration

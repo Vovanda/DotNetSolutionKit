@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using NUnit.Framework;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Tests.Misc;
 
