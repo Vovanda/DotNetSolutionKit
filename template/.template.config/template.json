@@ -2,6 +2,10 @@
   "$schema": "http://json.schemastore.org/template",
   "author": "Vladimir Savkin",
   "classifications": ["Microservice", "Solution"],
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
   "identity": "Sawking.DotNetSolutionKit",
   "name": "DotNet Solution Kit",
   "shortName": "DotNetSolutionKit",
@@ -89,7 +93,7 @@
   "postActions": [
     {
       "condition": "true",
-      "actionId": "D1F2E3C4-B5A6-7890-1234-56789ABCDEF0",
+      "actionId": "00000000-0000-0000-0000-000000000000",
       "description": "After generating services, verify and add projects to All.sln",
       "manualInstructions": [
         { "text": "1. Navigate to services folder: cd ./src/services\n2. Run script: ./manual-add-projects.sh\n3. The script will check all service projects and add them to All.sln, skipping already added ones." }
