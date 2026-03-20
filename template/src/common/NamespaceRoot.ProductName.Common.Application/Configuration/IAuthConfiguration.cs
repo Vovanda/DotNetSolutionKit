@@ -1,12 +1,22 @@
 namespace NamespaceRoot.ProductName.Common.Application.Configuration;
 
-public interface IJwtConfiguration
+/// <summary>
+/// JWT configuration for services that only validate tokens (public key only).
+/// </summary>
+public interface IJwtPublicConfiguration
 {
     string Issuer { get; }
     string Audience { get; }
     int LifetimeMinutes { get; }
-    string PrivateKeyPath { get; }
     string PublicKeyPath { get; }
+}
+
+/// <summary>
+/// Full JWT configuration for services that sign and validate tokens (Auth service).
+/// </summary>
+public interface IJwtConfiguration : IJwtPublicConfiguration
+{
+    string PrivateKeyPath { get; }
 }
 
 public interface IRefreshTokenConfiguration

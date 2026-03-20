@@ -29,6 +29,11 @@ public static class AuthConfigurationExtensions
         return services;
     }
 
+    /// <summary>Registers JWT public configuration (validation-only services: Gateway, Core, Billing).</summary>
+    public static IServiceCollection AddJwtPublicConfiguration(this IServiceCollection services, IConfiguration configuration) =>
+        services.AddConfiguration<JwtPublicConfiguration, IJwtPublicConfiguration>(configuration, JwtPublicConfiguration.SectionName);
+
+    /// <summary>Registers full JWT configuration (Auth service — signs and validates tokens).</summary>
     public static IServiceCollection AddJwtConfiguration(this IServiceCollection services, IConfiguration configuration) =>
         services.AddConfiguration<JwtConfiguration, IJwtConfiguration>(configuration, JwtConfiguration.SectionName);
 
