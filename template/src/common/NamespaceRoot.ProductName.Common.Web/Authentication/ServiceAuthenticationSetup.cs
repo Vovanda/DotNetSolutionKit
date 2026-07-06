@@ -21,6 +21,14 @@ public static class ServiceAuthenticationSetup
     public const string CompositeSchemeName = "ApiKey_Or_Jwt";
 
     /// <summary>
+    /// Cookie name for the access JWT. Set by the Auth service on login/refresh via
+    /// <see cref="AuthCookieExtensions.SetAccessTokenCookie"/> and read here as an
+    /// alternative to the Authorization header (browsers that keep the token in an HttpOnly
+    /// cookie cannot attach a Bearer header themselves).
+    /// </summary>
+    public const string AccessTokenCookieName = "access_token";
+
+    /// <summary>
     /// Registers the composite authentication scheme (API Key + optional JWT) for the service.
     /// </summary>
     public static WebApplicationBuilder SetupServiceAuthentication<TApiKeyHandler>(
@@ -46,6 +54,12 @@ public static class ServiceAuthenticationSetup
                     var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
                     if (authHeader?.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) == true)
                         return JwtBearerDefaults.AuthenticationScheme;
+
+                    // Fallback for browser clients that keep the JWT in an HttpOnly cookie
+                    // (see AuthCookieExtensions). Cookie-only requests carry no Authorization
+                    // header, so the composite scheme has to opt into the JWT scheme itself.
+                    if (!string.IsNullOrEmpty(context.Request.Cookies[AccessTokenCookieName]))
+                        return JwtBearerDefaults.AuthenticationScheme;
                 }
 
                 return ApiKeySchemeName;
@@ -63,6 +77,18 @@ public static class ServiceAuthenticationSetup
                 {
                     options.Events = new JwtBearerEvents
                     {
+                        OnMessageReceived = context =>
+                        {
+                            // Header wins; fall back to the HttpOnly access token cookie so
+                            // browser clients that never touch localStorage keep working.
+                            if (string.IsNullOrEmpty(context.Token))
+                            {
+                                var cookie = context.Request.Cookies[AccessTokenCookieName];
+                                if (!string.IsNullOrEmpty(cookie))
+                                    context.Token = cookie;
+                            }
+                            return Task.CompletedTask;
+                        },
                         OnAuthenticationFailed = context =>
                         {
                             // Do NOT write to Response here — let the error handling middleware handle it.

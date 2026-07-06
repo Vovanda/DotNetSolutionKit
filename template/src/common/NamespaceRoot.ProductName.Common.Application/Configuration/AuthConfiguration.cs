@@ -40,6 +40,19 @@ public class RefreshTokenConfiguration : IRefreshTokenConfiguration
 
     [Range(16, 64, ErrorMessage = "Refresh token size must be between 16 and 64 bytes")]
     public int Size { get; init; } = 32;
+
+    /// <summary>
+    /// Default matches the gateway-facing prefix of the v2 auth endpoints. If the concrete
+    /// project uses a different gateway prefix, override this per-environment. Leaving it
+    /// blank falls back to "/" which is safe but leaks the refresh cookie on every request.
+    /// </summary>
+    public string CookiePath { get; init; } = "/api/auth/v2/auth";
+
+    [Range(0, 300, ErrorMessage = "Reuse grace window must be between 0 and 300 seconds")]
+    public int ReuseGraceWindowSeconds { get; init; } = 30;
+
+    [Range(0, 86400, ErrorMessage = "Security alert throttle must be between 0 and 86400 seconds (24h)")]
+    public int SecurityAlertThrottleSeconds { get; init; } = 3600;
 }
 
 public class InternalApiConfiguration : IInternalApiConfiguration
