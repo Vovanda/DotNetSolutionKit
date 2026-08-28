@@ -36,7 +36,11 @@ internal static class WebApi
         builder.Services.AddControllers(options =>
         {
             options.Filters.Add<PermissionAuthorizationFilter>();
-        }).ConfigureApiBehaviorOptions(options =>
+        })
+        // Controllers that ship with the platform rather than with this service — the feature list
+        // among them, so every service answers about flags the same way instead of each writing its
+        // own endpoint.
+        .AddApplicationPart(typeof(Common.Web.FeatureManagement.FeaturesController).Assembly).ConfigureApiBehaviorOptions(options =>
         {
             // This is the bridge between MVC Validation and your ErrorResponse contract
             options.InvalidModelStateResponseFactory = context =>

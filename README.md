@@ -68,6 +68,71 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 - **Automated Versioning:** Built-in Nerdbank.GitVersioning for git-height-based semantic versions.
 - **Global Error Handling:** Centralized IExceptionHandler for 100% consistent error reporting.
 
+### 🚩 Feature Flags
+
+Flags are **data, not code**. They live in one `features.json` that ships from `Common` and is read by
+every service, so a feature means the same thing platform-wide, and adding one the UI merely reacts to
+costs no deployment.
+
+```json
+{
+  "Features": {
+    "checkout.new-flow": {
+      "enabled": false,
+      "effect": "enables",
+      "environments": { "Development": true },
+      "tags": ["checkout"],
+      "description": "Serve the rebuilt checkout instead of the original.",
+      "owner": "payments",
+      "expiresAt": "2026-12-31",
+      "ticket": "ABC-123"
+    }
+  }
+}
+```
+
+`enabled` is the default; `environments` overrides it per stand, which is what lets one shared file
+serve all of them. `effect` says whether turning it on enables or withholds the feature — write flags
+so that on means it works, and let a kill switch explain itself in its description. `owner`,
+`expiresAt` and `ticket` exist because flags accumulate: an expired flag is reported as expired, so
+debt is visible rather than remembered.
+
+Values are layered — the file, then any external store, then environment variables — and the file is
+the fallback when a store is unreachable. Each state reports **which layer decided it**, so an
+operator toggling a flag that an environment variable overrides can see why nothing changed.
+
+Registration is one call, and nothing to declare:
+
+```csharp
+services.AddPlatformFeatureManagement(configuration);
+```
+
+After it, three things are available:
+
+| Use | What |
+|---|---|
+| Evaluate in code | `IFeatureManager` from `Microsoft.FeatureManagement`, backed by the shared file |
+| Guard an endpoint | `[FeatureGate(FeatureKeys.SomeFeature)]` — the route is absent while the flag is off |
+| Read the platform view | `IFeatureCatalog` — values with owner, expiry, tags and value source |
+| Change a value | `IFeatureStore`, or `PUT /api/v1/features/{key}` |
+
+`GET /api/v1/features` returns the whole list and is anonymous — nothing in it is secret, and a client
+needs it before anyone signs in. **Enforcement still belongs on the server**: a client list decides
+what is drawn, never what is permitted, because a stale mobile cache is not a security boundary.
+
+Two attributes matter beyond evaluation:
+
+- `[BehindFeature("key")]` marks code that exists *because* of a flag — the class or method that goes
+  when the flag goes. Retiring a flag always ends in "what can be deleted", and this turns that into a
+  search instead of an archaeology exercise.
+- `[WithFeature("key")]` lets a test state the state it runs under instead of arranging configuration.
+
+Two tests keep it honest: every constant in `FeatureKeys` names a flag that exists, and keys stay in
+the agreed shape.
+
+The full design — schema, layering, the endpoints, retiring a flag, and how a frontend should
+integrate with it — is in [docs/feature-flags.md](docs/feature-flags.md).
+
 ### 🚀 DevOps
 
 - **Health Checks:** Advanced diagnostics including Service Identity, Build Version, and Git Commit Hash.

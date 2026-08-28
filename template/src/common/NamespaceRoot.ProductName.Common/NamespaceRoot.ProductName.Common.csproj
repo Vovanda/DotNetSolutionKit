@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -12,5 +12,15 @@
 
     <ItemGroup>
       <PackageReference Include="LinqSpecs" Version="3.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <!-- Travels with a ProjectReference, so every service that depends on Common gets the same file in
+           its output and reads the same flags. That is what makes a feature mean one thing platform-wide
+           instead of one thing per service. -->
+      <Content Include="FeatureManagement/features.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <TargetPath>features.json</TargetPath>
+      </Content>
     </ItemGroup>
 </Project>

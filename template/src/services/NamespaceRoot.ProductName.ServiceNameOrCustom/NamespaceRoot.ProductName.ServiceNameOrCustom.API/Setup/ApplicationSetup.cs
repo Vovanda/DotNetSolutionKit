@@ -1,3 +1,4 @@
+using NamespaceRoot.ProductName.Common.Application.FeatureManagement;
 using NamespaceRoot.ProductName.Common.Application.Configuration;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Application;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure;
@@ -11,6 +12,12 @@ internal static class ApplicationSetup
         var configuration = builder.Configuration;
         var services = builder.Services;
         
+        // Platform feature flags: the catalogue, the store, and the library that evaluates them.
+        // Flags come from the shared features.json, so nothing is declared here — a service gains a
+        // new flag without a line of code, and adds a constant to FeatureKeys only for the ones its
+        // own code reads.
+        services.AddPlatformFeatureManagement(configuration);
+
         // services.AddJwtConfiguration(configuration);
         services.AddInternalApiConfiguration(configuration);
         services.AddAuthValidationConfiguration(configuration);
