@@ -86,4 +86,14 @@ TEST_POSTGRES='Host=localhost;Port=15433;Database=postgres;Username=postgres;Pas
 dotnet test --filter "TestCategory!=Integration"   # everything else
 ```
 
-`Common.Tests/Integration` has one such fixture, for numbers from a sequence.
+`Common.Tests/Integration` has such fixtures, for numbers from a sequence and for object storage.
+
+## Coverage
+
+The test projects reference `coverlet.collector`, so coverage needs no setup:
+
+```bash
+dotnet test --collect:"XPlat Code Coverage"
+```
+
+Each test project writes a Cobertura report under `TestResults/`.
