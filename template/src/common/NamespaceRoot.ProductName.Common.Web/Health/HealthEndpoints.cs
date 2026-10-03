@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using NamespaceRoot.ProductName.Common.Application.Serialization;
 using NamespaceRoot.ProductName.Common.Contracts.Health;
 
 namespace NamespaceRoot.ProductName.Common.Web.Health;
@@ -21,7 +22,7 @@ namespace NamespaceRoot.ProductName.Common.Web.Health;
 /// </remarks>
 public static class HealthEndpoints
 {
-    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+    private static readonly JsonSerializerOptions JsonOptions = PlatformJson.Options;
 
     public static WebApplication MapPlatformHealth(this WebApplication app)
     {

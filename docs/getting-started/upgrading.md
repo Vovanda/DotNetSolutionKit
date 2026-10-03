@@ -43,6 +43,8 @@ Service host:
 API contract:
 
 - Errors are RFC 9457 problems; the `ErrorResponse` envelope is gone. See [errors](../architecture/errors.md).
+- Enums are written as names instead of numbers, and `DateTimeOffset` values in UTC with `Z` instead of
+  the server's offset. See [JSON](../architecture/web-layer.md#json).
 - Failed validation answers 422, not 400.
 - Health endpoints are `/health` and `/ready` instead of `/healthz` and `/readyz`.
 

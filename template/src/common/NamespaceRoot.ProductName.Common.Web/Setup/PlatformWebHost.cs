@@ -1,10 +1,9 @@
 using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NamespaceRoot.ProductName.Common.Application.Authorization;
+using NamespaceRoot.ProductName.Common.Application.Serialization;
 using NamespaceRoot.ProductName.Common.Infrastructure.Security;
 using NamespaceRoot.ProductName.Common.Web.Authorization;
 using NamespaceRoot.ProductName.Common.Web.Errors;
@@ -102,18 +101,12 @@ public static class PlatformWebHost
     }
 
     /// <summary>
-    /// camelCase and no nulls, for controllers and for anything written with <c>WriteAsJsonAsync</c>.
+    /// <see cref="PlatformJson"/> for controllers and for anything written with <c>WriteAsJsonAsync</c>.
     /// </summary>
     public static IServiceCollection ConfigurePlatformJson(this IServiceCollection services)
     {
-        services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options => Apply(options.JsonSerializerOptions));
-        services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => Apply(options.SerializerOptions));
+        services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options => PlatformJson.Apply(options.JsonSerializerOptions));
+        services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => PlatformJson.Apply(options.SerializerOptions));
         return services;
-
-        static void Apply(JsonSerializerOptions options)
-        {
-            options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-            options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-        }
     }
 }

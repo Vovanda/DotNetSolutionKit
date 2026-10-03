@@ -17,7 +17,7 @@ Both answer with the same body:
   "version": "1.2.0",
   "commit": "a1b2c3d",
   "releaseNotes": { "headline": "...", "highlights": [] },
-  "timestamp": "2026-10-03T12:00:00+00:00",
+  "timestamp": "2026-10-03T12:00:00Z",
   "checks": { "postgres": "Healthy", "hangfire": "Healthy" }
 }
 ```

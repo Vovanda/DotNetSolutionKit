@@ -6,8 +6,25 @@ services and a fix to it reaches them with a `Common` update.
 | Call | Registers or adds |
 |---|---|
 | `builder.AddPlatformLogging()` | Serilog from the `Serilog` section, with the version and the module on every line; health probes kept out of the log |
-| `builder.AddPlatformWebApi(serviceAssembly, mvc => ...)` | JSON (camelCase, nulls omitted), [errors](errors.md), controllers with the [permission check](authentication-and-permissions.md), [validation](validation-and-pagination.md), Swagger, CORS from the `Cors` section, the execution context |
+| `builder.AddPlatformWebApi(serviceAssembly, mvc => ...)` | [JSON](#json), [errors](errors.md), controllers with the [permission check](authentication-and-permissions.md), [validation](validation-and-pagination.md), Swagger, CORS from the `Cors` section, the execution context |
 | `app.UsePlatformPipeline(serviceAssembly, authenticate, beforeEndpoints)` | the middleware, in the order below, and the endpoints |
+
+## JSON
+
+Every service serializes with `PlatformJson` from `Common.Application`: the controllers, minimal APIs,
+`/health` and `/ready`, and any code that writes JSON itself through `PlatformJson.Options`.
+
+| Value | On the wire |
+|---|---|
+| Property names | camelCase |
+| `null` | left out |
+| Enums | names: `"ApiKey"`, not `1` |
+| `DateTimeOffset` | UTC with `Z`, fractional seconds only when present: `"2026-01-19T12:30:00Z"`; an offset read in is converted to UTC |
+| Non-ASCII text | as is, not as `\uXXXX` escapes |
+
+A number for an enum means nothing in a log, and reordering the enum changes the meaning of numbers
+already stored or sent. A timestamp in the server's own offset makes two services describe one instant
+differently, and clients comparing the strings get it wrong across a daylight-saving change.
 
 ## The pipeline
 
