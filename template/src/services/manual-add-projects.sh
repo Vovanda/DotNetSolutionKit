@@ -45,5 +45,10 @@ for service_dir in "$SERVICES_DIR"/*; do
 done
 
 echo -e "${BLUE}All projects checked.${RESET}"
-read -n1 -r -p "Press any key to exit..."
-echo
+
+# Keeps a window opened by a double click until it is read. Without a terminal, in CI or another
+# script, there is nobody to press a key, and read would fail the script.
+if [ -t 0 ]; then
+    read -n1 -r -p "Press any key to exit..."
+    echo
+fi

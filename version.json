@@ -1,6 +1,12 @@
 {
-  "version": "2.1.0",
+  "version": "2.1.1",
   "releaseNotes": {
+    "2.1.1": {
+      "headline": "Services are added to All.sln without a terminal too.",
+      "highlights": [
+        "Fixed: src/services/manual-add-projects.sh failed with exit code 1 when run without a terminal, as in CI, on the pause it kept for a window opened by a double click."
+      ]
+    },
     "2.1.0": {
       "headline": "Deployment, an API gateway, CI and one correlation identifier end to end; compatible with 2.0.",
       "highlights": [
