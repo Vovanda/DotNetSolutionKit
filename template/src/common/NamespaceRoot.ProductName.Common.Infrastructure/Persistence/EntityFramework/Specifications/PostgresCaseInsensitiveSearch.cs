@@ -1,20 +1,21 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using NamespaceRoot.ProductName.Common.Domain.Specifications;
 using LinqSpecs;
 using Microsoft.EntityFrameworkCore;
-using NamespaceRoot.ProductName.Common.Domain.Specifications;
 
-namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework.Specifications;
+namespace NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Specifications;
 
 /// <summary>
 /// PostgreSQL implementation for case-insensitive search using Npgsql ILIKE.
-/// Designed to work with LinqSpecs.
+/// Designed to work with LinqSpecs. Single implementation reused by every service
+/// (formerly copy-pasted per service).
 /// </summary>
 public class PostgresCaseInsensitiveSearch : ICaseInsensitiveSearch
 {
     private static readonly MethodInfo ILikeMethod = typeof(NpgsqlDbFunctionsExtensions).GetMethod(
                                                          nameof(NpgsqlDbFunctionsExtensions.ILike),
-                                                         [typeof(DbFunctions), typeof(string), typeof(string), typeof(string)]) 
+                                                         [typeof(DbFunctions), typeof(string), typeof(string), typeof(string)])
                                                      ?? throw new InvalidOperationException("Npgsql ILike method not found.");
 
     /// <summary>
@@ -24,7 +25,7 @@ public class PostgresCaseInsensitiveSearch : ICaseInsensitiveSearch
     public Specification<T> GetSpecification<T>(Expression<Func<T, string>> propertyExpression, string? pattern)
     {
         var searchTerm = EscapeAndWrapPattern(pattern);
-        
+
         var parameter = propertyExpression.Parameters[0];
         var propertyAccess = propertyExpression.Body;
 
@@ -50,7 +51,7 @@ public class PostgresCaseInsensitiveSearch : ICaseInsensitiveSearch
     {
         var searchTerm = EscapeAndWrapPattern(pattern);
         var parameter = arrayPropertyExpression.Parameters[0];
-        
+
         // Inner lambda for .Any(): s => EF.Functions.ILike(s, searchTerm, "/")
         var itemParam = Expression.Parameter(typeof(string), "s");
         var ilikeCall = Expression.Call(
@@ -84,7 +85,7 @@ public class PostgresCaseInsensitiveSearch : ICaseInsensitiveSearch
             return "%";
 
         // '/' is used as the ESCAPE character.
-        // We must escape: 
+        // We must escape:
         // 1. The escape character itself '/' -> '//'
         // 2. The any-sequence wildcard '%' -> '/%'
         // 3. The single-character wildcard '_' -> '/_'

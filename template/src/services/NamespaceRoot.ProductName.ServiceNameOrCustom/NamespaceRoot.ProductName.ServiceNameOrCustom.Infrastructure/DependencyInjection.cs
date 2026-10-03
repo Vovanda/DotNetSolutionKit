@@ -18,7 +18,7 @@ using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Application;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework.DataSeeding;
-using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework.Specifications;
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Specifications;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure;
 
