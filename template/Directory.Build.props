@@ -14,6 +14,8 @@
     <Version>$([System.Text.RegularExpressions.Regex]::Match($(_VersionJsonContent), '&quot;version&quot;\s*:\s*&quot;([^&quot;]+)&quot;').Groups[1].Value)</Version>
     <!-- The SDK appends the commit to the informational version on its own; the commit has its own field. -->
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <!-- A project sees only the projects it references itself, so a layer cannot reach another one by accident. -->
+    <DisableTransitiveProjectReferences>true</DisableTransitiveProjectReferences>
   </PropertyGroup>
 
   <Target Name="AddGitCommitMetadata" BeforeTargets="GetAssemblyAttributes">

@@ -54,7 +54,9 @@ Parameters:
 
 ### Architecture
 
-- Each service is split into domain, application, infrastructure and API projects.
+- Each service is split into domain, application, infrastructure and API projects. Transitive
+  project references are switched off, so a project sees only the projects it references itself:
+  a service's domain project references `Common` and nothing else.
 - `Common` holds the domain base types: `Entity`, `AggregateRoot`, domain events, `IUnitOfWork`.
   `Common.Application`, `Common.Infrastructure`, `Common.Web` and `Common.Contracts` hold what
   services share at the other layers.

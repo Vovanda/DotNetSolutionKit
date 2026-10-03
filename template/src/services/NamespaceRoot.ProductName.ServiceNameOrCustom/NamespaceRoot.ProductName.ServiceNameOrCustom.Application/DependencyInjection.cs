@@ -16,7 +16,11 @@ public static class DependencyInjection
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddApplicationConfiguration();
-        
+
+        // Domain services (policies and the like) are registered here rather than by the API,
+        // which works with the domain only through this layer.
+        services.AddDomainServices();
+
         // Register services
         
         return services;

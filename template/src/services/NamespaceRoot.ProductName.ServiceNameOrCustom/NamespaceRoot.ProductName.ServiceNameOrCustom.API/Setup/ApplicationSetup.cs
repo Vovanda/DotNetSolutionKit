@@ -22,10 +22,8 @@ internal static class ApplicationSetup
         services.AddInternalApiConfiguration(configuration);
         services.AddAuthValidationConfiguration(configuration);
 
-        // Register Domain Layer services
-        services.AddDomainServices();
-        
-        // Register Application Layer services
+        // Register Application Layer services. They register the domain services too:
+        // the API reaches the domain only through the application layer.
         services.AddApplicationServices();
         
         // Register Infrastructure Layer services
