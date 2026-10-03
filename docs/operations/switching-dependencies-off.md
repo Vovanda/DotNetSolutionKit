@@ -11,6 +11,7 @@ turn them on later with one setting, without regenerating anything.
 | `HangfireSettings:Enabled` | `true` | no job server, no dashboard; the dashboard password is not required |
 | `RabbitMq:Enabled` | `true` | a bus that drops what it is given, with a fatal line in the log at startup |
 | `Infisical:Enabled` | `true` | nothing is read from the secret store; values come from the files and the environment |
+| `ClickHouse:Enabled` | `true` | a connection answers 503, no readiness check, no connection string required |
 | `S3:Enabled` | `true` | object storage keeps nothing: writes are ignored, reads return empty |
 
 What a switched-off dependency registers: no services, no settings to validate, no check in `/ready`. The

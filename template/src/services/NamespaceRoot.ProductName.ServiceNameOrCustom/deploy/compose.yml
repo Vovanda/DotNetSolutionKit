@@ -21,6 +21,9 @@ services:
       RabbitMq__UserName: ${RABBITMQ_USER:-guest}
       RabbitMq__Password: ${RABBITMQ_PASSWORD:-guest}
 #endif
+#if (ClickHouse)
+      ClickHouse__ConnectionString: Host=clickhouse;Port=8123;Username=${CLICKHOUSE_USER:-app};Password=${CLICKHOUSE_PASSWORD:-};Database=${CLICKHOUSE_DB:-app}
+#endif
 #if (Storage)
       S3__ServiceUrl: http://s3:8333
       S3__BucketName: ${S3_BUCKET:-app}
@@ -47,6 +50,10 @@ services:
         condition: service_healthy
 #if (Messaging != "none")
       rabbitmq:
+        condition: service_healthy
+#endif
+#if (ClickHouse)
+      clickhouse:
         condition: service_healthy
 #endif
 #if (Storage)

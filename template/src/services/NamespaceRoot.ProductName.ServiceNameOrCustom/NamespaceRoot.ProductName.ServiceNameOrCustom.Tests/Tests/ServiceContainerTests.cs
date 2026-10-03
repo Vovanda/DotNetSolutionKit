@@ -24,6 +24,7 @@ internal class ServiceContainerTests
         ["RabbitMq__Enabled"] = "false",
         ["Infisical__Enabled"] = "false",
         ["S3__Enabled"] = "false",
+        ["ClickHouse__Enabled"] = "false",
     };
 
     private readonly Dictionary<string, string?> _previous = new();

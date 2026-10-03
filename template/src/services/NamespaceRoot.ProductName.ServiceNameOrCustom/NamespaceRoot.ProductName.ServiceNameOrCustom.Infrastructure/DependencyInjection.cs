@@ -18,6 +18,9 @@ using NamespaceRoot.ProductName.Common.Infrastructure.Messaging;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
+//#if (ClickHouse)
+using NamespaceRoot.ProductName.Common.Infrastructure.ClickHouse;
+//#endif
 //#if (Storage)
 using NamespaceRoot.ProductName.Common.Infrastructure.Storage;
 //#endif
@@ -103,6 +106,11 @@ public static class DependencyInjection
         // Readable numbers from a sequence, taken before the entity is created
         services.AddScoped<IShortIdGenerator, PostgresShortIdGenerator<ServiceIdentifierDbContext>>();
         
+//#if (ClickHouse)
+        // ClickHouse, the ClickHouse section: connections, the schema check, readiness
+        services.AddClickHouse(configuration);
+
+//#endif
 //#if (Storage)
         // Object storage, the S3 section; S3:Enabled=false keeps nothing
         services.AddS3ObjectStorage(configuration);

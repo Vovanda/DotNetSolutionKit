@@ -33,6 +33,22 @@ services:
       retries: 12
 #endif
 
+#if (ClickHouse)
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8-alpine
+    environment:
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-app}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?Set CLICKHOUSE_PASSWORD in deploy/compose/.env}
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB:-app}
+    volumes:
+      - clickhouse:/var/lib/clickhouse
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1:8123/ping | grep -q Ok"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+#endif
 #if (Storage)
 
   # S3-compatible storage. SeaweedFS (Apache 2.0): MinIO no longer publishes images.
@@ -59,6 +75,9 @@ volumes:
   postgres:
 #if (Messaging != "none")
   rabbitmq:
+#endif
+#if (ClickHouse)
+  clickhouse:
 #endif
 #if (Storage)
   s3:

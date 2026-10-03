@@ -105,6 +105,12 @@
       "defaultValue": "false",
       "description": "S3-compatible object storage (AWS S3, MinIO) in Common, registered in the service"
     },
+    "ClickHouse": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "ClickHouse connections, schema check and readiness in Common, registered in the service"
+    },
     "Deploy": {
       "type": "parameter",
       "datatype": "choice",
@@ -229,6 +235,14 @@
           "exclude": [
             "deploy/**",
             "**/deploy/**"
+          ]
+        },
+        {
+          "condition": "(!ClickHouse)",
+          "exclude": [
+            "src/common/NamespaceRoot.ProductName.Common.Infrastructure/ClickHouse/**",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Tests/ClickHouse/**",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/ClickHouse*.cs"
           ]
         },
         {

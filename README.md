@@ -37,6 +37,7 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 | `--FeatureFlags` | `false` | [Feature flags](docs/features/feature-flags.md). |
 | `--HierarchyRules` | `false` | [Access rules over a tenant tree](docs/features/hierarchy-rules.md). |
 | `--Storage` | `false` | [Object storage](docs/features/object-storage.md), S3-compatible. |
+| `--ClickHouse` | `false` | [ClickHouse](docs/features/clickhouse.md): connections, schema check, readiness. |
 | `--ApiGateway` | `false` | An [API gateway](docs/features/api-gateway.md) on YARP in place of a service, with `-M true`. |
 | `--Deploy` | `compose` | [Deployment files](docs/operations/deployment.md): `compose`, `k8s` or `none`. |
 | `--HttpPort` | free port | Port in `launchSettings.json` and on the host under compose. |
