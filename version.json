@@ -1,0 +1,37 @@
+{
+  "version": "2.1.0",
+  "releaseNotes": {
+    "2.1.0": {
+      "headline": "Deployment, an API gateway, CI and one correlation identifier end to end; compatible with 2.0.",
+      "highlights": [
+        "Every dependency - the database, Hangfire, RabbitMQ - can be switched off in configuration; a service without its database starts, and what needs the database answers 503.",
+        "--Deploy generates docker compose or Kubernetes files; under compose a blue-green switch with rollback that needs no rebuild.",
+        "--ApiGateway generates a YARP gateway that validates the token once and passes the user and permissions to the services with the internal key.",
+        "--Storage adds S3-compatible object storage, with SeaweedFS under compose; --ClickHouse adds connections, a schema check at startup and readiness.",
+        "--GitHubCiCd adds CI: build, unit and integration tests on real servers, coverage with a branch threshold, and a secret scan of incoming commits.",
+        "One correlation identifier across HTTP, the message bus, Hangfire jobs and calls to other services; AddInternalServiceHandlers() makes any HTTP client a call to another service of the product.",
+        "Common: a system execution context for jobs and consumers, readable numbers from a PostgreSQL sequence, text normalised before validation, accepted string values in the API schema, the client's scheme and address behind a proxy.",
+        "Integration tests run on a PostgreSQL database of their own, cloned from one migrated template; a generated service has a test that its container is complete.",
+        "Fixed: replicas starting together no longer race to create the schema."
+      ]
+    },
+    "2.0.0": {
+      "headline": "A layered microservice solution with a shared web host, three-phase domain events and opt-in infrastructure.",
+      "highlights": [
+        "Each service is Domain, Application, Infrastructure and API; a project sees only the projects it references itself.",
+        "One web host from Common.Web: logging, JSON, CORS, Swagger, validation and the pipeline, with the DI container validated at startup.",
+        "Errors are RFC 9457 problems carrying the correlation identifier; failed validation answers 422.",
+        "Domain events run in three phases tied to the transaction - before save, after commit, on rollback - and reach Hangfire jobs.",
+        "Permissions are declared on actions and checked from the token's claims; services accept a JWT and the internal API key.",
+        "Each service owns a PostgreSQL schema, checked at startup; repositories take queries as specifications.",
+        "Opt-in by flag: Hangfire, MassTransit with a transactional outbox, secrets from Infisical, feature flags, an API contract diff on pull requests, access rules over a tenant tree.",
+        "Package versions in one Directory.Packages.props, the product version by hand in version.json; /health and /ready report the version and the commit.",
+        "One Dockerfile builds every service."
+      ]
+    },
+    "1.0.0": {
+      "headline": "The template before the breaking changes of 2026.",
+      "highlights": []
+    }
+  }
+}

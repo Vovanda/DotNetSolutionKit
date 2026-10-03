@@ -7,9 +7,28 @@ The template is versioned with git tags, by semantic versioning.
 | `v1.0.0` | The template before the breaking changes of 2026. |
 | `v2.0.0-preview.1` | The breaking changes in progress. |
 | `v2.0.0` | The breaking changes completed and checked. |
+| `v2.1.0` | Deployment files, an API gateway, object storage, ClickHouse, CI, end-to-end correlation. Compatible with `v2.0.0`. |
+
+What each version brings is in [version.json](../../version.json) and on the
+[releases page](https://github.com/Vovanda/DotNetSolutionKit/releases).
 
 From `v2.0.0` on, a change keeps generated solutions working, or comes with a short way to update them.
 A change that cannot do either is a new major version.
+
+## From v2.0 to v2.1
+
+A service generated from `v2.0.0` builds unchanged on the `Common` of `v2.1.0`, and the `Common` tests
+pass: `Common` only gained types and members. A service generated from `v2.1.0` needs that `Common`, so update
+`Common` first:
+
+1. Generate a solution from `v2.1.0` into an empty folder with `-M false`, your `-N` and `-P`, your
+   flags and any you are adding: `--Storage` and `--ClickHouse` add files to `Common`.
+2. Replace your `src/common` and `src/Directory.Packages.props` with the generated ones. Where you changed
+   `Common` yourself, merge instead: a diff of the two folders shows your changes next to the template's.
+3. Take from it what you want of the new files: `deploy/`, `.github/`, `tools/`. Nothing in your services
+   has to change.
+
+Services generated after that take `-M true` and the same flags.
 
 ## Do not regenerate over an older solution
 

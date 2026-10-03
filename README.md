@@ -51,6 +51,10 @@ Details, dotted names and running locally:
 Everything else is in [docs](docs/README.md): the architecture, each feature, operations, the decisions
 behind the parts that depart from common practice, and the roadmap.
 
+What each version brings: [version.json](version.json) and the
+[releases](https://github.com/Vovanda/DotNetSolutionKit/releases). How versions are made:
+[contributing](CONTRIBUTING.md).
+
 ## License
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
