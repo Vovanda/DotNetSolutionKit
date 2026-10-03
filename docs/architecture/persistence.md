@@ -89,8 +89,49 @@ as a parameter, never into its text.
 `DbContextBase`. A unique-constraint violation on save becomes a `UniqueViolationException`, which the API
 answers with 409.
 
+## Commands a client may repeat
+
+A client retries when a connection drops or a queue redelivers, and it cannot tell whether the first
+attempt went through. A command that must not create a second thing carries a key the client chose, and
+`IIdempotentExecutor` runs its work once per key:
+
+```csharp
+public sealed record CreateOrder(..., string IdempotencyKey) : IIdempotentRequest;
+
+return await idempotent.ExecuteAsync(request, "orders.create", _ =>
+{
+    var order = new Order(context, ...);
+    orders.Add(order);
+    return Task.FromResult(order.ToResponse());
+}, ct);
+```
+
+- The first request does the work and records its key and answer in the same transaction; a repeat gets
+  that answer and does nothing.
+- Two requests with one key at the same moment both do the work, and the unique index on the log lets one
+  commit. The other rolls back, drops what it tracked, and answers with the winner's result.
+- A key used for another operation is refused with 409 `IDEMPOTENCY_KEY_REUSED`. A key shorter than 16 or
+  longer than 128 characters is refused before anything runs.
+- A failed attempt records nothing, so the retry does the work. A duplicate the work itself refuses, such
+  as a taken name, reaches the caller as that conflict: a retry would fail the same way.
+- `ExecuteOnceAsync` is for an answer that must not be stored, such as a secret shown once; a repeat is
+  refused with 409 `IDEMPOTENCY_ALREADY_CARRIED_OUT`.
+- Keys are scoped to the tenant the caller acts for, or to the account without one.
+
+The log is a table in the service's schema. It is not there by default; a service that needs it adds it
+to its model and registers the executor:
+
+```csharp
+// OnModelCreating, then add a migration
+modelBuilder.AddIdempotencyLog();
+
+// Infrastructure DependencyInjection
+services.AddIdempotency<OrdersDbContext>();
+```
+
 ## Tests
 
 `Common.Tests` covers the base repository, specifications, sorting, `DbContextBase` and the lock key of
 the migration runner. The guard, the migrations and the `ILIKE` translation need PostgreSQL and belong to
-integration tests.
+integration tests. The idempotent executor is tested on PostgreSQL: a retry, a race on one key, a reused
+and an invalid key, a failed attempt, the work's own duplicate, two tenants with one key.

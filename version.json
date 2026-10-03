@@ -1,6 +1,14 @@
 {
-  "version": "2.1.3",
+  "version": "2.2.0",
   "releaseNotes": {
+    "2.2.0": {
+      "headline": "Commands a client may repeat run once per key.",
+      "highlights": [
+        "IIdempotentExecutor: the first request with a key does the work and records its answer in the same transaction; a repeat gets that answer. Two requests racing with one key create one thing, decided by a unique index.",
+        "A key reused for another operation, a failed attempt, an answer that must not be stored and a duplicate the work itself refuses each get their own outcome; see persistence.",
+        "Opt in per service: modelBuilder.AddIdempotencyLog() and services.AddIdempotency<TContext>(). Tested on PostgreSQL."
+      ]
+    },
     "2.1.3": {
       "headline": "Images are named after the product too, so two solutions on one host keep their own.",
       "highlights": [
