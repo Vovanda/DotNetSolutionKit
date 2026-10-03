@@ -69,6 +69,20 @@ The PostgreSQL implementation translates it to `ILIKE` and escapes `%`, `_` and 
 user input matches literally. Tests on the in-memory database register an in-memory implementation
 instead; see [ADR-005](../adr/005-testing-a-service.md).
 
+## Readable numbers
+
+An order or invoice number people read and type comes from a PostgreSQL sequence, taken before the
+entity is created, so the events it raises in its constructor already carry the number:
+
+```csharp
+var number = await shortIds.GetNextAsync("orders.order_number_seq", ct);
+var order = new Order(context, number, ...);
+```
+
+`IShortIdGenerator` is registered in a generated service; the sequence comes from a migration. Each value
+is handed out once, even when its transaction rolls back, so gaps are normal. The name goes into the query
+as a parameter, never into its text.
+
 ## Unit of work
 
 `IUnitOfWork` is the transaction boundary of a use case; the service's `DbContext` implements it through

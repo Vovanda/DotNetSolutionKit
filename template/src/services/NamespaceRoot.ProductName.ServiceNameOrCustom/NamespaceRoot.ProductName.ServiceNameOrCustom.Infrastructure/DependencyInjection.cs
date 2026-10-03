@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NamespaceRoot.ProductName.Common.Application.Configuration;
+using NamespaceRoot.ProductName.Common.Application.Persistence;
 using NamespaceRoot.ProductName.Common.Domain.Persistence;
 using NamespaceRoot.ProductName.Common.Domain.Specifications;
 using NamespaceRoot.ProductName.Common.Infrastructure.Configuration;
@@ -95,6 +96,9 @@ public static class DependencyInjection
         
         // Specifications
         services.AddScoped<ICaseInsensitiveSearch, PostgresCaseInsensitiveSearch>();
+
+        // Readable numbers from a sequence, taken before the entity is created
+        services.AddScoped<IShortIdGenerator, PostgresShortIdGenerator<ServiceIdentifierDbContext>>();
         
         // Configurations
         services.AddInfrastructureConfiguration();

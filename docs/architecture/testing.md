@@ -74,8 +74,16 @@ database another way and accepting its model, where tests in one class run one a
 ## Integration tests
 
 What depends on PostgreSQL (transactions and the outbox, constraints, `ILIKE` and raw SQL, migrations)
-runs against a real database in fixtures marked `[Category("Integration")]`. Run the rest without them:
+runs against a real database in fixtures marked `[Category(TestCategories.Integration)]`. They read the
+connection string from `TEST_POSTGRES` and are skipped, with that reason, when it is not set, so a plain
+`dotnet test` needs no database:
 
 ```bash
-dotnet test --filter "TestCategory!=Integration"
+docker run -d --name tests-pg -p 15433:5432 -e POSTGRES_PASSWORD=test-do-not-use postgres:16-alpine
+TEST_POSTGRES='Host=localhost;Port=15433;Database=postgres;Username=postgres;Password=test-do-not-use' \
+  dotnet test --filter "TestCategory=Integration"
+
+dotnet test --filter "TestCategory!=Integration"   # everything else
 ```
+
+`Common.Tests/Integration` has one such fixture, for numbers from a sequence.
