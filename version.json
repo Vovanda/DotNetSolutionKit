@@ -1,6 +1,14 @@
 {
-  "version": "2.2.0",
+  "version": "2.3.0",
   "releaseNotes": {
+    "2.3.0": {
+      "headline": "A secret store outage is survivable, and one feature flag can be changed during it.",
+      "highlights": [
+        "Infisical__SnapshotPath: every successful read of the secret store is copied to a file only its owner can read, and a start that cannot reach the store runs on that copy, with a warning. Off by default, because the copy holds the secrets.",
+        "\"pinned\": true on a flag in features.json makes the file decide it, over the store, its snapshot and environment variables; such flags report the source Pinned, and every start names them in a warning.",
+        "Only the file can pin a flag, so the store cannot lock its own values in."
+      ]
+    },
     "2.2.0": {
       "headline": "Commands a client may repeat run once per key.",
       "highlights": [

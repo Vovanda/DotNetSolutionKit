@@ -52,6 +52,7 @@ running on what the file says instead of failing to start or silently answering 
 | `owner` | Who to ask. A flag with no owner is a flag nobody dares delete. |
 | `expiresAt` | When it should be gone. Past that date the flag is reported as **expired** - it keeps working, but the debt is visible instead of remembered. |
 | `ticket` | Where the decision was recorded. Deliberately a plain string: it survives a change of tracker. |
+| `pinned` | `true` makes the file's `enabled` and `environments` win over every other layer; see [pinning a flag](#pinning-a-flag). |
 
 Keys are lower kebab-case, dotted for sub-features (`billing.invoice.recurring`), and are matched
 without regard to case in both directions - `Checkout.New-Flow` and `checkout.new-flow` are one flag.
@@ -75,14 +76,27 @@ flowchart LR
     C --> H["GET /api/v1/features"]
 ```
 
-Later layers win. Each state reports **which layer decided it** - `File`, `Store`, `EnvironmentVariable`
-or `Default` - which exists for one situation that is otherwise unexplainable from the outside: an
-operator switches a flag off in the file, nothing happens, because an environment variable or the store
-sits above it. Without the source in the response, that is an afternoon of confusion.
+Later layers win, except over a [pinned](#pinning-a-flag) flag. Each state reports **which layer decided
+it** - `File`, `Store`, `EnvironmentVariable`, `Default` or `Pinned` - which exists for one situation
+that is otherwise unexplainable from the outside: an operator switches a flag off in the file, nothing
+happens, because an environment variable or the store sits above it. Without the source in the
+response, that is an afternoon of confusion.
 
-The external store is read once, at startup. A snapshot of the store on disk, used while the store is
-unreachable, and an `important` marker that pins a flag to the file's value are planned in
-[#3](https://github.com/Vovanda/DotNetSolutionKit/issues/3).
+The external store is read once, at startup. While it cannot be reached, a service can start on a
+[snapshot](secrets.md#when-the-store-is-unreachable) of what it last read.
+
+### Pinning a flag
+
+A flag with `"pinned": true` in `features.json` takes its value from the file alone, over the store, its
+snapshot and environment variables. It is for one flag that has to change now: the store is down and the
+service runs on its snapshot, or the store holds a value that must not apply here for a while. The file
+is edited, the flag pinned, and nothing else is touched; the store keeps its value until the pin is taken
+off.
+
+- Only the file can pin: `pinned` set in the store or an environment variable is ignored, so the store
+  cannot lock itself in.
+- A pinned flag reports `Pinned` as its source, and every start logs a warning naming the pinned flags,
+  so a pin left after the outage does not quietly keep overriding the store.
 
 The file is registered with `reloadOnChange`, and the catalogue reads configuration on **every call**
 rather than caching. That is what makes an edit apply to a running service. Caching a value here would

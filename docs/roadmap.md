@@ -9,7 +9,6 @@ date.
 |---|---|
 | `--ApiGateway`: Swagger of the services through the gateway, and permissions asked from a separate service | [#5](https://github.com/Vovanda/DotNetSolutionKit/issues/5) |
 | Cookie-only tokens, with CSRF protection for each deployment shape | [#6](https://github.com/Vovanda/DotNetSolutionKit/issues/6) |
-| Feature flags: an on-disk snapshot of the external store, and an `important` marker in `features.json` | [#3](https://github.com/Vovanda/DotNetSolutionKit/issues/3) |
 | A choice of test framework for a service's tests | |
 | A choice of database | |
 | A choice of secret store | |

@@ -31,7 +31,8 @@ know which services exist.
 ```
 
 `ProjectId` and `EnvironmentSlug` (`dev`, `staging`, `prod`) are required outside `Local`. `HostUri`,
-`SharedPath`, `ServicePath` and `Optional` have defaults.
+`SharedPath`, `ServicePath` and `Optional` have defaults. `SnapshotPath` is empty: no snapshot is kept
+until it is set; see below.
 
 The machine identity, `Infisical__ClientId` and `Infisical__ClientSecret`, comes from environment
 variables only. A file in the repository holding the key to the store would bring back the problem the
@@ -84,7 +85,28 @@ string or key fails later, on a request, and further from the cause.
 
 The store is read once, at startup. A secret changed in Infisical applies after the service restarts.
 
+### A snapshot for an outage
+
+With `Infisical__SnapshotPath` set, every successful read is copied to that file, and a start that cannot
+reach the store reads the copy instead of refusing:
+
+| The store | A snapshot | The service |
+|---|---|---|
+| answers | - | starts on the store's values, and replaces the snapshot |
+| does not answer | exists | starts on the snapshot, and logs a warning with the time it was written |
+| does not answer | none | refuses to start, as without a snapshot; outside `Local` |
+
+The snapshot holds the secrets themselves, which is why it is off until someone responsible for the
+service turns it on. It is written readable by its owner alone, and belongs on a volume only the service
+mounts. On a container's own filesystem it disappears with the container and protects nothing. A
+snapshot that cannot be written does not stop the service; the start logs why, so a missing snapshot is
+found before the outage that needs it.
+
+To change one feature flag while the service runs on its snapshot, [pin it](feature-flags.md#pinning-a-flag)
+in `features.json` instead of editing the snapshot.
+
 ## Tests
 
-`Common.Tests` covers the order of the folders and the optional and required store, with the store
-replaced by a stub.
+`Common.Tests` covers the order of the folders, the optional and required store, and the snapshot: kept
+after a read, read when the store does not answer, owner-only on Linux, and a write that fails reported,
+with the store replaced by a stub.
