@@ -1,6 +1,14 @@
 {
-  "version": "2.4.0",
+  "version": "2.5.0",
   "releaseNotes": {
+    "2.5.0": {
+      "headline": "An audit journal of entity changes, published through the outbox, with guards for writes it cannot see.",
+      "highlights": [
+        "--Audit with --Messaging outbox: an entity marked [Auditable] publishes AuditRecordedV1 for every change, in the same transaction, with the actor, the tenants, the diff and the correlation identifier; [AuditRedact] records a secret changing without its value.",
+        "IAuditRecorder and ISetBasedAuditCapture record writes past the change tracker; AuditBulkRecordedV1 carries the rows before and after.",
+        "A generated service runs four guards: every entity decided, markers valid, no secret in the journal, every set-based write declared with [SetBasedWrite]."
+      ]
+    },
     "2.4.0": {
       "headline": "Tokens in HttpOnly cookies with CSRF protection, set by the deployment instead of guessed.",
       "highlights": [

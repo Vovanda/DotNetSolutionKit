@@ -26,9 +26,9 @@ jobs:
           - name: every flag, three services
             first: >-
               -N Acme -P Shop -S Orders -M false --Messaging outbox -I true --DiffApi true --FeatureFlags true
-              --HierarchyRules true --Storage true --ClickHouse true --GitHubCiCd true
+              --HierarchyRules true --Storage true --ClickHouse true --GitHubCiCd true --Audit true
             # Flags that change a service's code are passed again to a later service, as the docs say.
-            more: -N Acme -P Shop -S Billing --Messaging outbox -I true --DiffApi true --FeatureFlags true --Storage true --ClickHouse true
+            more: -N Acme -P Shop -S Billing --Messaging outbox -I true --DiffApi true --FeatureFlags true --Storage true --ClickHouse true --Audit true
             gateway: -N Acme -P Shop -S Gateway --ApiGateway true
             integration: true
           - name: no background jobs

@@ -12,6 +12,7 @@
     "FeatureFlags": { "shortName": "" },
     "HttpPort": { "shortName": "" },
     "DiffApi": { "shortName": "" },
-    "GitHubCiCd": { "shortName": "" }
+    "GitHubCiCd": { "shortName": "" },
+    "Audit": { "shortName": "" }
   }
 }

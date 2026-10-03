@@ -16,6 +16,9 @@ using NamespaceRoot.ProductName.Common.Infrastructure.Configuration;
 using NamespaceRoot.ProductName.Common.Infrastructure.Messaging;
 //#endif
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
+//#if (AuditEnabled)
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Audit;
+//#endif
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
 //#if (ClickHouse)
@@ -82,6 +85,9 @@ public static class DependencyInjection
             if (!switches.Database)
                 options.UseSwitchedOffDatabase();
             options.ApplyDomainEventInterceptors(sp);
+//#if (AuditEnabled)
+            options.ApplyAuditInterceptor(sp);
+//#endif
         });
 
         services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<ServiceIdentifierDbContext>());
@@ -91,6 +97,14 @@ public static class DependencyInjection
         // commit together. Consumers are found in this assembly.
         services.AddMessaging<ServiceIdentifierDbContext>(
             configuration, "servicenameorcustom", typeof(InfrastructureMarker).Assembly);
+//#if (AuditEnabled)
+
+        // The audit journal: a change to an entity marked [Auditable] publishes AuditRecordedV1 into the
+        // outbox in the same save, so a rolled back change leaves no entry. IAuditRecorder and
+        // ISetBasedAuditCapture record what bypasses the change tracker; see docs/features/audit.md.
+        services.AddAuditPersistence();
+        services.AddAuditRecorder<ServiceIdentifierDbContext>("servicenameorcustom");
+//#endif
 
 //#elif (Messaging == "direct")
         // The bus without an outbox: a message goes straight to RabbitMQ and is lost if the broker is

@@ -129,6 +129,16 @@
       "defaultValue": "false",
       "description": "ClickHouse connections, schema check and readiness in Common, registered in the service"
     },
+    "Audit": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "An audit journal of entity changes, published through the outbox; takes effect only with --Messaging outbox"
+    },
+    "AuditEnabled": {
+      "type": "computed",
+      "value": "(Audit && Messaging == \"outbox\")"
+    },
     "Deploy": {
       "type": "parameter",
       "datatype": "choice",
@@ -241,6 +251,12 @@
           ]
         },
         {
+          "condition": "(!AuditEnabled)",
+          "exclude": [
+            "**/Tests/AuditGuardTests.cs"
+          ]
+        },
+        {
           "condition": "(Deploy != \"compose\")",
           "exclude": [
             "deploy/compose/**",
@@ -267,6 +283,19 @@
             "src/common/NamespaceRoot.ProductName.Common.Infrastructure/ClickHouse/**",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Tests/ClickHouse/**",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/ClickHouse*.cs"
+          ]
+        },
+        {
+          "condition": "(!AuditEnabled)",
+          "exclude": [
+            "src/common/NamespaceRoot.ProductName.Common/Attributes/Audit*.cs",
+            "src/common/NamespaceRoot.ProductName.Common/Attributes/SetBasedWriteAttribute.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Contracts/Messaging/Audit/**",
+            "src/common/NamespaceRoot.ProductName.Common.Application/Auditing/**",
+            "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Persistence/EntityFramework/Audit/**",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Audit/**",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Tests/Audit/**",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Stubs/NoOpAuditCapture.cs"
           ]
         },
         {
@@ -354,6 +383,12 @@
           "exclude": [
             "**/Setup/BackgroundJobsSetup.cs",
             "**/Security/Filters/HangfireAdminAuthorizationFilter.cs"
+          ]
+        },
+        {
+          "condition": "(!AuditEnabled)",
+          "exclude": [
+            "**/Tests/AuditGuardTests.cs"
           ]
         },
         {
