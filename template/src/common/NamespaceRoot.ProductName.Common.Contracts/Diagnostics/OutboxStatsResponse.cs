@@ -2,7 +2,7 @@ namespace NamespaceRoot.ProductName.Common.Contracts.Diagnostics;
 
 /// <summary>
 /// Snapshot of a service's MassTransit EF Outbox table for live debugging. Returned by the
-/// per-service <c>/internal/diagnostics/outbox-stats</c> endpoint so operators can confirm
+/// per-service <c>/api/v1/diagnostics/outbox-stats</c> endpoint so operators can confirm
 /// whether outbound bus messages are being persisted by the SaveChanges interceptor and
 /// drained by the <c>BusOutboxDeliveryService</c> background worker.
 /// </summary>

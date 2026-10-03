@@ -12,14 +12,13 @@ namespace NamespaceRoot.ProductName.Common.Web.Diagnostics;
 /// Minimal API endpoint that exposes the MassTransit EF Outbox state for live debugging.
 /// Gated on environment: registered only outside Production (Local / Development / Staging),
 /// so a real prod deployment never carries the endpoint at all — no auth check to forget,
-/// no token to compromise. Each service wires its own <c>DbContext</c> + schema-qualified
-/// outbox table name (e.g. <c>auth.outbox_message</c>).
+/// no token to compromise. The outbox table is read from the model of <typeparamref name="TDbContext"/>.
 /// </summary>
 public static class OutboxDiagnosticsEndpoint
 {
     private const string Route = "/api/v1/diagnostics/outbox-stats";
 
-    public static WebApplication MapOutboxDiagnostics<TDbContext>(this WebApplication app, string outboxTable)
+    public static WebApplication MapOutboxDiagnostics<TDbContext>(this WebApplication app)
         where TDbContext : DbContext
     {
         if (app.Environment.IsProduction()) return app;
@@ -31,7 +30,7 @@ public static class OutboxDiagnosticsEndpoint
                 int? sampleSize,
                 CancellationToken ct) =>
             {
-                var response = await OutboxStatsQuery.RunAsync(db, outboxTable, filter, sampleSize ?? 5, ct);
+                var response = await OutboxStatsQuery.RunAsync(db, filter, sampleSize ?? 5, ct);
                 return Results.Ok(response);
             })
             .AllowAnonymous()

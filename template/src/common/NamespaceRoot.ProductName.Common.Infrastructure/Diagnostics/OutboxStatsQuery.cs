@@ -1,27 +1,29 @@
 using NamespaceRoot.ProductName.Common.Contracts.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 
 namespace NamespaceRoot.ProductName.Common.Infrastructure.Diagnostics;
 
 /// <summary>
-/// Reads the MassTransit EF Outbox table for any service that wires
-/// <c>AddEntityFrameworkOutbox</c>. The table name is passed by the caller because each
-/// service owns its own outbox table in a per-service schema (auth.outbox_message,
-/// orders.outbox_message, notifications.outbox_message). The caller supplies a compile-time
-/// constant — never user input — so the raw-SQL string interpolation here is safe.
+/// Reads the MassTransit EF outbox table of a service: pending and sent counts and a sample of the
+/// latest rows.
 /// </summary>
+/// <remarks>
+/// A table name cannot be a SQL parameter, so it goes into the text of the query. It is taken from
+/// the EF model of the context, where <c>AddTransactionalOutbox</c> placed it in the service's schema,
+/// and quoted by the provider, so nothing a caller passes reaches the SQL text.
+/// </remarks>
 public static class OutboxStatsQuery
 {
     public static async Task<OutboxStatsResponse> RunAsync(
         DbContext db,
-        string outboxTable,
         string? filter,
         int sampleSize,
         CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(outboxTable))
-            throw new ArgumentException("Outbox table must be specified.", nameof(outboxTable));
+        var outboxTable = ResolveOutboxTable(db);
 
         // Aggregate counters across the whole table — pending vs sent + the age of the
         // oldest pending row + the freshness of the last sent row tells the operator
@@ -29,14 +31,16 @@ public static class OutboxStatsQuery
         // MassTransit's EF migration makes "SentTime" NOT NULL and writes the .NET
         // DateTime.MinValue sentinel (0001-01-01) for rows that haven't been delivered
         // yet, so a "pending" row is one with "SentTime" at or before 1900-01-01.
-        var totals = await db.Database
-            .SqlQueryRaw<OutboxTotals>($@"
+        var totalsSql = $@"
                 SELECT
                     COUNT(*) FILTER (WHERE ""SentTime"" <= TIMESTAMPTZ '1900-01-01')::bigint AS ""Pending"",
                     COUNT(*) FILTER (WHERE ""SentTime"" >  TIMESTAMPTZ '1900-01-01')::bigint AS ""Sent"",
                     MIN(""EnqueueTime"") FILTER (WHERE ""SentTime"" <= TIMESTAMPTZ '1900-01-01') AS ""OldestPendingAt"",
                     MAX(""SentTime"")    FILTER (WHERE ""SentTime"" >  TIMESTAMPTZ '1900-01-01') AS ""LastSentAt""
-                FROM {outboxTable}")
+                FROM {outboxTable}";
+
+        var totals = await db.Database
+            .SqlQueryRaw<OutboxTotals>(totalsSql)
             .SingleAsync(ct);
 
         // Sample of the most recent rows for hands-on inspection; respects the optional
@@ -73,6 +77,19 @@ public static class OutboxStatsQuery
             LastSentAt = totals.LastSentAt,
             Sample = rows,
         };
+    }
+
+    /// <summary>The quoted, schema-qualified outbox table of <paramref name="db"/>.</summary>
+    internal static string ResolveOutboxTable(DbContext db)
+    {
+        var entity = db.Model.FindEntityType(typeof(MassTransit.EntityFrameworkCoreIntegration.OutboxMessage))
+                     ?? throw new InvalidOperationException(
+                         $"{db.GetType().Name} has no outbox: call modelBuilder.AddTransactionalOutbox(schema) in OnModelCreating.");
+
+        var table = entity.GetTableName()
+                    ?? throw new InvalidOperationException("The outbox message entity is not mapped to a table.");
+
+        return db.GetService<ISqlGenerationHelper>().DelimitIdentifier(table, entity.GetSchema());
     }
 
     private sealed record OutboxTotals(long Pending, long Sent, DateTime? OldestPendingAt, DateTime? LastSentAt);
