@@ -20,4 +20,5 @@ start instead of a process that exited cleanly.
 ## Waiting for the database
 
 A service started together with its database does not fail while the database is coming up: the schema
-guard retries for about 30 seconds while PostgreSQL is starting or its port is still closed.
+guard retries for about 30 seconds while PostgreSQL is starting or its port is still closed. Replicas
+starting together take turns: the guard holds a lock per schema while it creates and claims it.

@@ -29,6 +29,7 @@
 ## Operations
 
 - [Docker](operations/docker.md): one Dockerfile, only changed services rebuilt
+- [Deployment](operations/deployment.md): docker compose or Kubernetes, `--Deploy`
 - [Health](operations/health.md): `/health` and `/ready`
 - [Startup checks](operations/startup-checks.md)
 - [Switching dependencies off](operations/switching-dependencies-off.md): run without the database, the

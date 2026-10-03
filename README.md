@@ -36,7 +36,8 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 | `--DiffApi` | `false` | [API contract diff](docs/features/api-diff.md) on pull requests. |
 | `--FeatureFlags` | `false` | [Feature flags](docs/features/feature-flags.md). |
 | `--HierarchyRules` | `false` | [Access rules over a tenant tree](docs/features/hierarchy-rules.md). |
-| `--HttpPort` | free port | Port in `launchSettings.json`. |
+| `--Deploy` | `compose` | [Deployment files](docs/operations/deployment.md): `compose`, `k8s` or `none`. |
+| `--HttpPort` | free port | Port in `launchSettings.json` and on the host under compose. |
 
 Details, dotted names and running locally:
 [generating a solution](docs/getting-started/generating-a-solution.md).

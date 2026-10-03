@@ -1,0 +1,45 @@
+# This service under docker compose; started by deploy/compose/compose.sh with the infrastructure.
+# Paths are relative to the solution root.
+services:
+  servicenameorcustom:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: NamespaceRoot.ProductName.ServiceNameOrCustom
+        GIT_SHA: ${GIT_SHA:-local}
+    image: ${REGISTRY:-local}/servicenameorcustom:${TAG:-latest}
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ConnectionStrings__DefaultConnection: Host=postgres;Database=${POSTGRES_DB:-app};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in deploy/compose/.env}
+      InternalApi__ApiKey: ${INTERNAL_API_KEY:-}
+#if (Hangfire)
+      HangfireSettings__DashboardPassword: ${HANGFIRE_DASHBOARD_PASSWORD:?Set HANGFIRE_DASHBOARD_PASSWORD in deploy/compose/.env}
+#endif
+#if (Messaging != "none")
+      RabbitMq__Host: rabbitmq
+      RabbitMq__UserName: ${RABBITMQ_USER:-guest}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD:-guest}
+#endif
+#if (Infisical)
+      Infisical__Enabled: ${INFISICAL_ENABLED:-true}
+      Infisical__ClientId: ${INFISICAL_CLIENT_ID:-}
+      Infisical__ClientSecret: ${INFISICAL_CLIENT_SECRET:-}
+#endif
+    # Only on the host's loopback: a reverse proxy or a gateway in front publishes it.
+    ports:
+      - "127.0.0.1:5054:8080"
+    # Ready, not merely alive: whatever depends on this service starts once its database is reachable.
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/ready"]
+      interval: 10s
+      timeout: 3s
+      start_period: 30s
+      retries: 12
+    depends_on:
+      postgres:
+        condition: service_healthy
+#if (Messaging != "none")
+      rabbitmq:
+        condition: service_healthy
+#endif

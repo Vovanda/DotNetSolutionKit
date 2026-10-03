@@ -58,7 +58,8 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--DiffApi` | `false` | [API contract diff](../features/api-diff.md) on pull requests. |
 | `--FeatureFlags` | `false` | [Feature flags](../features/feature-flags.md). |
 | `--HierarchyRules` | `false` | [Access rules over a tenant tree](../features/hierarchy-rules.md). |
-| `--HttpPort` | free port | Port in `launchSettings.json`; without it, a free port from 5000-5999 on the generating machine, so services generated one after another do not share a port. |
+| `--Deploy` | `compose` | [Deployment files](../operations/deployment.md): `compose`, `k8s` or `none`. One value for the solution: pass the same with `-M true`. |
+| `--HttpPort` | free port | Port in `launchSettings.json` and on the host under compose; without it, a free port from 5000-5999 on the generating machine, so services generated one after another do not share a port. |
 
 `-I`, `--DiffApi`, `--FeatureFlags` and `--HierarchyRules` add files to `Common`, so they have to be
 passed with `-M false`, when `Common` is generated. Pass `-I`, `--DiffApi` and `--FeatureFlags` again to

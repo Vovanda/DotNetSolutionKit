@@ -66,6 +66,16 @@
       "replaces": "servicenameorcustom",
       "description": "Lower-case service name with underscores for dots (Sales.Orders -> sales_orders), for the database schema, the Infisical folder and queue names"
     },
+    "ServiceNameKebab": {
+      "type": "generated",
+      "generator": "regex",
+      "parameters": {
+        "source": "ServiceNameLowerDotted",
+        "steps": [ { "regex": "\\.", "replacement": "-" } ]
+      },
+      "replaces": "service-name-kebab",
+      "description": "Lower-case service name with hyphens for dots (Sales.Orders -> sales-orders), for Kubernetes resource names, which allow no underscore"
+    },
     "Hangfire": {
       "type": "parameter",
       "datatype": "bool",
@@ -82,6 +92,17 @@
         { "choice": "direct", "description": "MassTransit on RabbitMQ; messages go straight to the broker and are lost if it is down" }
       ],
       "description": "Message bus for the service"
+    },
+    "Deploy": {
+      "type": "parameter",
+      "datatype": "choice",
+      "defaultValue": "compose",
+      "choices": [
+        { "choice": "compose", "description": "docker compose: the infrastructure and a compose file per service" },
+        { "choice": "k8s", "description": "Kubernetes: a Deployment and a Service per service" },
+        { "choice": "none", "description": "No deployment files; the Dockerfile only" }
+      ],
+      "description": "How the services are deployed"
     },
     "Infisical": {
       "type": "parameter",
@@ -138,6 +159,24 @@
     }
   },
 
+  "SpecialCustomOperations": {
+    "**/.env.example": {
+      "operations": [
+        {
+          "type": "conditional",
+          "configuration": {
+            "if": [ "#if" ],
+            "else": [ "#else" ],
+            "elseif": [ "#elseif" ],
+            "endif": [ "#endif" ],
+            "trim": true,
+            "wholeLine": true
+          }
+        }
+      ]
+    }
+  },
+
   "sources": [
     {
       "source": ".",
@@ -157,6 +196,27 @@
           "exclude": [
             "**/Setup/BackgroundJobsSetup.cs",
             "**/Security/Filters/HangfireAdminAuthorizationFilter.cs"
+          ]
+        },
+        {
+          "condition": "(Deploy != \"compose\")",
+          "exclude": [
+            "deploy/compose/**",
+            "**/deploy/compose.yml"
+          ]
+        },
+        {
+          "condition": "(Deploy != \"k8s\")",
+          "exclude": [
+            "deploy/k8s/**",
+            "**/deploy/k8s.yaml"
+          ]
+        },
+        {
+          "condition": "(Deploy == \"none\")",
+          "exclude": [
+            "deploy/**",
+            "**/deploy/**"
           ]
         },
         {
@@ -221,6 +281,27 @@
           "exclude": [
             "**/Setup/BackgroundJobsSetup.cs",
             "**/Security/Filters/HangfireAdminAuthorizationFilter.cs"
+          ]
+        },
+        {
+          "condition": "(Deploy != \"compose\")",
+          "exclude": [
+            "deploy/compose/**",
+            "**/deploy/compose.yml"
+          ]
+        },
+        {
+          "condition": "(Deploy != \"k8s\")",
+          "exclude": [
+            "deploy/k8s/**",
+            "**/deploy/k8s.yaml"
+          ]
+        },
+        {
+          "condition": "(Deploy == \"none\")",
+          "exclude": [
+            "deploy/**",
+            "**/deploy/**"
           ]
         },
         {
