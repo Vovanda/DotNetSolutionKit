@@ -17,6 +17,20 @@ round. With `compose` or `k8s`, `deploy/build-images.sh` builds an image per ser
 Each service keeps its deployment file in its own folder, so a service added later with `-M true` brings
 its file along and nothing shared has to be edited. The scripts pick up every service's file.
 
+What runs where, with a gateway; without one, the proxy talks to the services:
+
+```mermaid
+flowchart LR
+    U([client]) --> PX[TLS proxy]
+    PX --> GW["gateway<br/>with --ApiGateway"]
+    GW --> S1[service]
+    GW --> S2[service]
+    S1 --> PG[(PostgreSQL<br/>a schema per service)]
+    S2 --> PG
+    S1 -.-> MQ[[RabbitMQ]]
+    S2 -.-> MQ
+```
+
 ## Images
 
 ```bash

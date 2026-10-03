@@ -11,6 +11,19 @@ docker build --provenance=false \
 
 ## Only what changed is rebuilt
 
+```mermaid
+flowchart LR
+    subgraph common_stage [stage common]
+        P[Directory.Build.props, version.json,<br/>Directory.Packages.props] --> CB[build src/common]
+    end
+    subgraph service_stage [stage service]
+        CB --> SF["copy src/services/SERVICE"] --> PUB[dotnet publish]
+    end
+    subgraph runtime_stage [stage runtime]
+        PUB --> IMG["aspnet:8.0, curl, uid 1000<br/>GIT_SHA last"]
+    end
+```
+
 The first stage holds only `Common` and the build files, and builds `Common`. Each service adds its own
 folder on top. So:
 

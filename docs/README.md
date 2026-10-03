@@ -1,5 +1,42 @@
 # Documentation
 
+What the template gives a solution, at a glance:
+
+```mermaid
+mindmap
+  root((DotNetSolutionKit))
+    Generation
+      Common once, a service per run
+      Dotted names in every part
+      Flags
+        Hangfire jobs
+        Message bus with outbox or direct
+        Infisical secrets
+        Feature flags
+        API diff on pull requests
+        Access rules over a tenant tree
+        API gateway on YARP
+        Deploy with compose or Kubernetes
+    Architecture
+      Layers with explicit references
+      Domain events in three phases
+      Repositories on specifications
+      RFC 9457 problems
+      Validation answers 422
+      Permissions from the token
+      One JSON format
+    Operations
+      One Dockerfile, unchanged images stay
+      Health and readiness
+      Migrations and schema guard under a lock
+      Dependencies switched off in configuration
+      Version set by hand
+    Tests
+      Sociable service tests
+      A database per test
+      Integration only for PostgreSQL
+```
+
 ## Getting started
 
 - [Generating a solution](getting-started/generating-a-solution.md): install, parameters, dotted names,

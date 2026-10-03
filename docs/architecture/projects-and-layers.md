@@ -3,6 +3,40 @@
 A generated solution has two parts: the shared `Common` projects under `src/common`, generated once, and
 one folder per service under `src/services`.
 
+Who references whom; an arrow points at the project referenced:
+
+```mermaid
+flowchart BT
+    subgraph common [src/common]
+        C[Common]
+        CC[Common.Contracts] --> C
+        CA[Common.Application] --> C
+        CI[Common.Infrastructure] --> C
+        CI --> CA
+        CI --> CC
+        CW[Common.Web] --> C
+        CW --> CC
+        CW --> CA
+        CW --> CI
+    end
+    subgraph service ["src/services/#lt;Service#gt;"]
+        D["#lt;Service#gt;"] --> C
+        A["#lt;Service#gt;.Application"] --> D
+        A --> CA
+        I["#lt;Service#gt;.Infrastructure"] --> D
+        I --> A
+        I --> C
+        I --> CA
+        I --> CI
+        API["#lt;Service#gt;.API"] --> A
+        API --> I
+        API --> CW
+    end
+    subgraph gateway ["src/services/#lt;Gateway#gt;, with --ApiGateway"]
+        G["#lt;Gateway#gt;.API"] --> CW
+    end
+```
+
 ## Common
 
 | Project | Holds | References |

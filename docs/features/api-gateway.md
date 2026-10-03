@@ -27,6 +27,25 @@ with the forwarded user, and the permission check reads the same claims either w
 
 ## What the gateway does with a request
 
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant G as Gateway
+    participant S as Service
+    C->>G: GET /api/v1/orders, Bearer token
+    G->>G: validate the JWT
+    alt token presented and invalid
+        G-->>C: 401
+    else valid, or no token
+        G->>G: remove X-API-Key and X-User-* the client sent
+        G->>S: internal key, X-User-Id, X-User-Permissions
+        S->>S: internal key accepted, user and permissions into claims
+        S->>S: RequiredPermissions checked
+        S-->>G: 200, or 403 naming the permission
+        G-->>C: the service's answer
+    end
+```
+
 1. Authentication: the JWT from the `Authorization` header or the access token cookie, checked against
    the public key at `Jwt:PublicKeyPath`, with the issuer and the audience from `Jwt`.
 2. A token that was presented and failed (expired, wrong signature) is answered 401 at the gateway. A

@@ -28,6 +28,11 @@ differently, and clients comparing the strings get it wrong across a daylight-sa
 
 ## The pipeline
 
+```mermaid
+flowchart LR
+    R([request]) --> COR[Correlation id] --> LOG[Request log] --> ROUTE[Routing] --> CORS --> ERR[Errors as problems] --> AUTH[Authentication and authorization] --> SW[Swagger] --> OWN["beforeEndpoints:<br/>the service's own"] --> EP["Controllers,<br/>/health, /ready"]
+```
+
 1. Correlation: reads or creates `X-Correlation-Id`, puts it on every log line of the request and on the
    response.
 2. Request logging: one line per request with method, path, status and duration. It comes after

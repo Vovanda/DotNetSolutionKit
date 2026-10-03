@@ -25,6 +25,33 @@ Saving dispatches the events; the use case does nothing else.
 
 ## Handle
 
+One save, from the event to its handlers:
+
+```mermaid
+sequenceDiagram
+    participant UC as Use case
+    participant AG as Aggregate
+    participant DB as DbContext
+    participant PS as Pre-save interceptor
+    participant H as Handlers
+    participant TX as Transaction interceptor
+    UC->>AG: Place()
+    AG->>AG: AddDomainEvent(OrderPlaced)
+    UC->>DB: SaveChangesAsync()
+    DB->>PS: SavingChanges
+    loop until no new events, at most 20 rounds
+        PS->>H: IDomainPreSaveHandler, same DbContext and transaction
+    end
+    DB->>DB: write, commit
+    alt committed
+        DB->>TX: TransactionCommitted
+        TX->>H: IDomainPostCommitHandler, a fresh scope per event
+    else rolled back
+        DB->>TX: TransactionRolledBack
+        TX->>H: IDomainRollbackHandler, a fresh scope per event
+    end
+```
+
 A handler implements the interface of the phase it needs, and lives in the application project, where
 `AddDomainEvents` finds it:
 

@@ -75,6 +75,21 @@ internal class OrderServicePlaceTests : OrderServiceTestBase
 A consumer test is the same shape: `ArrangeAsync` seeds the state, `ActAsync` calls `Consume` with a built
 `ConsumeContext`, and `AssertAsync` reads what the consumer saved.
 
+The contexts form a ladder; a test takes the smallest that fits:
+
+```mermaid
+classDiagram
+    TestExecutionContext <|-- ServiceTestExecutionContext
+    TestExecutionContext <|-- DbTestExecutionContext
+    DbTestExecutionContext <|-- ServiceDbTestExecutionContext
+    ServiceDbTestExecutionContext <|-- InMemoryTestExecutionContext
+    class TestExecutionContext["TestExecutionContext: a DI container"]
+    class ServiceTestExecutionContext["ServiceTestExecutionContext#lt;TService#gt;: a class under test"]
+    class DbTestExecutionContext["DbTestExecutionContext#lt;TDbContext#gt;: a database"]
+    class ServiceDbTestExecutionContext["ServiceDbTestExecutionContext: both"]
+    class InMemoryTestExecutionContext["InMemoryTestExecutionContext: both, in memory, domain events wired"]
+```
+
 ### Integration: only what needs PostgreSQL
 
 The in-memory provider is not a database. These are tested against PostgreSQL, and only these:
