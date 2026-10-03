@@ -1,6 +1,13 @@
 {
-  "version": "2.6.0",
+  "version": "2.6.1",
   "releaseNotes": {
+    "2.6.1": {
+      "headline": "The first push of a generated solution passes the secret scan.",
+      "highlights": [
+        "The idempotency test's key looked like an API key to gitleaks. The generated secret scan checks only the commits a push brings in, so it failed only the first push of a new solution, where every file is new.",
+        "The template's CI scans each generated solution in full with the solution's own gitleaks rules."
+      ]
+    },
     "2.6.0": {
       "headline": "A service's tests can be NUnit or xUnit, on one shared test infrastructure.",
       "highlights": [
