@@ -36,6 +36,7 @@ public static class PlatformWebHost
         Action<IMvcBuilder>? configureMvc = null)
     {
         builder.Services.ConfigurePlatformJson();
+        builder.Services.AddPlatformForwardedHeaders(builder.Configuration);
 
         // Errors are RFC 9457 problems with a correlation identifier; see Common.Web/Errors.
         builder.Services.AddPlatformErrorHandling(builder.Environment);
@@ -83,6 +84,8 @@ public static class PlatformWebHost
         bool authenticate = true,
         Action<WebApplication>? beforeEndpoints = null)
     {
+        // First, so everything after sees the client's scheme and address, not the proxy's.
+        app.UsePlatformForwardedHeaders();
         app.UsePlatformTracing();
         app.UsePlatformRequestLogging();
         app.UseRouting();

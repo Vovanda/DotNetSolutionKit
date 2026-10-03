@@ -1,6 +1,9 @@
 using System.Reflection;
 using NamespaceRoot.ProductName.Common.Application.Configuration;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
+//#if (Messaging == "outbox")
+using NamespaceRoot.ProductName.Common.Web.Diagnostics;
+//#endif
 using NamespaceRoot.ProductName.Common.Web.Setup;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
@@ -76,6 +79,11 @@ try
     app.UsePlatformPipeline(typeof(Program).Assembly);
 //#endif
 
+//#if (Messaging == "outbox")
+    // Outside Production: what waits in the outbox and what was sent, at /api/v1/diagnostics/outbox-stats.
+    app.MapOutboxDiagnostics<ServiceIdentifierDbContext>();
+
+//#endif
     // --- Application startup ---
     app.Run();
 }

@@ -49,6 +49,10 @@ Host, credentials and retries have defaults (`localhost`, `guest`, 3 retries); p
 `RabbitMq__UserName` and `RabbitMq__Password`. `Enabled: false` registers a bus that does nothing and logs
 a critical line at startup. With a bus, `/ready` checks the broker.
 
+With the outbox, `GET /api/v1/diagnostics/outbox-stats` shows how many messages wait and were sent, and the
+latest ones; `?filter=` matches a message body, an order id for instance. The endpoint exists outside
+Production only.
+
 Registration, contracts, publishing, the outbox and consumers in detail:
 [Messaging/README.md](../../template/src/common/NamespaceRoot.ProductName.Common.Infrastructure/Messaging/README.md).
 
