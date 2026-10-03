@@ -34,7 +34,7 @@ internal static class WebApi
         {
             options.Filters.Add<PermissionAuthorizationFilter>();
         })
-        // Controllers that ship with the platform rather than with this service — the feature list
+        // Controllers that ship with the platform rather than with this service - the feature list
         // among them, so every service answers about flags the same way instead of each writing its
         // own endpoint.
         // Invalid model state is answered by the default factory with a validation problem.

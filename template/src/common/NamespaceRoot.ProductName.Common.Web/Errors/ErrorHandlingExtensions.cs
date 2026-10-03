@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NamespaceRoot.ProductName.Common.Application.Tracing;
+using NamespaceRoot.ProductName.Common.Contracts.Responses;
 using NamespaceRoot.ProductName.Common.Web.Tracing;
 
 namespace NamespaceRoot.ProductName.Common.Web.Errors;
@@ -65,6 +66,10 @@ public static class ErrorHandlingExtensions
 
             if (context.ProblemDetails is HttpValidationProblemDetails validation)
             {
+                // Model validation, the validators and the pagination check create these without a
+                // code; a client matches every invalid argument on the same one.
+                validation.Extensions.TryAdd(PlatformExceptionMapper.CodeExtension, ErrorConstants.Codes.ValidationError);
+
                 var naming = requestServices.GetService<IOptions<Microsoft.AspNetCore.Http.Json.JsonOptions>>()?
                     .Value.SerializerOptions.PropertyNamingPolicy;
                 RenameFields(validation.Errors, naming);

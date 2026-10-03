@@ -1,13 +1,16 @@
 using System.Reflection;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using NamespaceRoot.ProductName.Common.Web.Pagination;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
 namespace NamespaceRoot.ProductName.Common.Web.Setup;
 
 /// <summary>
 /// FluentValidation for controllers: every validator in the given assemblies runs before the action,
-/// and an invalid request is answered with 400 and <c>ValidationProblemDetails</c>.
+/// and an invalid request is answered with 400 and <c>ValidationProblemDetails</c>. Page and page size
+/// are checked against <see cref="PaginationContract"/> the same way.
 /// </summary>
 public static class ValidationSetup
 {
@@ -29,6 +32,7 @@ public static class ValidationSetup
 
         services.AddValidatorsFromAssemblies(assemblies);
         services.AddFluentValidationAutoValidation();
+        services.Configure<MvcOptions>(options => options.Filters.Add<PaginationValidationFilter>());
         return services;
     }
 }

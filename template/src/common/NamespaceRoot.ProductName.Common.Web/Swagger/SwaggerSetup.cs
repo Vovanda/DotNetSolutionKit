@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using NamespaceRoot.ProductName.Common.Application.Configuration;
 using NamespaceRoot.ProductName.Common.Infrastructure.Security;
+using NamespaceRoot.ProductName.Common.Web.Pagination;
 using NamespaceRoot.ProductName.Common.Web.Swagger.Filters;
 
 namespace NamespaceRoot.ProductName.Common.Web.Swagger;
@@ -20,7 +21,7 @@ public static class SwaggerSetup
     /// Registers Swagger generation with versioned docs, security definitions, and standard filters.
     /// </summary>
     /// <param name="builder">The web application builder.</param>
-    /// <param name="serviceAssembly">The service's own assembly — used for version discovery and XML comments.</param>
+    /// <param name="serviceAssembly">The service's own assembly, used for version discovery and XML comments.</param>
     public static WebApplicationBuilder SetupSwaggerPage(
         this WebApplicationBuilder builder,
         Assembly serviceAssembly)
@@ -100,6 +101,7 @@ public static class SwaggerSetup
 
             options.OperationFilter<AuthorizationOperationFilter>();
             options.OperationFilter<PermissionsOperationFilter>();
+            options.OperationFilter<PaginationOperationFilter>();
             options.DocumentFilter<VersionedDocumentFilter>();
 
             var xmlFile = $"{serviceAssembly.GetName().Name}.xml";
