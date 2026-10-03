@@ -69,6 +69,10 @@ internal static class ActorHeaderWriter
         if (Activity.Current?.Id is { } traceParent)
             context.Headers.Set("traceparent", traceParent);
 
+        // The correlation identifier too: the caller may have chosen its own, which the trace does not carry.
+        if (Correlation.Current is { } correlationId)
+            context.Headers.Set(TracingHeaders.CorrelationId, correlationId);
+
         using var scope = services.CreateScope();
         var actor = scope.ServiceProvider.GetService<IUserContext>();
 
@@ -114,6 +118,10 @@ public sealed class ActorRestoreConsumeFilter<T>(ILoggerFactory loggerFactory) :
     {
         using var activity = MessageTracing.Start(context);
         var actor = ReadActor(context);
+        var correlationId = context.Headers.Get<string>(TracingHeaders.CorrelationId)
+                            ?? Activity.Current?.TraceId.ToString()
+                            ?? Guid.NewGuid().ToString("n");
+        using var correlation = Correlation.Use(correlationId);
 
         // Every line the handler writes carries the identifier and the person without the handler
         // saying so — the same thing the request pipeline does for an HTTP call.
@@ -121,7 +129,7 @@ public sealed class ActorRestoreConsumeFilter<T>(ILoggerFactory loggerFactory) :
             .CreateLogger<ActorRestoreConsumeFilter<T>>()
             .BeginScope(new Dictionary<string, object?>
             {
-                [TracingProperties.CorrelationId] = Activity.Current?.TraceId.ToString(),
+                [TracingProperties.CorrelationId] = correlationId,
                 ["ActorLogin"] = actor?.Login,
                 ["ActorUserId"] = actor?.UserId,
             });

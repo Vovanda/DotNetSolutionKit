@@ -45,6 +45,7 @@ public sealed class CorrelationIdMiddleware
         // enricher, which reads the same Activity and keeps working outside a request — in a job or a bus
         // consumer, where this middleware never runs. Pushing them here as well would leave two sources
         // for one property and no way to tell which one a given line came from.
+        using (Correlation.Use(correlationId))
         using (LogContext.PushProperty(TracingProperties.CorrelationId, correlationId))
         {
             await _next(context);

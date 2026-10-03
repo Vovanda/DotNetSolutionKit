@@ -37,7 +37,7 @@ flowchart LR
    `X-Forwarded-For`, as the proxy in front saw them. First, so the log, the cookies and anything that
    checks for HTTPS see the client's request, not the proxy's. See [behind a proxy](#behind-a-proxy).
 2. Correlation: reads or creates `X-Correlation-Id`, puts it on every log line of the request and on the
-   response.
+   response. See [correlation](#correlation).
 3. Request logging: one line per request with method, path, status and duration. It comes after
    correlation, so the line carries the identifier.
 4. Routing.
@@ -48,6 +48,23 @@ flowchart LR
 8. Swagger.
 9. The service's own middleware, from `beforeEndpoints`: the Hangfire dashboard, for instance.
 10. Controllers, `/health` and `/ready`.
+
+## Correlation
+
+The correlation identifier ties one external request to everything it caused. A caller may send its
+own in `X-Correlation-Id`; without one the request takes its trace id. Searching the logs of every
+service by that identifier finds the request, the messages it published, their consumers, the jobs
+they enqueued and the calls to other services, each line under the `CorrelationId` property:
+
+| Where the work goes | How the identifier gets there |
+|---|---|
+| a message | the `X-Correlation-Id` header of the message, put back for the consumer ([messaging](../features/messaging.md)) |
+| a Hangfire job | a job parameter, put back while the job runs ([background jobs](../features/background-jobs.md)) |
+| another service | the `X-Correlation-Id` header of the call ([calling another service](authentication-and-permissions.md#calling-another-service)) |
+
+The trace (`traceparent`) crosses the same boundaries. The identifier travels separately because a caller
+that sent its own searches by it, and the trace does not carry it past the first service.
+Inside the process the identifier of the running work is `Correlation.Current`.
 
 ## Behind a proxy
 

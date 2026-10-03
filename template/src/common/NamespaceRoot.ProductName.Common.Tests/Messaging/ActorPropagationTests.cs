@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using NamespaceRoot.ProductName.Common.Application.Tracing;
+using System.Diagnostics;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -61,6 +62,38 @@ public class ActorPropagationTests
         var headers = await Publish(new UserContextMock(UserId));
 
         headers["traceparent"].ShouldBe(activity.Id);
+    }
+
+    [Test]
+    public async Task The_correlation_the_caller_chose_travels_with_the_message()
+    {
+        using var _ = Correlation.Use("client-chosen-42");
+
+        var headers = await Publish(new UserContextMock(UserId));
+
+        headers[TracingHeaders.CorrelationId].ShouldBe("client-chosen-42");
+    }
+
+    [Test]
+    public async Task The_correlation_is_restored_for_the_whole_handling_of_the_message()
+    {
+        string? seen = null;
+
+        await Consume(
+            new Dictionary<string, object?> { [TracingHeaders.CorrelationId] = "client-chosen-42" },
+            onHandling: () => seen = Correlation.Current);
+
+        seen.ShouldBe("client-chosen-42", "the caller searching by its own identifier finds the consumer's lines too");
+    }
+
+    [Test]
+    public async Task A_message_without_a_correlation_is_correlated_by_its_trace()
+    {
+        string? seen = null;
+
+        await Consume(new Dictionary<string, object?>(), onHandling: () => seen = Correlation.Current);
+
+        seen.ShouldNotBeNullOrEmpty();
     }
 
     [Test]

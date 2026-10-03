@@ -49,7 +49,30 @@ receives the user and the permissions in headers that come with the internal API
 and the same `ClaimsPermissionService` check them. Permissions asked from a separate service are planned;
 see issue [#5](https://github.com/Vovanda/DotNetSolutionKit/issues/5).
 
+## Calling another service
+
+A client the factory builds, typed or Refit, becomes a call to another service of the product with one
+line:
+
+```csharp
+services.AddHttpClient<BillingClient>(c => c.BaseAddress = new Uri(options.BaseUrl))
+    .AddInternalServiceHandlers();
+```
+
+Every request of that client then carries:
+
+- the internal API key;
+- the caller, read from the request's claims: the user, the tenant, the roles and the permissions, so
+  the called service checks its permissions as it checks the gateway's headers. Work with no request
+  behind it, a job or a consumer, calls as the system. An anonymous request passes nobody on, so an open
+  endpoint does not get the system's rights in the next service;
+- the [correlation identifier](web-layer.md#correlation) of the running work.
+
+A client for a provider outside the product takes `.AddCorrelation()` alone: the key and the user's
+details are not the provider's to see.
+
 ## Tests
 
 `Common.Tests` checks on a test server an open action, an anonymous caller, a missing and a held
-permission, and a system call.
+permission, and a system call. For a call to another service it checks, through a client the factory
+builds, what goes with the request for a user, a job, a system caller and an anonymous request.

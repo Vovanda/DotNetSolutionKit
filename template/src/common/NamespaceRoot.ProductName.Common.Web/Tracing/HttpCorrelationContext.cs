@@ -22,6 +22,7 @@ public sealed class HttpCorrelationContext : ICorrelationContext
 
     public string CorrelationId =>
         _httpContextAccessor.HttpContext?.Items[TracingProperties.CorrelationId] as string
+        ?? Correlation.Current
         ?? System.Diagnostics.Activity.Current?.TraceId.ToString()
         ?? Guid.NewGuid().ToString("n");
 }

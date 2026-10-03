@@ -43,6 +43,10 @@ What the template adds to plain Hangfire:
   that user while the job runs, so what the job writes is attributed to them. A scheduled run has no such
   user and runs as the system. A job that acts on its own account even when someone enqueued it takes
   its context from `ISystemExecutionContextFactory.Create()`.
+- **The correlation travels with every job.** The same filter records the trace and the
+  [correlation identifier](../architecture/web-layer.md#correlation) of the work that enqueued the job,
+  so its log lines are found with the request's. A scheduled run starts a trace of its own and is
+  correlated by it.
 - **`/ready` checks Hangfire.** The health check fails when no Hangfire server is running.
 
 ## Why Hangfire

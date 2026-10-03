@@ -35,8 +35,11 @@ service (`orders`, `sales_orders`), so two services consuming one event each get
 
 ## What travels with a message
 
-The user who caused the message and the trace (`traceparent`) are written into its headers and restored
-for the consumer, so what a consumer writes is attributed to that user and its log lines join the trace.
+The user who caused the message, the trace (`traceparent`) and the
+[correlation identifier](../architecture/web-layer.md#correlation) are written into its headers and
+restored for the consumer, so what a consumer writes is attributed to that user and its log lines are
+found by the identifier of the request that caused them. The outbox keeps the headers: a message
+delivered from it later still carries them.
 Domain events raised in a consumer are dispatched as in a request.
 
 ## Configuration
