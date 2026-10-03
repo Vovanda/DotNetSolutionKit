@@ -81,7 +81,22 @@ catch (HostAbortedException ex)
 {
     Log.Warning(ex, "Host was aborted. This may be expected in some environments.");
 }
+// Build-time tools such as dotnet-getdocument start this entry point and stop it with an internal
+// exception once the host is built. Swallowing it below would make the run look like a clean exit,
+// and the tool would report that no host was built.
+catch (Exception ex) when (ex.GetType().Name == "StopTheHostException")
+{
+    throw;
+}
 catch (Exception ex)
 {
     Log.Fatal(ex, "The {EntryAssemblyName} application startup failed", Assembly.GetEntryAssembly()?.GetName().Name);
+    // A failure before logging is configured leaves Serilog silent, so the error also goes to stderr.
+    // A non-zero exit code tells the orchestrator the service did not start.
+    Console.Error.WriteLine(ex);
+    Environment.ExitCode = 1;
+}
+finally
+{
+    Log.CloseAndFlush();
 }
