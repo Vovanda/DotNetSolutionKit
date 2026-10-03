@@ -24,6 +24,13 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders -M false
 dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 ```
 
+A release can also be installed from its package: download `SawKing.DotNetSolutionKit.<version>.nupkg` from
+the [releases](https://github.com/Vovanda/DotNetSolutionKit/releases) and run `dotnet new install <file>`.
+
+What the generated solutions look like, with their CI running:
+[DotNetSolutionKit.Samples](https://github.com/Vovanda/DotNetSolutionKit.Samples), one branch per combination
+of flags, regenerated from each release.
+
 | Parameter | Default | What it does |
 |---|---|---|
 | `-N`, `--NamespaceRoot` | `MyCompany` | Organization name, the root namespace. May be dotted. |
