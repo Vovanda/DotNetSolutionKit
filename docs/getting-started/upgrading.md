@@ -30,6 +30,27 @@ pass: `Common` only gained types and members. A service generated from `v2.1.0` 
 
 Services generated after that take `-M true` and the same flags.
 
+## From v2.5 to v2.6
+
+The test infrastructure a service's tests build on - the test execution contexts, the PostgreSQL test
+databases, the stubs and the rule checks - moved out of `Common.Tests` into `Common.Testing`, a project
+with no test framework. The namespaces did not change. After updating `Common`, a service's test project
+references `Common.Testing` instead of `Common.Tests`:
+
+```xml
+<ProjectReference Include="..\..\..\common\MyCompany.MyProduct.Common.Testing\MyCompany.MyProduct.Common.Testing.csproj" />
+```
+
+and tells it how NUnit skips a test, in one file:
+
+```csharp
+internal static class TestSkipSetup
+{
+    [ModuleInitializer]
+    internal static void UseNUnit() => TestSkip.Handler = Assert.Ignore;
+}
+```
+
 ## Do not regenerate over an older solution
 
 `dotnet new ... --force` over a solution generated from `v1` overwrites files that `v2` changed and leaves

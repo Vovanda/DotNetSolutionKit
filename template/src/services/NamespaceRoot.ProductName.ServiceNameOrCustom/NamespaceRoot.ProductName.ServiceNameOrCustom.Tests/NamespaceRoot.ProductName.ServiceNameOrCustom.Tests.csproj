@@ -21,7 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\common\NamespaceRoot.ProductName.Common.Tests\NamespaceRoot.ProductName.Common.Tests.csproj" />
       <ProjectReference Include="..\..\..\common\NamespaceRoot.ProductName.Common\NamespaceRoot.ProductName.Common.csproj" />
       <ProjectReference Include="..\..\..\common\NamespaceRoot.ProductName.Common.Application\NamespaceRoot.ProductName.Common.Application.csproj" />
       <ProjectReference Include="..\..\..\common\NamespaceRoot.ProductName.Common.Infrastructure\NamespaceRoot.ProductName.Common.Infrastructure.csproj" />
@@ -30,6 +29,7 @@
       <ProjectReference Include="..\NamespaceRoot.ProductName.ServiceNameOrCustom.Application\NamespaceRoot.ProductName.ServiceNameOrCustom.Application.csproj" />
       <ProjectReference Include="..\NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure\NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.csproj" />
       <ProjectReference Include="..\NamespaceRoot.ProductName.ServiceNameOrCustom.API\NamespaceRoot.ProductName.ServiceNameOrCustom.API.csproj" />
+      <ProjectReference Include="..\..\..\common\NamespaceRoot.ProductName.Common.Testing\NamespaceRoot.ProductName.Common.Testing.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,6 +1,13 @@
 {
-  "version": "2.5.0",
+  "version": "2.6.0",
   "releaseNotes": {
+    "2.6.0": {
+      "headline": "A service's tests no longer depend on NUnit through the shared infrastructure.",
+      "highlights": [
+        "Common.Testing holds the test execution contexts, the PostgreSQL test databases, the stubs and the rule checks, with no test framework; Common.Tests and the services' tests reference it. TestSkip lets each test framework say how it skips a test.",
+        "Updating an earlier solution: a service's test project references Common.Testing instead of Common.Tests, and sets TestSkip.Handler; see upgrading."
+      ]
+    },
     "2.5.0": {
       "headline": "An audit journal of entity changes, published through the outbox, with guards for writes it cannot see.",
       "highlights": [

@@ -3,8 +3,10 @@
 Which kind of test a piece of code gets, and why most of them run on an in-memory database:
 [ADR-005](../adr/005-testing-a-service.md). This page is how to start.
 
-The service's test project references `Common.Tests`, which brings the test contexts and stubs for time
-and the user.
+The service's test project references `Common.Testing`: the test contexts, the PostgreSQL test databases,
+stubs for time and the user, and the rule checks. It carries no test framework; the service's test
+project picks one, and sets `TestSkip.Handler` to how that framework skips a test. `Common.Tests` is the
+test project of `Common` itself.
 
 ## A service test
 

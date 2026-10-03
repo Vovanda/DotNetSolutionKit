@@ -293,9 +293,9 @@
             "src/common/NamespaceRoot.ProductName.Common.Contracts/Messaging/Audit/**",
             "src/common/NamespaceRoot.ProductName.Common.Application/Auditing/**",
             "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Persistence/EntityFramework/Audit/**",
-            "src/common/NamespaceRoot.ProductName.Common.Tests/Audit/**",
+            "src/common/NamespaceRoot.ProductName.Common.Testing/Audit/**",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Tests/Audit/**",
-            "src/common/NamespaceRoot.ProductName.Common.Tests/Stubs/NoOpAuditCapture.cs"
+            "src/common/NamespaceRoot.ProductName.Common.Testing/Stubs/NoOpAuditCapture.cs"
           ]
         },
         {

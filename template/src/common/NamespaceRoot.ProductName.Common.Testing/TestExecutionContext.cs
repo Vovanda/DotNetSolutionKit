@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
-using NUnit.Framework;
 
 namespace NamespaceRoot.ProductName.Common.Tests;
 
@@ -250,7 +249,7 @@ public class InMemoryTestExecutionContext<TService, TDbContext> : ServiceDbTestE
     public InMemoryTestExecutionContext() =>
         Services.AddDbContext<TDbContext>((sp, options) =>
         {
-            options.UseInMemoryDatabase($"TestDb_{TestContext.CurrentContext.Test.ID}");
+            options.UseInMemoryDatabase($"TestDb_{Guid.NewGuid():N}");
             options.ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning));
             if (sp.GetService<DomainEventPreSaveInterceptor>() != null)
                 options.ApplyDomainEventInterceptors(sp);
