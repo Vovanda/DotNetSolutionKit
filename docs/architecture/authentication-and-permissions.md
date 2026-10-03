@@ -64,7 +64,7 @@ The access cookie authenticates every request, read where no `Authorization` hea
 in a generated service, `ResponseContractTests`, fails when an action returns a type with a property named
 `Token`, `AccessToken`, `RefreshToken`, `IdToken`, `Jwt` or `BearerToken`.
 
-What the cookie can be depends on where the frontend runs, and the browser decides it, not the service:
+What the cookie can be depends on where the frontend runs; the browser enforces it:
 
 | Frontend and API | HTTPS | `AuthCookies` | CSRF |
 |---|---|---|---|
