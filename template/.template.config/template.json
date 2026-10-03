@@ -93,6 +93,12 @@
       ],
       "description": "Message bus for the service"
     },
+    "ApiGateway": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Generate an API gateway on YARP instead of a service; with -M true, into an existing solution"
+    },
     "Deploy": {
       "type": "parameter",
       "datatype": "choice",
@@ -263,7 +269,8 @@
             "**/logs/**",
             "**/*.user",
             "**/*.DotSettings.user",
-            ".template.config/**"
+            ".template.config/**",
+            "gateway/**"
           ]
         }
       ]
@@ -272,6 +279,12 @@
       "source": "src/services",
       "target": "src/services",
       "modifiers": [
+        {
+          "condition": "(ApiGateway)",
+          "exclude": [
+            "NamespaceRoot.ProductName.ServiceNameOrCustom/**"
+          ]
+        },
         {
           "condition": "(!Minimal)",
           "exclude": ["**/*"]
@@ -318,6 +331,28 @@
           ]
         }
       ]
+    },
+    {
+      "source": "gateway",
+      "target": "src/services",
+      "condition": "(ApiGateway && Minimal)",
+      "modifiers": [
+        {
+          "condition": "(Deploy != \"compose\")",
+          "exclude": [ "**/deploy/compose.yml" ]
+        },
+        {
+          "condition": "(Deploy != \"k8s\")",
+          "exclude": [ "**/deploy/k8s.yaml" ]
+        },
+        {
+          "condition": "(Deploy == \"none\")",
+          "exclude": [ "**/deploy/**" ]
+        },
+        {
+          "exclude": [ "**/[Bb]in/**", "**/[Oo]bj/**", "**/logs/**", "**/*.user" ]
+        }
+      ]
     }
   ],
 
@@ -331,5 +366,6 @@
         { "text": "1. Navigate to services folder: cd ./src/services\n2. Run script: ./manual-add-projects.sh\n3. The script will check all service projects and add them to All.sln, skipping already added ones." }
       ]
     }
+
   ]
 }

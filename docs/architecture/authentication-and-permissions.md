@@ -44,9 +44,10 @@ one claim per permission, as a JSON array in a JWT becomes. It needs no other se
 solution with a single service. A service whose permissions live elsewhere registers its own
 `IPermissionService`.
 
-A gateway that validates tokens once and forwards the user to the services, and permissions asked from a
-separate service, are planned behind `--ApiGateway`; see issue
-[#5](https://github.com/Vovanda/DotNetSolutionKit/issues/5).
+Behind a [gateway](../features/api-gateway.md) the token is validated once, at the gateway, and a service
+receives the user and the permissions in headers that come with the internal API key; the same filter
+and the same `ClaimsPermissionService` check them. Permissions asked from a separate service are planned;
+see issue [#5](https://github.com/Vovanda/DotNetSolutionKit/issues/5).
 
 ## Tests
 

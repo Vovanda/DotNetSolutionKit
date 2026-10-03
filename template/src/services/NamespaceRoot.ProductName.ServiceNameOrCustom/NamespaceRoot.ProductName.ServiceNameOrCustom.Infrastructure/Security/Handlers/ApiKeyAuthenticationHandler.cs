@@ -145,6 +145,14 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationS
             _logger.LogDebug("Added {RoleCount} roles from header for user {UserId}", roles.Count, userIdHeader);
         }
 
+        // Permissions from the gateway, which read them from the caller's token
+        if (Request.Headers.TryGetValue(AuthHeaders.UserPermissions, out var permissionsHeader))
+        {
+            claims.AddRange(permissionsHeader.ToString()
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(permission => new Claim(AuthClaims.Permissions, permission)));
+        }
+
         // Add default role if no roles provided
         if (claims.All(c => c.Type != AuthClaims.UserRole))
         {

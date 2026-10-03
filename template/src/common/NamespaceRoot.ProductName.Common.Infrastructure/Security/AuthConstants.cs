@@ -19,8 +19,18 @@ public static class AuthHeaders
     public const string UserLogin = "X-User-Login";
     public const string UserDisplayName = "X-User-DisplayName";
     public const string UserRoles = "X-User-Roles";
+    public const string UserPermissions = "X-User-Permissions";
     public const string TenantId = "X-Tenant-Id";
-    
+
+    /// <summary>
+    /// The headers that carry who the caller is. A service trusts them only next to the internal API
+    /// key, and a gateway removes any a client sent before it sets its own.
+    /// </summary>
+    public static readonly IReadOnlyList<string> UserContext =
+    [
+        AuthType, AuthId, AuthValidated, AuthExp, SystemCall,
+        UserId, UserLogin, UserDisplayName, UserRoles, UserPermissions, TenantId,
+    ];
 }
 
 /// <summary>

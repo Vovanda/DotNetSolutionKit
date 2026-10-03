@@ -51,6 +51,10 @@ public static class PlatformWebHost
         builder.SetupSwaggerPage(serviceAssembly);
         builder.AddPlatformCors();
 
+        // /health and /ready are mapped by UsePlatformPipeline; a host with no dependency to check
+        // (a gateway) still needs the health check services behind them.
+        builder.Services.AddHealthChecks();
+
         builder.Services.AddMemoryCache();
         builder.Services.AddExecutionContext();
         builder.Services.AddSingleton(TimeProvider.System);

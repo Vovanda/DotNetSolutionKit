@@ -25,6 +25,7 @@
 - [Feature flags](features/feature-flags.md): `--FeatureFlags`
 - [API diff](features/api-diff.md): `--DiffApi`
 - [Access rules over a tenant tree](features/hierarchy-rules.md): `--HierarchyRules`
+- [API gateway](features/api-gateway.md): YARP, `--ApiGateway`
 
 ## Operations
 

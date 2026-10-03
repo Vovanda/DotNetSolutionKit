@@ -266,6 +266,8 @@ ModelManifest.xml
 **/*.secrets.json
 *certificates*
 *.env
+# A private key signs tokens and never belongs in the repository; a gateway needs only the public one.
+**/*private*.pem
 
 #ignore local files (for developers)
 *.Local.cs

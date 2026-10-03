@@ -68,58 +68,82 @@ public static class ServiceAuthenticationSetup
         .AddScheme<AuthenticationSchemeOptions, TApiKeyHandler>(ApiKeySchemeName, _ => { });
 
         if (jwtEnabled)
-        {
-            builder.Services.AddSingleton<IRsaPublicKeyProvider, RsaPublicKeyProvider>();
-            builder.Services.AddAuthentication().AddJwtBearer();
-            builder.Services
-                .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
-                .Configure<IRsaPublicKeyProvider, IJwtPublicConfiguration>((options, rsaProvider, jwt) =>
-                {
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            // Header wins; fall back to the HttpOnly access token cookie so
-                            // browser clients that never touch localStorage keep working.
-                            if (string.IsNullOrEmpty(context.Token))
-                            {
-                                var cookie = context.Request.Cookies[AccessTokenCookieName];
-                                if (!string.IsNullOrEmpty(cookie))
-                                    context.Token = cookie;
-                            }
-                            return Task.CompletedTask;
-                        },
-                        OnAuthenticationFailed = context =>
-                        {
-                            // Do NOT write to Response here — let the error handling middleware handle it.
-                            context.HttpContext.Items["AuthError"] = "INVALID_TOKEN";
-                            return Task.CompletedTask;
-                        },
-                        OnChallenge = context =>
-                        {
-                            // Only annotate the error — do NOT call HandleResponse().
-                            context.HttpContext.Items["AuthError"] = context.AuthenticateFailure != null
-                                ? "INVALID_TOKEN"
-                                : "NO_TOKEN";
-                            return Task.CompletedTask;
-                        }
-                    };
-
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ClockSkew = TimeSpan.Zero,
-                        ValidIssuer = jwt.Issuer,
-                        ValidAudience = jwt.Audience,
-                        IssuerSigningKey = rsaProvider.ValidationKey
-                    };
-                });
-        }
+            builder.AddPlatformJwtBearer();
 
         return builder;
+    }
+
+    /// <summary>
+    /// Authentication for a gateway: every caller presents a JWT, validated here; the services behind
+    /// trust what the gateway forwards with the internal API key.
+    /// </summary>
+    public static WebApplicationBuilder SetupGatewayAuthentication(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
+        builder.AddPlatformJwtBearer();
+        return builder;
+    }
+
+    /// <summary>
+    /// The JWT bearer scheme: RS256 tokens checked against the public key at <c>Jwt:PublicKeyPath</c>,
+    /// from the Authorization header or the access token cookie.
+    /// </summary>
+    private static void AddPlatformJwtBearer(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddJwtPublicConfiguration(builder.Configuration);
+        builder.Services.AddSingleton<IRsaPublicKeyProvider, RsaPublicKeyProvider>();
+        builder.Services.AddAuthentication().AddJwtBearer();
+        builder.Services
+            .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+            .Configure<IRsaPublicKeyProvider, IJwtPublicConfiguration>((options, rsaProvider, jwt) =>
+            {
+                // Claims keep the names the token uses (role, permissions, user_id), the names the
+                // rest of the platform reads; by default "role" would be renamed to a long URI.
+                options.MapInboundClaims = false;
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        // Header wins; fall back to the HttpOnly access token cookie so
+                        // browser clients that never touch localStorage keep working.
+                        if (string.IsNullOrEmpty(context.Token))
+                        {
+                            var cookie = context.Request.Cookies[AccessTokenCookieName];
+                            if (!string.IsNullOrEmpty(cookie))
+                                context.Token = cookie;
+                        }
+                        return Task.CompletedTask;
+                    },
+                    OnAuthenticationFailed = context =>
+                    {
+                        // Do NOT write to Response here — let the error handling middleware handle it.
+                        context.HttpContext.Items["AuthError"] = "INVALID_TOKEN";
+                        return Task.CompletedTask;
+                    },
+                    OnChallenge = context =>
+                    {
+                        // Only annotate the error — do NOT call HandleResponse().
+                        context.HttpContext.Items["AuthError"] = context.AuthenticateFailure != null
+                            ? "INVALID_TOKEN"
+                            : "NO_TOKEN";
+                        return Task.CompletedTask;
+                    }
+                };
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidIssuer = jwt.Issuer,
+                    ValidAudience = jwt.Audience,
+                    IssuerSigningKey = rsaProvider.ValidationKey
+                };
+            });
+    
     }
 
     /// <summary>
