@@ -56,8 +56,8 @@ public class ServiceIdentifierDbContextFactory : IDesignTimeDbContextFactory<Ser
         {
             // Adding a migration compares the model with the snapshot and never opens a connection,
             // so a freshly generated service can get its first migration before any database exists.
-            // Commands that do connect (database update, migrations script --idempotent against a
-            // live database) fail on this placeholder with a connection error naming localhost.
+            // Commands that do connect, such as database update and migrations list, fail on this
+            // placeholder with a connection error naming localhost.
             Console.WriteLine(
                 "Connection string 'DefaultConnection' not found: using a placeholder. " +
                 "Enough to add a migration; set ConnectionStrings__DefaultConnection to touch a database.");

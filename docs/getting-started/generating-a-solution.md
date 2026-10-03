@@ -93,7 +93,10 @@ migration before the first run; the command needs no database:
 
 ```bash
 cd src/services/MyCompany.MyProduct.Orders
-dotnet ef migrations add Initial   -p MyCompany.MyProduct.Orders.Infrastructure   -s MyCompany.MyProduct.Orders.Infrastructure   -o EntityFramework/Migrations
+dotnet ef migrations add Initial \
+  -p MyCompany.MyProduct.Orders.Infrastructure \
+  -s MyCompany.MyProduct.Orders.Infrastructure \
+  -o EntityFramework/Migrations
 ```
 
 The migration also creates the tables of the outbox, when the service was generated with
