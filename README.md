@@ -1,5 +1,10 @@
 # DotNetSolutionKit
 
+> **BREAKING CHANGES SINCE OCTOBER 2026. DO NOT APPLY THIS TEMPLATE WITH `--force` OVER A SOLUTION
+> GENERATED FROM AN EARLIER VERSION.** Namespaces, project references, package management and
+> versioning changed, and the overwritten solution will not build. Use the template for new
+> solutions; port changes into existing ones by hand.
+
 A `dotnet new` template for microservices on .NET 8 and PostgreSQL. It generates a set of shared
 `Common` libraries and a service split into domain, application, infrastructure and API projects.
 

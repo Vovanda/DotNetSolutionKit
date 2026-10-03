@@ -8,6 +8,7 @@
   },
   "identity": "Sawking.DotNetSolutionKit",
   "name": "DotNet Solution Kit",
+  "description": "Microservice solution on .NET 8 and PostgreSQL. BREAKING CHANGES SINCE OCTOBER 2026: DO NOT APPLY WITH --force OVER A SOLUTION GENERATED FROM AN EARLIER VERSION, IT WILL NOT BUILD.",
   "shortName": "DotNetSolutionKit",
   "preferNameDirectory": false,
 
