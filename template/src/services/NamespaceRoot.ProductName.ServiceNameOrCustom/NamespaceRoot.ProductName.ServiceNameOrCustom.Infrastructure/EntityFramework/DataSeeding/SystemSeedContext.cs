@@ -19,7 +19,7 @@ public class SystemSeedContext : IDomainExecutionContext
     private class SystemUserContext : IUserContext
     {
         public Guid UserId => SystemUserId;
-        public Guid? PartnerId => null;
+        public Guid? TenantId => null;
         public string Login => SystemUserName;
         public string DisplayName => SystemUserName;
         public Guid? ApiKeyId => null;

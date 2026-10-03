@@ -19,7 +19,7 @@ public class UserContextMock : IUserContext
     }
 
     public Guid UserId { get; set; }
-    public Guid? PartnerId { get; set; }
+    public Guid? TenantId { get; set; }
     public string? Login { get; set; }
     public string? DisplayName { get; set; }
     public Guid? ApiKeyId { get; set; }

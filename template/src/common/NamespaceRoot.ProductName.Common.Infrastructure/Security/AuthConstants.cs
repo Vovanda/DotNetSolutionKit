@@ -19,7 +19,7 @@ public static class AuthHeaders
     public const string UserLogin = "X-User-Login";
     public const string UserDisplayName = "X-User-DisplayName";
     public const string UserRoles = "X-User-Roles";
-    public const string PartnerId = "X-Partner-Id";
+    public const string TenantId = "X-Tenant-Id";
     
 }
 
@@ -38,7 +38,7 @@ public static class AuthClaims
     
     // Application specific claims
     public const string DisplayName = "display_name";
-    public const string PartnerId = "partner_id";
+    public const string TenantId = "tenant_id";
     public const string ApiKeyId = "api_key_id";
     
     // Authentication context claims

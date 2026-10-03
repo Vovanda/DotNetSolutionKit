@@ -11,9 +11,9 @@ public interface IUserContext
     Guid UserId { get; }
     
     /// <summary>
-    /// Partner unique identifier
+    /// The tenant the user acts for; null outside any tenant, as for the platform itself
     /// </summary>
-    Guid? PartnerId  { get; }
+    Guid? TenantId  { get; }
 
     /// <summary>
     /// User login/email

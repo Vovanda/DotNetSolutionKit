@@ -127,7 +127,7 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationS
         // Add optional headers as claims
         AddOptionalHeaderClaim(AuthHeaders.UserLogin, AuthClaims.UserLogin, claims);
         AddOptionalHeaderClaim(AuthHeaders.UserDisplayName, AuthClaims.DisplayName, claims);
-        AddOptionalHeaderClaim(AuthHeaders.PartnerId, AuthClaims.PartnerId, claims);
+        AddOptionalHeaderClaim(AuthHeaders.TenantId, AuthClaims.TenantId, claims);
         AddOptionalHeaderClaim(AuthHeaders.AuthExp, AuthClaims.Exp, claims);
         AddOptionalHeaderClaim(AuthHeaders.AuthExp, AuthClaims.AuthExp, claims);
         AddOptionalHeaderClaim(AuthHeaders.AuthValidated, AuthClaims.AuthValidated, claims);

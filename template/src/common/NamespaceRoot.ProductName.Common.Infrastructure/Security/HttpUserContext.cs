@@ -9,13 +9,13 @@ public sealed class HttpUserContext : IUserContext
     private readonly IHttpContextAccessor _httpContextAccessor;
     private IAuthContext? _cachedAuthContext;
     private Guid? _cachedUserId;
-    private Guid? _cachedPartnerId;
+    private Guid? _cachedTenantId;
     private Guid? _cachedApiKeyId;
     private string? _cachedLogin;
     private string? _cachedDisplayName;
 
     public Guid UserId => _cachedUserId ??= GetUserId();
-    public Guid? PartnerId => _cachedPartnerId ??= GetPartnerId();
+    public Guid? TenantId => _cachedTenantId ??= GetTenantId();
     public string? Login => _cachedLogin ??= GetLogin();
     public string? DisplayName => _cachedDisplayName ??= GetDisplayName();
     public Guid? ApiKeyId => _cachedApiKeyId ??= GetApiKeyId();
@@ -48,20 +48,20 @@ public sealed class HttpUserContext : IUserContext
         return userId;
     }
 
-    private Guid? GetPartnerId()
+    private Guid? GetTenantId()
     {
-        var partnerIdStr = Principal.FindFirstValue(AuthClaims.PartnerId);
+        var tenantIdStr = Principal.FindFirstValue(AuthClaims.TenantId);
         
-        if (string.IsNullOrWhiteSpace(partnerIdStr))
+        if (string.IsNullOrWhiteSpace(tenantIdStr))
             return null;
 
-        if (!Guid.TryParse(partnerIdStr, out var partnerId))
-            throw new UnauthorizedAccessException($"Invalid partner ID format: '{partnerIdStr}'");
+        if (!Guid.TryParse(tenantIdStr, out var tenantId))
+            throw new UnauthorizedAccessException($"Invalid tenant ID format: '{tenantIdStr}'");
         
         if (IsSystemCall)
-            throw new InvalidOperationException("System context has no partner ID");
+            throw new InvalidOperationException("System context has no tenant ID");
 
-        return partnerId;
+        return tenantId;
     }
     
     private Guid? GetApiKeyId()

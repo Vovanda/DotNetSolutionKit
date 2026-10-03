@@ -19,7 +19,7 @@ public static class ActorHeaders
 {
     public const string UserId = "ActorUserId";
     public const string Login = "ActorLogin";
-    public const string PartnerId = "ActorPartnerId";
+    public const string TenantId = "ActorTenantId";
 }
 
 /// <summary>
@@ -76,7 +76,7 @@ internal static class ActorHeaderWriter
 
         context.Headers.Set(ActorHeaders.UserId, actor.UserId.ToString());
         context.Headers.Set(ActorHeaders.Login, actor.Login);
-        context.Headers.Set(ActorHeaders.PartnerId, actor.PartnerId?.ToString());
+        context.Headers.Set(ActorHeaders.TenantId, actor.TenantId?.ToString());
     }
 
     private static bool IsAnonymous(IUserContext actor)
@@ -144,12 +144,12 @@ public sealed class ActorRestoreConsumeFilter<T>(ILoggerFactory loggerFactory) :
 
         if (!Guid.TryParse(raw, out var userId) || userId == Guid.Empty) return null;
 
-        var partner = context.Headers.Get<string>(ActorHeaders.PartnerId);
+        var tenant = context.Headers.Get<string>(ActorHeaders.TenantId);
 
         return new JobTriggeredByUserContext(
             userId,
             context.Headers.Get<string>(ActorHeaders.Login),
-            Guid.TryParse(partner, out var partnerId) ? partnerId : null);
+            Guid.TryParse(tenant, out var tenantId) ? tenantId : null);
     }
 }
 

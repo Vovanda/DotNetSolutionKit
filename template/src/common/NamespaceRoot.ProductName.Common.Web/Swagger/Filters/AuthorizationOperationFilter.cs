@@ -30,7 +30,7 @@ public class AuthorizationOperationFilter : IOperationFilter
                                 $"- `{AuthHeaders.UserId}` (required)\n" +
                                 $"- `{AuthHeaders.UserLogin}` (optional)\n" +
                                 $"- `{AuthHeaders.UserDisplayName}` (optional)\n" +
-                                $"- `{AuthHeaders.PartnerId}` (optional)\n" +
+                                $"- `{AuthHeaders.TenantId}` (optional)\n" +
                                 $"- `{AuthHeaders.UserRoles}` (optional, comma-separated)\n";
     }
 }

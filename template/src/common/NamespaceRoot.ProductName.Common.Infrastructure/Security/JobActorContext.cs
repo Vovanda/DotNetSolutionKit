@@ -46,11 +46,11 @@ public static class JobActorContext
 /// re-run authorisation: the endpoint that enqueued it already decided the caller was allowed, and
 /// re-deriving rights from a snapshot hours old would be worse than not having them.
 /// </remarks>
-public sealed class JobTriggeredByUserContext(Guid userId, string? login, Guid? partnerId) : IUserContext
+public sealed class JobTriggeredByUserContext(Guid userId, string? login, Guid? tenantId) : IUserContext
 {
     public Guid UserId { get; } = userId;
 
-    public Guid? PartnerId { get; } = partnerId;
+    public Guid? TenantId { get; } = tenantId;
 
     public string? Login { get; } = login;
 

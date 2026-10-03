@@ -20,7 +20,7 @@ namespace NamespaceRoot.ProductName.Common.Tests.Messaging;
 public class ActorPropagationTests
 {
     private const string UserId = "11111111-1111-1111-1111-111111111111";
-    private const string PartnerId = "22222222-2222-2222-2222-222222222222";
+    private const string TenantId = "22222222-2222-2222-2222-222222222222";
 
     [SetUp]
     public void Reset() => Activity.Current = null;
@@ -35,13 +35,13 @@ public class ActorPropagationTests
     }
 
     [Test]
-    public async Task A_partner_operator_carries_the_organisation_they_act_for()
+    public async Task A_tenant_user_carries_the_tenant_they_act_for()
     {
-        var actor = new UserContextMock(UserId, login: "partner@example.com") { PartnerId = Guid.Parse(PartnerId) };
+        var actor = new UserContextMock(UserId, login: "user@example.com") { TenantId = Guid.Parse(TenantId) };
 
         var headers = await Publish(actor);
 
-        headers[ActorHeaders.PartnerId].ShouldBe(PartnerId);
+        headers[ActorHeaders.TenantId].ShouldBe(TenantId);
     }
 
     [Test]
@@ -73,14 +73,14 @@ public class ActorPropagationTests
             {
                 [ActorHeaders.UserId] = UserId,
                 [ActorHeaders.Login] = "operator@example.com",
-                [ActorHeaders.PartnerId] = PartnerId,
+                [ActorHeaders.TenantId] = TenantId,
             },
             onHandling: () => seen = JobActorContext.Actor);
 
         seen.ShouldNotBeNull("without it the audit journal writes the system down instead of the person");
         seen!.UserId.ShouldBe(Guid.Parse(UserId));
         seen.Login.ShouldBe("operator@example.com");
-        seen.PartnerId.ShouldBe(Guid.Parse(PartnerId));
+        seen.TenantId.ShouldBe(Guid.Parse(TenantId));
     }
 
     [Test]

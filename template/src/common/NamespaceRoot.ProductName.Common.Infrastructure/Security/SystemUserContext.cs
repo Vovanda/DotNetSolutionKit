@@ -4,7 +4,7 @@ namespace NamespaceRoot.ProductName.Common.Infrastructure.Security;
 
 /// <summary>
 /// Production <see cref="IUserContext"/> used by background jobs and other server-initiated flows
-/// where no HTTP user is present. Fixed identity, <c>PartnerId = null</c> (so platform-only policy
+/// where no HTTP user is present. Fixed identity, <c>TenantId = null</c> (so platform-only policy
 /// checks pass) and <c>AuthContext.Type = System</c> for audit trails.
 /// </summary>
 public sealed class SystemUserContext : IUserContext
@@ -21,7 +21,7 @@ public sealed class SystemUserContext : IUserContext
     }
 
     public Guid UserId => SystemUserId;
-    public Guid? PartnerId => null;
+    public Guid? TenantId => null;
     public string? Login => "system";
     public string? DisplayName => "System";
     public Guid? ApiKeyId => null;
