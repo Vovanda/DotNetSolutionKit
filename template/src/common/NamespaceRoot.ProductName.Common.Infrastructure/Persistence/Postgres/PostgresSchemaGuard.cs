@@ -1,3 +1,4 @@
+using System.Net.Sockets;
 using Npgsql;
 
 namespace NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
@@ -14,7 +15,8 @@ public static class PostgresSchemaGuard
     /// <summary>
     /// Ensures that the specified PostgreSQL schema is either empty or owned by the current service.
     /// This prevents accidental schema sharing between different microservices.
-    /// Retries up to <see cref="MaxRetries"/> times when the database is still starting up (SQLSTATE 57P03).
+    /// Retries up to <see cref="MaxRetries"/> times while the database is still starting up: SQLSTATE 57P03, or the
+    /// port refusing connections.
     /// </summary>
     /// <param name="connectionString">PostgreSQL database connection string.</param>
     /// <param name="schemaName">The schema name to validate (e.g., 'auth' or 'auth_hangfire').</param>
@@ -79,6 +81,14 @@ public static class PostgresSchemaGuard
         }
     }
 
+    /// <summary>
+    /// A database still coming up: either the server answers 57P03, or its port is not open yet, as when
+    /// the service and the database are started together.
+    /// </summary>
+    private static bool IsStartingUp(NpgsqlException exception) =>
+        exception is PostgresException { SqlState: PostgresStartingUpSqlState }
+        || exception.InnerException is SocketException { SocketErrorCode: SocketError.ConnectionRefused };
+
     private static NpgsqlConnection OpenWithRetry(string connectionString)
     {
         for (var attempt = 0; attempt < MaxRetries; attempt++)
@@ -89,15 +99,15 @@ public static class PostgresSchemaGuard
                 conn.Open();
                 return conn;
             }
-            catch (PostgresException ex) when (ex.SqlState == PostgresStartingUpSqlState)
+            catch (NpgsqlException ex) when (IsStartingUp(ex))
             {
                 conn.Dispose();
                 if (attempt == MaxRetries - 1)
                     throw;
 
                 Console.Error.WriteLine(
-                    $"[PostgresSchemaGuard] Database is starting up (57P03), retrying in {RetryDelay.TotalSeconds}s " +
-                    $"(attempt {attempt + 1}/{MaxRetries})...");
+                    $"[PostgresSchemaGuard] Database is not accepting connections yet ({ex.Message}), retrying in " +
+                    $"{RetryDelay.TotalSeconds}s (attempt {attempt + 1}/{MaxRetries})...");
                 Thread.Sleep(RetryDelay);
             }
             catch
