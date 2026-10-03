@@ -47,7 +47,7 @@ solution with a single service. A service whose permissions live elsewhere regis
 Behind a [gateway](../features/api-gateway.md) the token is validated once, at the gateway, and a service
 receives the user and the permissions in headers that come with the internal API key; the same filter
 and the same `ClaimsPermissionService` check them. Permissions asked from a separate service are planned;
-see issue [#5](https://github.com/Vovanda/DotNetSolutionKit/issues/5).
+see issue [#5](https://github.com/sawking-tech/DotNetSolutionKit/issues/5).
 
 ## Tokens in cookies
 

@@ -25,10 +25,10 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 ```
 
 A release can also be installed from its package: download `SawKing.DotNetSolutionKit.<version>.nupkg` from
-the [releases](https://github.com/Vovanda/DotNetSolutionKit/releases) and run `dotnet new install <file>`.
+the [releases](https://github.com/sawking-tech/DotNetSolutionKit/releases) and run `dotnet new install <file>`.
 
 What the generated solutions look like, with their CI running:
-[DotNetSolutionKit.Samples](https://github.com/Vovanda/DotNetSolutionKit.Samples), one branch per combination
+[DotNetSolutionKit.Samples](https://github.com/sawking-tech/DotNetSolutionKit.Samples), one branch per combination
 of flags, regenerated from each release.
 
 | Parameter | Default | What it does |
@@ -60,7 +60,7 @@ Everything else is in [docs](docs/README.md): the architecture, each feature, op
 behind the parts that depart from common practice, and the roadmap.
 
 What each version brings: [version.json](version.json) and the
-[releases](https://github.com/Vovanda/DotNetSolutionKit/releases). How versions are made:
+[releases](https://github.com/sawking-tech/DotNetSolutionKit/releases). How versions are made:
 [contributing](CONTRIBUTING.md).
 
 ## License

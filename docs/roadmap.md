@@ -7,7 +7,7 @@ date.
 
 | What | Issue |
 |---|---|
-| `--ApiGateway`: Swagger of the services through the gateway, and permissions asked from a separate service | [#5](https://github.com/Vovanda/DotNetSolutionKit/issues/5) |
+| `--ApiGateway`: Swagger of the services through the gateway, and permissions asked from a separate service | [#5](https://github.com/sawking-tech/DotNetSolutionKit/issues/5) |
 | A choice of test framework for a service's tests | |
 | A choice of database | |
 | A choice of secret store | |

@@ -19,4 +19,4 @@ jq -r --arg v "$version" '
 ' version.json
 
 printf '\nHow to update a solution generated from an earlier version: [upgrading](https://github.com/%s/blob/v%s/docs/getting-started/upgrading.md).\n' \
-    "${GITHUB_REPOSITORY:-Vovanda/DotNetSolutionKit}" "$version"
+    "${GITHUB_REPOSITORY:-sawking-tech/DotNetSolutionKit}" "$version"

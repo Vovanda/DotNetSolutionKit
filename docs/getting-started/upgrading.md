@@ -10,7 +10,7 @@ The template is versioned with git tags, by semantic versioning.
 | `v2.1.0` | Deployment files, an API gateway, object storage, ClickHouse, CI, end-to-end correlation. Compatible with `v2.0.0`. |
 
 What each version brings is in [version.json](../../version.json) and on the
-[releases page](https://github.com/Vovanda/DotNetSolutionKit/releases).
+[releases page](https://github.com/sawking-tech/DotNetSolutionKit/releases).
 
 From `v2.0.0` on, a change keeps generated solutions working, or comes with a short way to update them.
 A change that cannot do either is a new major version.

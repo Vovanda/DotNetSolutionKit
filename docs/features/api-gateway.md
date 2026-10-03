@@ -107,4 +107,4 @@ On a generated solution under compose, a service and a gateway in front of it:
 
 - Swagger of the services through the gateway: each service still shows its own.
 - Permissions asked from a separate service instead of read from the token: issue
-  [#5](https://github.com/Vovanda/DotNetSolutionKit/issues/5).
+  [#5](https://github.com/sawking-tech/DotNetSolutionKit/issues/5).
