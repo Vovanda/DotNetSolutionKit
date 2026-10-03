@@ -81,12 +81,12 @@ public class PasswordResetOutboxHandler : IDomainPreSaveHandler<PasswordResetReq
 }
 
 // Phase 2 - follow-up write + publish in the handler's OWN transaction (fresh scope)
-public class EvaluateHeadroomMonitoringHandler : IDomainPostCommitHandler<AirTimeBalanceHeadroomChangedDomainEvent>
+public class StockLevelCheckHandler : IDomainPostCommitHandler<OrderPlacedEvent>
 {
-    public async Task Handle(AirTimeBalanceHeadroomChangedDomainEvent @event, CancellationToken ct, object? data = null)
+    public async Task Handle(OrderPlacedEvent @event, CancellationToken ct, object? data = null)
     {
-        // monitor internally does: Begin -> flip marker + bus.PublishAsync -> SaveChanges -> Commit
-        await _monitor.EvaluateAfterBalanceChangeAsync(@event.BalanceId, ct);
+        // the check internally does: Begin -> flip a low-stock marker + bus.PublishAsync -> SaveChanges -> Commit
+        await _stockLevels.CheckAfterOrderAsync(@event.OrderId, ct);
     }
 }
 
