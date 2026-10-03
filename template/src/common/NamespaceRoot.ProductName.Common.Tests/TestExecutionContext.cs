@@ -165,7 +165,7 @@ public class TestExecutionContext : IDisposable, IAsyncDisposable
         GC.SuppressFinalize(this);
     }
 
-    public async ValueTask DisposeAsync()
+    public virtual async ValueTask DisposeAsync()
     {
         if (!_disposed)
         {
