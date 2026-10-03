@@ -1,8 +1,7 @@
-using System.Net.Http.Headers;
-using System.Text;
 using Hangfire.Dashboard;
 using Microsoft.AspNetCore.Http;
 using NamespaceRoot.ProductName.Common.Infrastructure.Configuration;
+using NamespaceRoot.ProductName.Common.Infrastructure.Security;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.Security.Filters;
 
@@ -20,29 +19,9 @@ public class HangfireAdminAuthorizationFilter : IDashboardAuthorizationFilter
     public bool Authorize(DashboardContext context)
     {
         var httpContext = context.GetHttpContext();
-        var header = httpContext.Request.Headers["Authorization"].FirstOrDefault();
 
-        if (string.IsNullOrEmpty(header) || !header.StartsWith("Basic "))
-        {
-            SetChallengeResponse(httpContext);
-            return false;
-        }
-
-        try
-        {
-            var authHeader = AuthenticationHeaderValue.Parse(header);
-            var credentialBytes = Convert.FromBase64String(authHeader.Parameter ?? string.Empty);
-            var credentials = Encoding.UTF8.GetString(credentialBytes).Split(':', 2);
-
-            if (credentials.Length == 2 && credentials[0] == _user && credentials[1] == _password)
-            {
-                return true;
-            }
-        }
-        catch
-        {
-            // Invalid encoding or format
-        }
+        if (BasicCredentials.Match(httpContext.Request.Headers.Authorization.FirstOrDefault(), _user, _password))
+            return true;
 
         SetChallengeResponse(httpContext);
         return false;
