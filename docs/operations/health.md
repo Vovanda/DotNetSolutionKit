@@ -28,8 +28,14 @@ Both answer with the same body:
 ## Checks
 
 The checks are standard ASP.NET Core health checks. A generated service has the database (EF Core), and
-Hangfire and the message bus when it has them. A new dependency joins `/ready` by registering a check with
-the `ready` tag:
+Hangfire and the message bus when it has them.
+
+The bus has two checks. `masstransit-bus` is MassTransit's own and reports the receive endpoints; a
+service without consumers has none, so it stays healthy with the broker gone. `rabbitmq` opens a
+connection to the broker and keeps it between probes, so `/ready` answers 503 within one probe of the
+broker going away, and 200 again once it is back.
+
+A new dependency joins `/ready` by registering a check with the `ready` tag:
 
 ```csharp
 builder.Services.AddHealthChecks()

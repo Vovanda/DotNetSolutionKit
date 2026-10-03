@@ -3,6 +3,7 @@ using System.Reflection;
 using NamespaceRoot.ProductName.Common.Application.Configuration;
 using NamespaceRoot.ProductName.Common.Application.Messaging;
 using NamespaceRoot.ProductName.Common.Contracts;
+using NamespaceRoot.ProductName.Common.Contracts.Health;
 using NamespaceRoot.ProductName.Common.Domain.Messaging;
 using NamespaceRoot.ProductName.Common.Infrastructure.Configuration;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
@@ -92,6 +93,12 @@ public static class DependencyInjection
 
         services.ValidateOptions<RabbitMqSettings>(RabbitMqSettings.SectionName);
         services.AddScoped<IMessageBus, MassTransitMessageBus>();
+
+        // MassTransit's own check sees only receive endpoints; this one sees the broker.
+        services.AddHealthChecks().AddCheck(
+            "rabbitmq",
+            new RabbitMqConnectionHealthCheck(settings),
+            tags: [HealthConstants.ReadyTag]);
 
         // Diagnostic state + announcers — registered unconditionally so DI shape is stable.
         // The announcers themselves read Diagnostics:Messaging:LogStartup at runtime and
