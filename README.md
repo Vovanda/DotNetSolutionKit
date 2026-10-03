@@ -169,7 +169,18 @@ The schema, the layering, the endpoints, retiring a flag and frontend integratio
   registration when it is built.
 - `/healthz` and `/readyz` report the service name and build version; `/readyz` also checks the
   database connection.
-- Each service has a multi-stage Dockerfile.
+- One `Dockerfile` at the solution root builds every service. Its first stage holds only `Common`
+  and the build props, and each service adds only its own folder on top. A change in one service
+  rebuilds that service alone: every other image keeps its layers and digest, so a deploy restarts
+  only what changed. A change in `Common` rebuilds every service, with `Common` compiled once.
+
+  ```bash
+  docker build --provenance=false     --build-arg SERVICE=MyCompany.MyProduct.Billing     --build-arg GIT_SHA=$(git log -1 --format=%h -- src/common src/services/MyCompany.MyProduct.Billing '*.props' version.json)     -t billing .
+  ```
+
+  `GIT_SHA` is the last commit that changed the service's inputs, so an unchanged service gets the
+  same value and the same image; `/healthz` reports it as `commit`. `--provenance=false` leaves out
+  the build attestation, which carries a timestamp and would give every build a new digest.
 
 ## 4. After generation
 
