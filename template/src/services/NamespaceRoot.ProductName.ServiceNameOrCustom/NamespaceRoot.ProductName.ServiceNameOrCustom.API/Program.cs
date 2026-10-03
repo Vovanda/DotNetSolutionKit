@@ -1,11 +1,7 @@
 using System.Reflection;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
-using NamespaceRoot.ProductName.Common.Web.Errors;
-//#if (DiffApi)
 using NamespaceRoot.ProductName.Common.Web.Setup;
-//#endif
 using NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup;
-using NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup.Swagger;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework.DataSeeding;
 using Serilog;
@@ -58,40 +54,25 @@ try
         }
     }
 
-    // --- Middleware ---
-    app.UsePlatformTracing()
-        .UseLogging()
-        .UseWebServer()
-        .UseAppCors()
-        .UsePlatformErrorHandling();
-
+    // --- Middleware and endpoints, in the order the platform relies on (Common.Web) ---
 //#if (DiffApi)
     // Nothing to authenticate against on a schema-only run: the schemes were never registered.
-    if (!schemaOnly)
-    {
-        app.UseAppAuthentication().UseAppAuthorization();
-    }
-//#else
-    app.UseAppAuthentication().UseAppAuthorization();
-//#endif
-
-    app.UseSwaggerPage();
 //#if (Hangfire)
-//#if (DiffApi)
-
-    if (hangfireEnabled)
+    app.UsePlatformPipeline(typeof(Program).Assembly, authenticate: !schemaOnly, beforeEndpoints: pipeline =>
     {
-        app.UseAppHangfire();
-    }
+        if (hangfireEnabled)
+        {
+            pipeline.UseAppHangfire();
+        }
+    });
 //#else
-    app.UseAppHangfire();
+    app.UsePlatformPipeline(typeof(Program).Assembly, authenticate: !schemaOnly);
 //#endif
+//#elif (Hangfire)
+    app.UsePlatformPipeline(typeof(Program).Assembly, beforeEndpoints: pipeline => pipeline.UseAppHangfire());
+//#else
+    app.UsePlatformPipeline(typeof(Program).Assembly);
 //#endif
-
-    app.UseWebApi();
-
-    // --- Health checks ---
-    app.MapHealthEndpoints();
 
     // --- Application startup ---
     app.Run();

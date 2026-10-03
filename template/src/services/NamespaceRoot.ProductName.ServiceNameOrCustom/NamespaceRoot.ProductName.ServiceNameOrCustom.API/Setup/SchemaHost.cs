@@ -1,7 +1,5 @@
-//#if (DiffApi)
 using NamespaceRoot.ProductName.Common.Web.Setup;
-//#endif
-using NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup.Swagger;
+using NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup.Interceptors;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup;
 
@@ -31,7 +29,7 @@ public static class SchemaHost
         });
 
         // --- Logging configuration ---
-        builder.SetupLogging();
+        builder.AddPlatformLogging();
 //#if (DiffApi)
 
         var schemaOnly = SchemaOnlyMode.IsEnabled(args);
@@ -56,25 +54,33 @@ public static class SchemaHost
         // --- Application configuration ---
         builder.Configuration.SetupAppConfiguration(builder.Environment, args);
 
-        // --- Application services setup ---
-        builder.SetupWebApi()
-            .SetupAppServices()
-            .SetupHealthChecks()
-            .SetupSwaggerPage()
-            .SetupValidation()
-            .SetupCors();
+        // --- Web layer shared by every service (Common.Web), with this service's own MVC additions ---
+        builder.AddPlatformWebApi(typeof(SchemaHost).Assembly, mvc =>
+        {
+            mvc.AddMvcOptions(options => options.Filters.Add<PermissionAuthorizationFilter>());
+//#if (FeatureFlags)
+
+            // The feature list endpoint ships with the platform, so every service answers about flags
+            // the same way instead of each writing its own endpoint.
+            mvc.AddApplicationPart(typeof(Common.Web.FeatureManagement.FeaturesController).Assembly);
+//#endif
+        });
+
+        // --- This service's own registrations ---
+        builder.SetupAppServices()
+            .SetupHealthChecks();
 
 //#if (DiffApi)
         // Left out of a schema-only run: the handlers resolve services this mode does not register,
         // and WebApplication adds the authentication middleware itself once it sees the schemes.
         if (!schemaOnly)
         {
-            builder.SetupAppAuthentication().SetupAppAuthorization();
+            builder.SetupAppAuthentication();
         }
 
         builder.Services.RemoveStartupValidation(args);
 //#else
-        builder.SetupAppAuthentication().SetupAppAuthorization();
+        builder.SetupAppAuthentication();
 //#endif
 
         return builder.Build();

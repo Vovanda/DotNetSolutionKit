@@ -81,6 +81,11 @@ Parameters:
 - Repositories take queries as specifications and share one implementation of filtering, paging,
   sorting and includes in `EntityFrameworkRepository`. See
   [docs/repositories-on-specifications.md](docs/repositories-on-specifications.md).
+- The web layer of a service comes from `Common.Web`: `AddPlatformLogging`, `AddPlatformWebApi` and
+  `UsePlatformPipeline` register logging, JSON, errors, controllers, validation, Swagger and CORS and
+  build the pipeline in a fixed order. A service keeps only what is its own: configuration, its
+  registrations, health checks, its authentication handler and its database setup. A fix to the
+  pipeline reaches every service with a `Common` update.
 - Background jobs run on Hangfire, stored in PostgreSQL in a separate schema per service.
 
 ### Development
