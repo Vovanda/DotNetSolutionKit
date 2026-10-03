@@ -69,7 +69,10 @@ Parameters:
 - Swagger builds one document per API version; the versions are discovered from the routes, and XML
   comments become the descriptions.
 - `TestExecutionContext` in `Common.Tests` runs integration tests against a real DI container.
-- Nerdbank.GitVersioning derives the version from git history.
+- The version is set by hand in `version.json`, next to its release notes, and `Directory.Build.props`
+  passes it to every assembly. `/healthz` reports it together with the commit in a separate field:
+  the short git SHA recorded at build time, or `GIT_SHA` from the environment where the build had no
+  `.git` folder.
 - Package versions are declared once, in `src/Directory.Packages.props`; a `.csproj` references a
   package by name only. Every version stays on the .NET 8 line: no package pulls in .NET 9
   libraries, directly or transitively.
