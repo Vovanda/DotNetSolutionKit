@@ -1,4 +1,5 @@
 using System.Net.Sockets;
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
 using Npgsql;
 
 namespace NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
@@ -29,6 +30,16 @@ public static class PostgresSchemaGuard
         using var transaction = conn.BeginTransaction();
         try
         {
+            // Replicas of one service start together, and CREATE SCHEMA IF NOT EXISTS is not safe under
+            // concurrency: two sessions both see no schema, both create it, and the second fails on the
+            // catalogue's unique index (23505). One lock per schema, released with the transaction, makes
+            // the second replica wait and then find everything in place.
+            using (var cmd = new NpgsqlCommand("SELECT pg_advisory_xact_lock(@key)", conn, transaction))
+            {
+                cmd.Parameters.AddWithValue("key", MigrationRunner.ComputeLockKey($"schema-guard:{schemaName}"));
+                cmd.ExecuteNonQuery();
+            }
+
             // 1. Ensure the target schema exists
             using (var cmd = new NpgsqlCommand($"CREATE SCHEMA IF NOT EXISTS \"{schemaName}\";", conn, transaction))
             {
