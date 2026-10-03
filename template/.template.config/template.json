@@ -70,6 +70,29 @@
       "defaultValue": "false",
       "description": "Read secrets from Infisical: the shared folder and the service's folder overlay configuration"
     },
+    "HttpPort": {
+      "type": "parameter",
+      "datatype": "integer",
+      "description": "Port of the service in launchSettings.json; a free port from 5000-5999 when not given"
+    },
+    "HttpPortGenerated": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": {
+        "low": 5000,
+        "high": 5999,
+        "fallback": 5054
+      }
+    },
+    "HttpPortReplacer": {
+      "type": "generated",
+      "generator": "coalesce",
+      "parameters": {
+        "sourceVariableName": "HttpPort",
+        "fallbackVariableName": "HttpPortGenerated"
+      },
+      "replaces": "5054"
+    },
     "FeatureFlags": {
       "type": "parameter",
       "datatype": "bool",

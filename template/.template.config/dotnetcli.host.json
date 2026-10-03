@@ -9,6 +9,7 @@
     "Infisical": { "shortName": "I" },
     "Messaging": { "shortName": "" },
     "HierarchyRules": { "shortName": "" },
-    "FeatureFlags": { "shortName": "" }
+    "FeatureFlags": { "shortName": "" },
+    "HttpPort": { "shortName": "" }
   }
 }

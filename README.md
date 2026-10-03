@@ -57,6 +57,9 @@ Parameters:
 - `--HierarchyRules`: add access rules over a tenant tree stored as materialized paths
   (`IHierarchicalEntity`, `HierarchyRules`): whether a tenant may see another one in its subtree or
   among its direct children. Off by default; it lives in `Common`, so pass it with `-M false`.
+- `--HttpPort`: the port of the service in `launchSettings.json`. Without it the template picks a free
+  port from 5000-5999 on the machine that generates the service, so services generated one after
+  another do not share a port; pass it to choose one.
 - `--FeatureFlags`: add platform feature flags, described below. Off by default. Pass it with
   `-M false` for `Common`, and again to each service generated later that should read the flags.
 
