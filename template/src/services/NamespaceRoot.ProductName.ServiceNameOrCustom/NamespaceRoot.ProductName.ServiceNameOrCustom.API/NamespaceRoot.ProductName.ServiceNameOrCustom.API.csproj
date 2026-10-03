@@ -12,8 +12,10 @@
     <ItemGroup>
         <PackageReference Include="FluentValidation" />
         <!--#if (Hangfire) -->
+        <PackageReference Include="AspNetCore.HealthChecks.Hangfire" />
         <PackageReference Include="Hangfire.AspNetCore" />
         <!--#endif -->
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
         <PackageReference Include="Serilog.AspNetCore" />

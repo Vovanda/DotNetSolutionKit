@@ -58,11 +58,11 @@ RUN mkdir -p /app/https && chown -R 1000:1000 /app
 COPY --chown=1000:1000 --from=service /app/publish .
 USER 1000:1000
 
-# The commit the service was built from; reported by /healthz. Set last, so it only changes this layer.
+# The commit the service was built from; reported by /health. Set last, so it only changes this layer.
 ARG GIT_SHA=local
 ENV GIT_SHA=${GIT_SHA}
 
 HEALTHCHECK --interval=15s --timeout=3s --start-period=30s --retries=3 \
-    CMD curl -fsS http://localhost:8080/healthz || exit 1
+    CMD curl -fsS http://localhost:8080/health || exit 1
 
 ENTRYPOINT ["sh", "-c", "exec dotnet \"$(cat /app/.entrypoint)\""]

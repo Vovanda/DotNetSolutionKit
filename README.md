@@ -86,7 +86,7 @@ Parameters:
   comments become the descriptions.
 - `TestExecutionContext` in `Common.Tests` runs integration tests against a real DI container.
 - The version is set by hand in `version.json`, next to its release notes, and `Directory.Build.props`
-  passes it to every assembly. `/healthz` reports it together with the commit in a separate field:
+  passes it to every assembly. `/health` reports it together with the commit in a separate field:
   the short git SHA recorded at build time, or `GIT_SHA` from the environment where the build had no
   `.git` folder.
 - Package versions are declared once, in `src/Directory.Packages.props`; a `.csproj` references a
@@ -167,8 +167,11 @@ The schema, the layering, the endpoints, retiring a flag and frontend integratio
   validated with `ValidateOnStart`, a missing connection string throws, the schema guard refuses a
   schema owned by another service, and in the `Local` environment the container validates every
   registration when it is built.
-- `/healthz` and `/readyz` report the service name and build version; `/readyz` also checks the
-  database connection.
+- `/health` answers while the process runs and checks no dependency; `/ready` runs every check
+  tagged `ready` and answers 503 when one fails. Both report the service, the version with its
+  release notes, the commit and each check by name. The checks are standard ASP.NET Core health
+  checks: the database through EF Core, Hangfire and the message bus when the service has them; a
+  new dependency joins `/ready` by registering a check with the `ready` tag.
 - One `Dockerfile` at the solution root builds every service. Its first stage holds only `Common`
   and the build props, and each service adds only its own folder on top. A change in one service
   rebuilds that service alone: every other image keeps its layers and digest, so a deploy restarts
@@ -179,7 +182,7 @@ The schema, the layering, the endpoints, retiring a flag and frontend integratio
   ```
 
   `GIT_SHA` is the last commit that changed the service's inputs, so an unchanged service gets the
-  same value and the same image; `/healthz` reports it as `commit`. `--provenance=false` leaves out
+  same value and the same image; `/health` reports it as `commit`. `--provenance=false` leaves out
   the build attestation, which carries a timestamp and would give every build a new digest.
 
 ## 4. After generation

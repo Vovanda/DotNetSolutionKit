@@ -18,6 +18,11 @@
     <DisableTransitiveProjectReferences>true</DisableTransitiveProjectReferences>
   </PropertyGroup>
 
+  <!-- Web projects carry version.json next to their binaries, where VersionInfo reads it at runtime. -->
+  <ItemGroup Condition="'$(UsingMicrosoftNETSdkWeb)' == 'true'">
+    <None Include="$(VersionJsonPath)" Link="version.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <Target Name="AddGitCommitMetadata" BeforeTargets="GetAssemblyAttributes">
     <Exec Command="git rev-parse --short=7 HEAD"
           ConsoleToMSBuild="true"
