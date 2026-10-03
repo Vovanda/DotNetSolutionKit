@@ -1,6 +1,15 @@
 {
-  "version": "2.3.0",
+  "version": "2.4.0",
   "releaseNotes": {
+    "2.4.0": {
+      "headline": "Tokens in HttpOnly cookies with CSRF protection, set by the deployment instead of guessed.",
+      "highlights": [
+        "AuthCookies:SameSite and AuthCookies:ServedOverHttps state the deployment; SameSite=None without HTTPS, or with any CORS origin and credentials, refuses to start with what to change.",
+        "With AuthCookies:RequireCsrfHeader, a POST, PUT, PATCH or DELETE a token cookie would authenticate needs the X-CSRF header, or is refused with 403 CSRF_HEADER_MISSING; Authorization headers and API keys are not checked.",
+        "IssueTokenCookies, ReadRefreshTokenCookie and ClearTokenCookies cover login, refresh and logout; a rule test in a generated service fails when a response carries a token.",
+        "A service generated now has the section with Lax and the check on. Without it, as in an earlier solution, cookies behave as before; add the section once the frontend sends the header."
+      ]
+    },
     "2.3.0": {
       "headline": "A secret store outage is survivable, and one feature flag can be changed during it.",
       "highlights": [

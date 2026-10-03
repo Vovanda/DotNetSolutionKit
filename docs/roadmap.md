@@ -8,7 +8,6 @@ date.
 | What | Issue |
 |---|---|
 | `--ApiGateway`: Swagger of the services through the gateway, and permissions asked from a separate service | [#5](https://github.com/Vovanda/DotNetSolutionKit/issues/5) |
-| Cookie-only tokens, with CSRF protection for each deployment shape | [#6](https://github.com/Vovanda/DotNetSolutionKit/issues/6) |
 | A choice of test framework for a service's tests | |
 | A choice of database | |
 | A choice of secret store | |

@@ -49,6 +49,46 @@ receives the user and the permissions in headers that come with the internal API
 and the same `ClaimsPermissionService` check them. Permissions asked from a separate service are planned;
 see issue [#5](https://github.com/Vovanda/DotNetSolutionKit/issues/5).
 
+## Tokens in cookies
+
+A token in a response body ends up in the frontend's storage, where any script on the page can read it.
+The service that issues tokens puts them into HttpOnly cookies with `AuthCookieExtensions` instead:
+
+- login answers with the user and their permissions, and `IssueTokenCookies` sets the access and refresh
+  cookies;
+- refresh reads `ReadRefreshTokenCookie`, rotates both tokens into the cookies, and answers with an empty
+  body;
+- logout calls `ClearTokenCookies`; a token error clears both cookies too, and answers 401.
+
+The access cookie authenticates every request, read where no `Authorization` header is sent. A rule test
+in a generated service, `ResponseContractTests`, fails when an action returns a type with a property named
+`Token`, `AccessToken`, `RefreshToken`, `IdToken`, `Jwt` or `BearerToken`.
+
+What the cookie can be depends on where the frontend runs, and the browser decides it, not the service:
+
+| Frontend and API | HTTPS | `AuthCookies` | CSRF |
+|---|---|---|---|
+| same site: one domain, or subdomains of one; ports do not matter | either | `SameSite: Lax` | the browser keeps a Lax cookie off cross-site POSTs; the header check is a second layer |
+| different domains | yes | `SameSite: None`, `ServedOverHttps: true` | the header check is the protection: the cookie reaches cross-site requests |
+| different domains | no | not possible: the browser drops `SameSite=None` without `Secure` | put both behind one domain, a reverse proxy or the [gateway](../features/api-gateway.md), or serve HTTPS |
+
+`SameSite: None` without `ServedOverHttps` refuses to start, and so does `None` with `Cors:AllowedOrigins`
+`*` and credentials: any site could then send the cookie and the header.
+
+With `RequireCsrfHeader`, a POST, PUT, PATCH or DELETE that a token cookie would authenticate needs the
+`X-CSRF` header, any value, or is refused with 403 `CSRF_HEADER_MISSING`. A page on another origin cannot
+add a custom header without a CORS preflight, which only the allowed origins pass. A request with an
+`Authorization` header or an API key is not checked. The frontend sends the header on every such request:
+
+```ts
+fetch(url, { method: "POST", credentials: "include", headers: { "X-CSRF": "1" }, body })
+```
+
+A service generated from 2.4 has the section in `appsettings.json` with `Lax` and the check on. Without
+the section, as in a solution generated earlier, the cookies behave as they did: `SameSite=None` over
+HTTPS, `Lax` over HTTP, and no CSRF check. Such a solution turns the protection on by adding the section
+once its frontend sends the header.
+
 ## Calling another service
 
 A client the factory builds, typed or Refit, becomes a call to another service of the product with one
