@@ -34,13 +34,15 @@ flowchart LR
 ## Images
 
 ```bash
-deploy/build-images.sh                                         # every service, as local/<service>:latest
+deploy/build-images.sh                                         # every service, as local/<product>-<service>:latest
 deploy/build-images.sh Orders                                  # one service
 REGISTRY=registry.example.com TAG=1.4.0 PUSH=1 deploy/build-images.sh
 ```
 
-An image is named `<REGISTRY>/<service>:<TAG>`, the service in lower case with underscores for dots
-(`Sales.Orders` is `sales_orders`). `GIT_SHA` is the last commit that touched the service's inputs, so an
+An image is named `<REGISTRY>/<product>-<service>:<TAG>`, both in lower case with underscores for dots
+(`Retail.Shop` and `Sales.Orders` make `retail_shop-sales_orders`), so two solutions on one host do not
+take each other's `orders` image. The script reads the name from the service's own deploy files: a
+service generated before 2.1.3, named `<REGISTRY>/<service>`, keeps its name. `GIT_SHA` is the last commit that touched the service's inputs, so an
 unchanged service gets the same image; see [Docker](docker.md).
 
 ## docker compose

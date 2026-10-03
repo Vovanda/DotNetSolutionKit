@@ -29,6 +29,24 @@
       "replaces": "ProductName",
       "description": "Product name"
     },
+    "ProductNameLowerDotted": {
+      "type": "generated",
+      "generator": "casing",
+      "parameters": {
+        "source": "ProductName",
+        "toLower": true
+      }
+    },
+    "ProductNameLower": {
+      "type": "generated",
+      "generator": "regex",
+      "parameters": {
+        "source": "ProductNameLowerDotted",
+        "steps": [ { "regex": "\\.", "replacement": "_" } ]
+      },
+      "replaces": "productnamelower",
+      "description": "Lower-case product name with underscores for dots (Retail.Shop -> retail_shop), for image names, which two solutions on one host must not share"
+    },
     "ServiceNameOrCustom": {
       "type": "parameter",
       "datatype": "text",

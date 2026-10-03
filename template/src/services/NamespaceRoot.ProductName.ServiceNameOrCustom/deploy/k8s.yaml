@@ -28,7 +28,7 @@ spec:
         runAsUser: 1000
       containers:
         - name: service-name-kebab
-          image: __REGISTRY__/servicenameorcustom:__TAG__
+          image: __REGISTRY__/productnamelower-servicenameorcustom:__TAG__
           ports:
             - name: http
               containerPort: 8080
