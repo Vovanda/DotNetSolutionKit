@@ -254,8 +254,12 @@ ModelManifest.xml
 #rider files
 .idea/
 
-#ignore secrets
-*[Ss]ecret*
+# Files that hold secret values. Matched by file name, not by any path containing "secret":
+# code that handles secrets (a Secrets folder, secrets.md) has to stay in the repository.
+**/appsettings.Secrets.json
+**/appsettings.*.Secrets.json
+**/secrets.json
+**/*.secrets.json
 !template/**/appsettings.Secrets.json
 *certificates*
 *.env
