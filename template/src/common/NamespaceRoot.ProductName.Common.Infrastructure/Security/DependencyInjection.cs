@@ -12,8 +12,14 @@ public static class DependencyInjection
 
         services.AddScoped<IUserContext>(sp =>
         {
-            var http = sp.GetRequiredService<IHttpContextAccessor>();
-            return new HttpUserContext(http);
+            // Inside a background job or a consumer there are no claims to read, and asking
+            // HttpUserContext for a user id throws. Resolution order says what the caller actually
+            // is: an HTTP request, then a job or message carrying the actor that triggered it, then
+            // the system.
+            if (sp.GetRequiredService<IHttpContextAccessor>() is { HttpContext: not null } http)
+                return new HttpUserContext(http);
+
+            return JobActorContext.Actor ?? SystemUserContext.Instance;
         });
     }
     
