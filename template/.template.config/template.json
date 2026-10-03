@@ -53,6 +53,17 @@
       "defaultValue": "true",
       "description": "Background jobs on Hangfire, stored in PostgreSQL in the service's own schema, with the dashboard"
     },
+    "Messaging": {
+      "type": "parameter",
+      "datatype": "choice",
+      "defaultValue": "none",
+      "choices": [
+        { "choice": "none", "description": "No message bus" },
+        { "choice": "outbox", "description": "MassTransit on RabbitMQ; messages go through a transactional outbox in the service's database" },
+        { "choice": "direct", "description": "MassTransit on RabbitMQ; messages go straight to the broker and are lost if it is down" }
+      ],
+      "description": "Message bus for the service"
+    },
     "Infisical": {
       "type": "parameter",
       "datatype": "bool",

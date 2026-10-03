@@ -10,6 +10,9 @@ using Microsoft.Extensions.Options;
 using NamespaceRoot.ProductName.Common.Domain.Persistence;
 using NamespaceRoot.ProductName.Common.Domain.Specifications;
 using NamespaceRoot.ProductName.Common.Infrastructure.Configuration;
+//#if (Messaging != "none")
+using NamespaceRoot.ProductName.Common.Infrastructure.Messaging;
+//#endif
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework.DataSeeding;
@@ -48,6 +51,18 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<ServiceNameOrCustomDbContext>());
 
+//#if (Messaging == "outbox")
+        // The bus, with the outbox in this service's schema: a message and the change that caused it
+        // commit together. Consumers are found in this assembly.
+        services.AddMessaging<ServiceNameOrCustomDbContext>(
+            configuration, "servicenameorcustom", typeof(InfrastructureMarker).Assembly);
+
+//#elif (Messaging == "direct")
+        // The bus without an outbox: a message goes straight to RabbitMQ and is lost if the broker is
+        // down. Consumers are found in this assembly.
+        services.AddMessaging(configuration, "servicenameorcustom", typeof(InfrastructureMarker).Assembly);
+
+//#endif
         // Repositories
         
         // Specifications

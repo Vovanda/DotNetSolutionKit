@@ -1,6 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using NamespaceRoot.ProductName.Common.Domain.Persistence;
+//#if (Messaging == "outbox")
+using NamespaceRoot.ProductName.Common.Infrastructure.Messaging;
+//#endif
 using NamespaceRoot.ProductName.Common.Infrastructure.Repositories.EntityFramework;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
@@ -18,6 +21,11 @@ public class ServiceNameOrCustomDbContext(DbContextOptions<ServiceNameOrCustomDb
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.HasDefaultSchema(DefaultSchemaName);
+//#if (Messaging == "outbox")
+
+        // Outbox tables in this service's schema: a message is stored with the change that caused it
+        modelBuilder.AddTransactionalOutbox(DefaultSchemaName);
+//#endif
 
         // Automatic registration of configurations from assembly
         modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);

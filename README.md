@@ -46,6 +46,10 @@ Parameters:
   only the service folder.
 - `--Hangfire false`: no background jobs. By default each service gets Hangfire, stored in PostgreSQL
   in its own schema, with the dashboard; the flag works per service, also with `-M true`.
+- `--Messaging none|outbox|direct`: message bus for the service, `none` by default. `outbox` wires
+  MassTransit on RabbitMQ with a transactional outbox in the service's database; `direct` sends straight
+  to the broker, and a message is lost if the broker is down. See
+  [Messaging/README.md](template/src/common/NamespaceRoot.ProductName.Common.Infrastructure/Messaging/README.md).
 - `-I` (Infisical): read secrets from Infisical. The shared folder and the service's folder overlay
   configuration, so code reads a secret like any other setting. Pass it together with `-M false`, since
   the secret store lives in `Common`; a service generated later with `-I` uses it from there.
