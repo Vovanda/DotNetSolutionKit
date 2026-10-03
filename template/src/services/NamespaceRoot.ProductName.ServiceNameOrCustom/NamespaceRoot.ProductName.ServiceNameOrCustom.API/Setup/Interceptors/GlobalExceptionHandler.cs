@@ -64,6 +64,8 @@ internal sealed class GlobalExceptionHandler(
 
             UnauthorizedAccessException ex => ErrorResponseHelper.Unauthorized(ex.Message, ErrorConstants.Codes.Unauthorized),
 
+            BadRequestException ex => ErrorResponseHelper.BadRequest(ex.Message, ex.ErrorCode ?? ErrorConstants.Codes.BadRequest),
+
             AccessDeniedException ex => ErrorResponseHelper.Forbidden(ex.Message, ex.ErrorCode ?? ErrorConstants.Codes.Forbidden),
 
             NotFoundException ex => ErrorResponseHelper.NotFound(ex.Message),
@@ -85,6 +87,8 @@ internal sealed class GlobalExceptionHandler(
                 },
 
             RateLimitException ex => ErrorResponseHelper.TooManyRequests(ex.Message),
+
+            ServiceUnavailableException ex => ErrorResponseHelper.ServiceUnavailable(ex.Message, ex.ErrorCode),
 
             _ => environment.IsProduction()
                 ? ErrorResponseHelper.InternalServerError()
