@@ -1,5 +1,7 @@
 # DotNetSolutionKit
 
+Made by [SawKing Tech](https://sawking.tech/). Author: Vladimir Savkin.
+
 > **Version 2 breaks version 1. Do not apply this template with `--force` over a solution generated from
 > v1:** namespaces, project references, package management, versioning and the shape of error responses
 > changed, and the overwritten solution will not build. Use v2 for new solutions; port changes into
