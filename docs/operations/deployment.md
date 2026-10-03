@@ -97,8 +97,19 @@ flowchart LR
   the version still running: add first, remove in a later release.
 - It needs docker compose 2.24 or later, for the `!reset` in the override it generates.
 
-Checked under continuous requests to the edge: a deploy and a rollback, 39 and 33 requests, all
-answered 200, each ending on the expected commit.
+When something fails, the color that was serving keeps serving:
+
+- A color that does not become ready is stopped, and its last log lines are printed; the edge and the
+  recorded active color are not touched.
+- When the edge does not answer `/ready` after the switch, it is pointed back at the previous color.
+- `up` reconnects the infrastructure to both colors' networks: a changed setting or image recreates an
+  infrastructure container, and without it the running color would lose its database.
+- One run at a time: a second `up` or `rollback` while one runs refuses to start. A lock left by a run
+  that was killed is taken over.
+
+Checked under continuous requests to the edge: a deploy and a rollback, 321 requests, all answered 200.
+Checked by breaking it: a color that cannot reach its database, an edge that does not answer after the
+switch, two runs at once and a lock left behind.
 
 ## Kubernetes
 

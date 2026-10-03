@@ -1,6 +1,15 @@
 {
-  "version": "2.1.1",
+  "version": "2.1.2",
   "releaseNotes": {
+    "2.1.2": {
+      "headline": "Blue-green keeps the serving color serving when a deploy fails.",
+      "highlights": [
+        "Fixed: when the edge did not answer after the switch, bluegreen.sh exited with the edge left on the new color; it now points the edge back at the previous one.",
+        "Fixed: an infrastructure container recreated during up, by a changed setting or image, left the running color without its database; both colors are reconnected.",
+        "A color that does not become ready is stopped and its last log lines printed; the active color is not touched.",
+        "One bluegreen.sh run at a time; a lock left by a killed run is taken over."
+      ]
+    },
     "2.1.1": {
       "headline": "Services are added to All.sln without a terminal too.",
       "highlights": [
