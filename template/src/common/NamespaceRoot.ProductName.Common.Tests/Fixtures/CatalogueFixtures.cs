@@ -4,7 +4,10 @@ using NamespaceRoot.ProductName.Common.Domain.Context;
 using NamespaceRoot.ProductName.Common.Domain.Events;
 using NamespaceRoot.ProductName.Common.Domain.Persistence;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
+using NamespaceRoot.ProductName.Common.Domain.Querying;
 
+// Shouldly ships a SortDirection of its own, and the global usings bring it into every test file.
+using SortDirection = NamespaceRoot.ProductName.Common.Domain.Querying.SortDirection;
 
 namespace NamespaceRoot.ProductName.Common.Tests.Fixtures;
 
@@ -83,3 +86,37 @@ public class CatalogueDbContext : DbContextBase
     public DbSet<Region> Regions => Set<Region>();
 }
 
+/// <summary>
+/// A repository written the way a service is expected to write one: it declares what may be sorted by and
+/// adds nothing else.
+/// </summary>
+public class PlanRepository : EntityFrameworkRepository<Plan, Guid, CatalogueDbContext>
+{
+    public PlanRepository(CatalogueDbContext context)
+        : base(context)
+    {
+    }
+
+    protected override IReadOnlyDictionary<string, string> SortFields { get; } =
+        new Dictionary<string, string>
+        {
+            ["name"] = nameof(Plan.Name),
+            ["price"] = nameof(Plan.PriceMinor),
+        };
+
+    protected override string DefaultSortField => nameof(Plan.Name);
+}
+
+/// <summary>
+/// The request shape a controller would bind: page, size, sort field and direction in one object.
+/// </summary>
+public sealed record PageRequest : IPaginationRequest, ISortableRequest
+{
+    public int Page { get; init; }
+
+    public int PageSize { get; init; }
+
+    public string? SortBy { get; init; }
+
+    public SortDirection SortDir { get; init; }
+}

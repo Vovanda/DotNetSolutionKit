@@ -78,6 +78,9 @@ Parameters:
   interceptors. See [Events/Readme.md](template/src/common/NamespaceRoot.ProductName.Common.Application/Events/Readme.md).
 - Persistence is EF Core on PostgreSQL. Each service owns its schema, and a guard refuses to start a
   service on a schema another service has claimed.
+- Repositories take queries as specifications and share one implementation of filtering, paging,
+  sorting and includes in `EntityFrameworkRepository`. See
+  [docs/repositories-on-specifications.md](docs/repositories-on-specifications.md).
 - Background jobs run on Hangfire, stored in PostgreSQL in a separate schema per service.
 
 ### Development
