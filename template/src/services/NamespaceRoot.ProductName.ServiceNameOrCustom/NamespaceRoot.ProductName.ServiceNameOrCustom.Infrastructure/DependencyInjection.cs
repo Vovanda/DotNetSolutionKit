@@ -18,6 +18,9 @@ using NamespaceRoot.ProductName.Common.Infrastructure.Messaging;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
+//#if (Storage)
+using NamespaceRoot.ProductName.Common.Infrastructure.Storage;
+//#endif
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Application;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework.DataSeeding;
@@ -100,6 +103,11 @@ public static class DependencyInjection
         // Readable numbers from a sequence, taken before the entity is created
         services.AddScoped<IShortIdGenerator, PostgresShortIdGenerator<ServiceIdentifierDbContext>>();
         
+//#if (Storage)
+        // Object storage, the S3 section; S3:Enabled=false keeps nothing
+        services.AddS3ObjectStorage(configuration);
+
+//#endif
         // Configurations
         services.AddInfrastructureConfiguration();
         
