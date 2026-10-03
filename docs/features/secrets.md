@@ -67,12 +67,12 @@ sent through the broker can change things quietly.
 
 The alternatives considered:
 
-- **HashiCorp Vault.** Mature and widely integrated, but its licence is no longer open source, and it
+- HashiCorp Vault. Mature and widely integrated, but its licence is no longer open source, and it
   brings enterprise complexity for a team that needs a store of secrets and settings.
-- **OpenBao**, the open-source fork of Vault under MPL-2.0. The licence problem is gone; the complexity
+- OpenBao, the open-source fork of Vault under MPL-2.0. The licence problem is gone; the complexity
   stays.
-- **Infisical.** Open source, simpler, and noticeably lighter to run than Vault, which matters for a team
-  that hosts it itself.
+- Infisical. Open source, simpler, and noticeably lighter to run than Vault, for a team that hosts it
+  itself.
 
 The template reads the store through a port, so another store can be added later; see the
 [roadmap](../roadmap.md).

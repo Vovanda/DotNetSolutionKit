@@ -37,17 +37,17 @@ BackgroundJob.Enqueue<ExpireUnpaidOrdersJob>(job => job.ExecuteAsync());
 
 What the template adds to plain Hangfire:
 
-- **Domain events work in jobs.** `DomainEventJobActivator` gives each job a scope the domain event
+- Domain events work in jobs. `DomainEventJobActivator` gives each job a scope the domain event
   interceptors can see, so events raised by a job are dispatched as in a request.
-- **The actor travels with the job.** `JobActorPropagationFilter` records who enqueued a job and restores
+- The actor travels with the job. `JobActorPropagationFilter` records who enqueued a job and restores
   that user while the job runs, so what the job writes is attributed to them. A scheduled run has no such
   user and runs as the system. A job that acts on its own account even when someone enqueued it takes
   its context from `ISystemExecutionContextFactory.Create()`.
-- **The correlation travels with every job.** The same filter records the trace and the
+- The correlation travels with every job. The same filter records the trace and the
   [correlation identifier](../architecture/web-layer.md#correlation) of the work that enqueued the job,
   so its log lines are found with the request's. A scheduled run starts a trace of its own and is
   correlated by it.
-- **`/ready` checks Hangfire.** The health check fails when no Hangfire server is running.
+- `/ready` checks Hangfire: the health check fails when no Hangfire server is running.
 
 ## Why Hangfire
 
