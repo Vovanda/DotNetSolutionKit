@@ -11,7 +11,9 @@
 
     <ItemGroup>
         <PackageReference Include="FluentValidation" />
+        <!--#if (Hangfire) -->
         <PackageReference Include="Hangfire.AspNetCore" />
+        <!--#endif -->
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
         <PackageReference Include="Serilog.AspNetCore" />

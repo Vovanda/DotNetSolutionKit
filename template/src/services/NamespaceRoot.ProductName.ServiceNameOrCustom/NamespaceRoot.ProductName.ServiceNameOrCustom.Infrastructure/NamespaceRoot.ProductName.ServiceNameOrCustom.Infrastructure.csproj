@@ -21,9 +21,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!--#if (Hangfire) -->
         <PackageReference Include="Hangfire.AspNetCore" />
         <PackageReference Include="Hangfire.Console" />
         <PackageReference Include="Hangfire.PostgreSql" />
+        <!--#endif -->
         <PackageReference Include="Microsoft.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
             <PrivateAssets>all</PrivateAssets>

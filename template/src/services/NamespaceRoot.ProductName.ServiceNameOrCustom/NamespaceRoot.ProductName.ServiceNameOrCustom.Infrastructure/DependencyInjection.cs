@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+//#if (Hangfire)
 using Hangfire;
 using Hangfire.PostgreSql;
+//#endif
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,9 +56,11 @@ public static class DependencyInjection
         // Configurations
         services.AddInfrastructureConfiguration();
         
+//#if (Hangfire)
         // Background jobs
         services.AddBackgroundJobs(connectionString);
 
+//#endif
         // Data Seeding
         services.AddScoped<DataSeeder>();
         
@@ -65,6 +69,7 @@ public static class DependencyInjection
         return services;
     }
 
+//#if (Hangfire)
     /// <summary>
     /// Register Hangfire and background job services.
     /// </summary>
@@ -95,16 +100,18 @@ public static class DependencyInjection
 
         return services;
     }
-    
+//#endif
+
     /// <summary>
     /// Register and validate infrastructure configuration settings.
     /// </summary>
     /// <param name="services">Service collection.</param>
     private static void AddInfrastructureConfiguration(this IServiceCollection services)
     {
-        services
-            .AddValidatedOptions<ICorsSettings, CorsSettings>(CorsSettings.SectionName)
-            .AddValidatedOptions<IHangfireSettings, HangfireSettings>(HangfireSettings.SectionName);
+        services.AddValidatedOptions<ICorsSettings, CorsSettings>(CorsSettings.SectionName);
+//#if (Hangfire)
+        services.AddValidatedOptions<IHangfireSettings, HangfireSettings>(HangfireSettings.SectionName);
+//#endif
     }
     
     /// <summary>

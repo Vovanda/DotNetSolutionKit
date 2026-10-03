@@ -39,6 +39,8 @@ Parameters:
 - `-S` (ServiceNameOrCustom): service name; a dotted name such as `Domain.Service` works too.
 - `-M` (Minimal): `false` generates the full kit (`Common` projects and `All.sln`), `true` (default)
   only the service folder.
+- `--Hangfire false`: no background jobs. By default each service gets Hangfire, stored in PostgreSQL
+  in its own schema, with the dashboard; the flag works per service, also with `-M true`.
 - `-I` (Infisical): read secrets from Infisical. The shared folder and the service's folder overlay
   configuration, so code reads a secret like any other setting. Pass it together with `-M false`, since
   the secret store lives in `Common`; a service generated later with `-I` uses it from there.

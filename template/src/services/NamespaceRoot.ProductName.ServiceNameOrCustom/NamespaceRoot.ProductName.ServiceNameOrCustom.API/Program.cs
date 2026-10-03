@@ -66,7 +66,9 @@ try
         .UseAppAuthentication()
         .UseAppAuthorization()
         .UseSwaggerPage()
+//#if (Hangfire)
         .UseAppHangfire()
+//#endif
         .UseWebApi();
 
     // --- Health checks ---

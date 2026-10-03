@@ -46,6 +46,12 @@
       "replaces": "servicenameorcustom",
       "description": "Lower-case service name, used where a path is expected, such as the Infisical folder"
     },
+    "Hangfire": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Background jobs on Hangfire, stored in PostgreSQL in the service's own schema, with the dashboard"
+    },
     "Infisical": {
       "type": "parameter",
       "datatype": "bool",
@@ -73,6 +79,13 @@
           "rename": {
             ".gitignore.template": ".gitignore"
           }
+        },
+        {
+          "condition": "(!Hangfire)",
+          "exclude": [
+            "**/Setup/BackgroundJobsSetup.cs",
+            "**/Security/Filters/HangfireAdminAuthorizationFilter.cs"
+          ]
         },
         {
           "condition": "(!Infisical)",
@@ -103,6 +116,13 @@
         {
           "condition": "(!Minimal)",
           "exclude": ["**/*"]
+        },
+        {
+          "condition": "(!Hangfire)",
+          "exclude": [
+            "**/Setup/BackgroundJobsSetup.cs",
+            "**/Security/Filters/HangfireAdminAuthorizationFilter.cs"
+          ]
         },
         {
           "exclude": [
