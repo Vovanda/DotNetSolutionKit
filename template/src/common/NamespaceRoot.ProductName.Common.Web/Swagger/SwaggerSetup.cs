@@ -1,3 +1,4 @@
+using System.Xml.XPath;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -106,8 +107,14 @@ public static class SwaggerSetup
 
             var xmlFile = $"{serviceAssembly.GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            // Read through a stream: given a path, the XML reader resolves it as a URI, and a Windows path
+            // longer than 260 characters fails to parse as one.
             if (File.Exists(xmlPath))
-                options.IncludeXmlComments(xmlPath, true);
+                options.IncludeXmlComments(() =>
+                {
+                    using var stream = File.OpenRead(xmlPath);
+                    return new XPathDocument(stream);
+                }, true);
 
             options.DescribeAllParametersInCamelCase();
             options.SupportNonNullableReferenceTypes();
