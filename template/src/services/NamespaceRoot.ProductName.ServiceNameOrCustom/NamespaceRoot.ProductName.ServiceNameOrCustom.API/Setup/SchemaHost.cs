@@ -1,5 +1,4 @@
 using NamespaceRoot.ProductName.Common.Web.Setup;
-using NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup.Interceptors;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup;
 
@@ -57,9 +56,7 @@ public static class SchemaHost
         // --- Web layer shared by every service (Common.Web), with this service's own MVC additions ---
         builder.AddPlatformWebApi(typeof(SchemaHost).Assembly, mvc =>
         {
-            mvc.AddMvcOptions(options => options.Filters.Add<PermissionAuthorizationFilter>());
 //#if (FeatureFlags)
-
             // The feature list endpoint ships with the platform, so every service answers about flags
             // the same way instead of each writing its own endpoint.
             mvc.AddApplicationPart(typeof(Common.Web.FeatureManagement.FeaturesController).Assembly);

@@ -3,7 +3,10 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using NamespaceRoot.ProductName.Common.Application.Authorization;
 using NamespaceRoot.ProductName.Common.Infrastructure.Security;
+using NamespaceRoot.ProductName.Common.Web.Authorization;
 using NamespaceRoot.ProductName.Common.Web.Errors;
 using NamespaceRoot.ProductName.Common.Web.Health;
 using NamespaceRoot.ProductName.Common.Web.Swagger;
@@ -21,7 +24,8 @@ namespace NamespaceRoot.ProductName.Common.Web.Setup;
 public static class PlatformWebHost
 {
     /// <summary>
-    /// Registers JSON, error handling, controllers, validation, Swagger, CORS and the execution context.
+    /// Registers JSON, error handling, controllers with the permission check, validation, Swagger, CORS
+    /// and the execution context.
     /// </summary>
     /// <param name="builder">The service's builder.</param>
     /// <param name="serviceAssembly">The service's API assembly: its validators, controllers' versions
@@ -37,8 +41,12 @@ public static class PlatformWebHost
         // Errors are RFC 9457 problems with a correlation identifier; see Common.Web/Errors.
         builder.Services.AddPlatformErrorHandling(builder.Environment);
 
-        var mvc = builder.Services.AddControllers();
+        // Every action marked [RequiredPermissions] is checked; the permissions come from the token
+        // unless the service registers its own IPermissionService.
+        var mvc = builder.Services.AddControllers(options => options.Filters.Add<PermissionAuthorizationFilter>());
         configureMvc?.Invoke(mvc);
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.TryAddScoped<IPermissionService, ClaimsPermissionService>();
 
         builder.Services.AddValidation(serviceAssembly);
         builder.SetupSwaggerPage(serviceAssembly);
