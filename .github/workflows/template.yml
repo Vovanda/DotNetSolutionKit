@@ -1,0 +1,134 @@
+name: Template
+
+# Generates solutions from this commit of the template, one per combination of flags, and checks that
+# each builds and passes its tests. Each flag is on in at least one combination, so a change that breaks
+# a combination fails here instead of in a team's first generation.
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: defaults
+            first: -N Acme -P Shop -S Orders -M false
+          - name: every flag, three services
+            first: >-
+              -N Acme -P Shop -S Orders -M false --Messaging outbox -I true --DiffApi true --FeatureFlags true
+              --HierarchyRules true --Storage true --ClickHouse true --GitHubCiCd true
+            # Flags that change a service's code are passed again to a later service, as the docs say.
+            more: -N Acme -P Shop -S Billing --Messaging outbox -I true --DiffApi true --FeatureFlags true --Storage true --ClickHouse true
+            gateway: -N Acme -P Shop -S Gateway --ApiGateway true
+            integration: true
+          - name: no background jobs
+            first: -N Acme -P Shop -S Orders -M false -H false
+            more: -N Acme -P Shop -S Billing -H false
+          - name: direct bus
+            first: -N Acme -P Shop -S Orders -M false --Messaging direct
+          - name: dotted names
+            first: -N Acme.Corp -P Retail.Shop -S Sales.Orders -M false --Messaging outbox --DiffApi true
+            more: -N Acme.Corp -P Retail.Shop -S Sales.Billing --Messaging outbox --DiffApi true
+          - name: kubernetes files
+            first: -N Acme -P Shop -S Orders -M false --Deploy k8s
+            more: -N Acme -P Shop -S Billing --Deploy k8s
+          - name: no deployment files
+            first: -N Acme -P Shop -S Orders -M false --Deploy none
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('template/**/*.csproj', 'template/**/Directory.Packages.props') }}
+          restore-keys: ${{ runner.os }}-nuget-
+
+      - name: Install the template from this commit
+        run: dotnet new install ./template
+
+      - name: Generate
+        working-directory: ${{ runner.temp }}
+        run: |
+          mkdir solution && cd solution
+          dotnet new DotNetSolutionKit ${{ matrix.first }}
+          if [ -n "${{ matrix.more }}" ]; then dotnet new DotNetSolutionKit ${{ matrix.more }}; fi
+          if [ -n "${{ matrix.gateway }}" ]; then dotnet new DotNetSolutionKit ${{ matrix.gateway }}; fi
+          bash src/services/manual-add-projects.sh
+          dotnet sln src/services/*.All.sln list
+
+      - name: Build
+        working-directory: ${{ runner.temp }}/solution
+        run: dotnet build src/services/*.All.sln --configuration Release
+
+      - name: Unit tests
+        working-directory: ${{ runner.temp }}/solution
+        run: dotnet test src/services/*.All.sln --configuration Release --no-build --filter "TestCategory!=Integration"
+
+      # The integration tests of the combination with every server the template knows. The same
+      # servers and settings as the generated ci.yml.
+      - name: Start the test servers
+        if: matrix.integration
+        run: |
+          docker run -d --name tests-pg -p 5432:5432 -e POSTGRES_PASSWORD=test-do-not-use \
+            --tmpfs /var/lib/postgresql/data:rw,size=2g postgres:16-alpine \
+            -c fsync=off -c synchronous_commit=off -c full_page_writes=off -c max_wal_size=512MB -c autovacuum=off
+          docker run -d --name tests-ch -p 8123:8123 -e CLICKHOUSE_USER=tester -e CLICKHOUSE_PASSWORD=test-do-not-use \
+            -e CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1 clickhouse/clickhouse-server:24.8-alpine
+          docker run -d --name tests-s3 -p 8333:8333 -e AWS_ACCESS_KEY_ID=tester -e AWS_SECRET_ACCESS_KEY=test-do-not-use \
+            chrislusf/seaweedfs server -s3 -dir=/data
+          for attempt in $(seq 1 60); do
+            ready=1
+            docker exec tests-pg pg_isready -U postgres >/dev/null 2>&1 || ready=0
+            curl -fsS http://localhost:8123/ping >/dev/null 2>&1 || ready=0
+            echo "s3.bucket.create -name tests" | docker exec -i tests-s3 weed shell -master=localhost:9333 2>&1 \
+              | grep -qE 'created|exists' || ready=0
+            [ $ready = 1 ] && exit 0
+            sleep 1
+          done
+          exit 1
+
+      - name: Integration tests
+        if: matrix.integration
+        working-directory: ${{ runner.temp }}/solution
+        env:
+          TEST_POSTGRES: Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=test-do-not-use
+          TEST_CLICKHOUSE: Host=localhost;Port=8123;Username=tester;Password=test-do-not-use
+          TEST_S3: ServiceUrl=http://localhost:8333;Bucket=tests;AccessKey=tester;SecretKey=test-do-not-use
+        run: dotnet test src/services/*.All.sln --configuration Release --no-build --filter "TestCategory=Integration"
+
+  # Names that must not appear in the template. The list is a repository secret, LEAK_PATTERN (an extended
+  # regular expression), so the check does not publish the names it guards. Without the secret, as in a
+  # fork, the check is skipped.
+  leaks:
+    name: Denied names
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Search
+        env:
+          LEAK_PATTERN: ${{ secrets.LEAK_PATTERN }}
+        run: |
+          if [ -z "$LEAK_PATTERN" ]; then
+            echo "::notice::LEAK_PATTERN is not set; skipped."
+            exit 0
+          fi
+          if grep -rniE --exclude-dir=.git "$LEAK_PATTERN" . > "$RUNNER_TEMP/found.txt"; then
+            echo "::error::$(wc -l < "$RUNNER_TEMP/found.txt") lines match LEAK_PATTERN; the file names follow, the lines are not printed"
+            cut -d: -f1,2 "$RUNNER_TEMP/found.txt"
+            exit 1
+          fi
