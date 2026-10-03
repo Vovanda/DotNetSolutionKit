@@ -1,153 +1,125 @@
 # Controller Development Guide
 
+The template ships no controllers: every service adds its own. This guide shows the shape they take.
+`Sample*` below is an illustration, not code that exists in the template.
+
+## Controller
+
 ```csharp
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NamespaceRoot.ProductName.Common.Application.Authorization;
+using NamespaceRoot.ProductName.Common.Contracts.ServiceNameOrCustomService.Samples;
+using NamespaceRoot.ProductName.Common.Contracts.ServiceNameOrCustomService.Samples.Models;
 using NamespaceRoot.ProductName.Common.Web.Authorization;
-using NamespaceRoot.ProductName.ServiceNameOrCustom.Application.Services.Sample;
-using NamespaceRoot.ProductName.ServiceNameOrCustom.Common.Contracts.Sample;
+using NamespaceRoot.ProductName.ServiceNameOrCustom.Application.Services.Samples;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.API.Controllers;
 
 /// <summary>
-/// Sample controller for managing samples
+/// Manages samples.
 /// </summary>
 [ApiController]
-[Authorize]                                    
-[Route(SampleControllerRoutes.SampleControllerRoot)] // ✅ MUST use route constants with version
-public class SampleController : ControllerBase
+[Authorize]
+[Route(SampleRoutes.SamplesRoot)]
+public class SamplesController : ControllerBase
 {
     private readonly ISampleService _sampleService;
 
     /// <summary>
-    /// Initializes a new instance of the SampleController
+    /// Initializes a new instance of the <see cref="SamplesController"/>.
     /// </summary>
-    public SampleController(ISampleService sampleService)
+    public SamplesController(ISampleService sampleService)
     {
         _sampleService = sampleService;
     }
 
     /// <summary>
-    /// Retrieves all samples in the system
+    /// Returns the samples matching the filter.
     /// </summary>
-    /// <param name="filter">Filter criteria for samples</param>
-    [HttpGet(SampleControllerRoutes.GetAllSamples)] // ✅ Route constant
-    [RequiredPermissions(AppPermissions.SamplePermission.View)] 
-    [ProducesResponseType(StatusCodes.Status200OK)] 
+    /// <param name="filter">Filter criteria.</param>
+    [HttpGet(SampleRoutes.GetAllSamples)]
+    [RequiredPermissions(SamplePermissions.View)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public Task<GetAllSamplesResponse> GetAllSamples([FromQuery] SampleFilter filter)
     {
-        return _sampleService.GetAllSamplesAsync(filter, HttpContext.RequestAborted); // ✅ No async/await
+        return _sampleService.GetAllSamplesAsync(filter, HttpContext.RequestAborted);
     }
 
     /// <summary>
-    /// Retrieves a specific sample by ID
+    /// Returns one sample.
     /// </summary>
-    /// <param name="id">Sample identifier</param>
-    [HttpGet(SampleControllerRoutes.GetSampleById)] 
-    [RequiredPermissions(AppPermissions.SamplePermission.View)]
+    /// <param name="id">Sample identifier.</param>
+    [HttpGet(SampleRoutes.GetSampleById)]
+    [RequiredPermissions(SamplePermissions.View)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public Task<GetSampleResponse> GetSampleById([FromRoute] Guid id)
     {
-        return _sampleService.GetSampleByIdAsync(id, HttpContext.RequestAborted); // ✅ Direct Task return
+        return _sampleService.GetSampleByIdAsync(id, HttpContext.RequestAborted);
     }
 
     /// <summary>
-    /// Creates a new sample
+    /// Creates a sample.
     /// </summary>
-    /// <param name="request">Sample creation data</param>
-    [HttpPost(SampleControllerRoutes.CreateSample)] 
-    [RequiredPermissions(AppPermissions.SamplePermission.Create)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status201Created)] // ✅ 201 for POST
+    /// <param name="request">Sample data.</param>
+    [HttpPost(SampleRoutes.CreateSample)]
+    [RequiredPermissions(SamplePermissions.Create)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public Task<CreateSampleResponse> CreateSample([FromBody] CreateSampleRequest request)
     {
-        return _sampleService.CreateSampleAsync(request, HttpContext.RequestAborted); // ✅ Specific response type
-    }
-
-    /// <summary>
-    /// Updates an existing sample
-    /// </summary>
-    /// <param name="id">Sample identifier</param>
-    /// <param name="request">Sample update data</param>
-    [HttpPut(SampleControllerRoutes.UpdateSample)]
-    [RequiredPermissions(AppPermissions.SamplePermission.Edit)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public Task<UpdateSampleResponse> UpdateSample(
-        [FromRoute] Guid id, 
-        [FromBody] UpdateSampleRequest request)
-    {
-        return _sampleService.UpdateSampleAsync(id, request, HttpContext.RequestAborted);
-    }
-
-    /// <summary>
-    /// Deletes a sample
-    /// </summary>
-    /// <param name="id">Sample identifier</param>
-    [HttpDelete(SampleControllerRoutes.DeleteSample)]
-    [RequiredPermissions(AppPermissions.SamplePermission.Delete)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public Task<DeleteSampleResponse> DeleteSample([FromRoute] Guid id)
-    {
-        return _sampleService.DeleteSampleAsync(id, HttpContext.RequestAborted);
+        return _sampleService.CreateSampleAsync(request, HttpContext.RequestAborted);
     }
 }
 ```
 
-## Route Constants (Required)
+## Route constants
+
+Routes live in `Common.Contracts`, next to the request and response models, so a client of the
+service and the service itself read the same strings:
 
 ```csharp
-namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Common.Contracts.Sample;
+namespace NamespaceRoot.ProductName.Common.Contracts.ServiceNameOrCustomService.Samples;
 
 /// <summary>
-/// Sample controller API endpoints
+/// Samples API endpoints.
 /// </summary>
-public static class SampleControllerRoutes
+public static class SampleRoutes
 {
     private const string ApiWithVersion = "/api/v1/";
 
-    /// <summary>Sample controller root</summary>
-    public const string SampleControllerRoot = ApiWithVersion + "samples";
-    
-    /// <summary>Get all samples</summary>
+    /// <summary>Samples root.</summary>
+    public const string SamplesRoot = ApiWithVersion + "samples";
+
+    /// <summary>Get all samples.</summary>
     public const string GetAllSamples = "";
-    
-    /// <summary>Get sample by ID</summary>
+
+    /// <summary>Get a sample by id.</summary>
     public const string GetSampleById = "{id}";
-    
-    /// <summary>Create sample</summary>
+
+    /// <summary>Create a sample.</summary>
     public const string CreateSample = "";
-    
-    /// <summary>Update sample</summary>
-    public const string UpdateSample = "{id}";
-    
-    /// <summary>Delete sample</summary>
-    public const string DeleteSample = "{id}";
 }
 ```
 
-## Key Rules Summary
+## Rules
 
-1. **Route Constants**: ✅ Always use `*ControllerRoutes` with version in path
-2. **No async/await**: ✅ Return `Task<T>` directly from service calls
-3. **Specific Response Types**: ✅ No `IActionResult`, return concrete types
-4. **Response Envelope**: ✅ Use Automatic wrapping by filter, no manual `ApiResponse<T>`
-5. **XML Documentation**: ✅ Swagger summaries and param docs for all methods
-6. **Response Status Codes**: ✅ Appropriate codes for each operation (201 POST, 404 GET, etc.)
-7. **Error Handling**: ✅ Global middleware, no try-catch in controllers
-8. **Route Attributes**: ✅ Use route constants in `[HttpGet]`, `[HttpPost]`, etc.
-9. **Versioning**: ✅ Version included in route constants (`/api/v1/`)
+1. Routes come from constants in `Common.Contracts`, with the version in the path (`/api/v1/`).
+   Swagger builds one document per version from these paths.
+2. The controller only delegates. It returns the service's `Task<T>` directly, without
+   `async`/`await`, and holds no logic of its own.
+3. Actions return a concrete response type instead of `IActionResult`, so Swagger documents it.
+4. Successful responses return the DTO as is. Only errors are wrapped: the global exception
+   handler and the model-state factory return an `ErrorResponse` envelope.
+5. No try/catch in controllers. Throw the exceptions from `Common/Exceptions`
+   (`NotFoundException`, `ConflictException` and the rest); the global handler maps them to status
+   codes.
+6. Permissions on every action through `[RequiredPermissions(...)]`; the global permission filter
+   enforces them.
+7. XML comments on every action and parameter. They become the Swagger descriptions.
+8. Status codes match the operation: `201` for creation, `404` when a resource is looked up by id.
