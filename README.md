@@ -40,28 +40,18 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 
 Parameters:
 
-- `-N` (NamespaceRoot): organization name, the root namespace.
-- `-P` (ProductName): product name.
-- `-S` (ServiceNameOrCustom): service name; a dotted name such as `Domain.Service` works too.
-- `-M` (Minimal): `false` generates the full kit (`Common` projects and `All.sln`), `true` (default)
-  only the service folder.
-- `--Hangfire false`: no background jobs. By default each service gets Hangfire, stored in PostgreSQL
-  in its own schema, with the dashboard; the flag works per service, also with `-M true`.
-- `--Messaging none|outbox|direct`: message bus for the service, `none` by default. `outbox` wires
-  MassTransit on RabbitMQ with a transactional outbox in the service's database; `direct` sends straight
-  to the broker, and a message is lost if the broker is down. See
-  [Messaging/README.md](template/src/common/NamespaceRoot.ProductName.Common.Infrastructure/Messaging/README.md).
-- `-I` (Infisical): read secrets from Infisical. The shared folder and the service's folder overlay
-  configuration, so code reads a secret like any other setting. Pass it together with `-M false`, since
-  the secret store lives in `Common`; a service generated later with `-I` uses it from there.
-- `--HierarchyRules`: add access rules over a tenant tree stored as materialized paths
-  (`IHierarchicalEntity`, `HierarchyRules`): whether a tenant may see another one in its subtree or
-  among its direct children. Off by default; it lives in `Common`, so pass it with `-M false`.
-- `--HttpPort`: the port of the service in `launchSettings.json`. Without it the template picks a free
-  port from 5000-5999 on the machine that generates the service, so services generated one after
-  another do not share a port; pass it to choose one.
-- `--FeatureFlags`: add platform feature flags, described below. Off by default. Pass it with
-  `-M false` for `Common`, and again to each service generated later that should read the flags.
+| Parameter | Default | What it does |
+|---|---|---|
+| `-N`, `--NamespaceRoot` | `MyCompany` | Organization name, the root namespace. |
+| `-P`, `--ProductName` | `Product` | Product name. |
+| `-S`, `--ServiceNameOrCustom` | `Service` | Service name; a dotted name such as `Domain.Service` works too. |
+| `-M`, `--Minimal` | `true` | `true` generates only the service folder, `false` the full kit: `Common` projects and `All.sln`. |
+| `-H`, `--Hangfire` | `true` | Background jobs on Hangfire, stored in PostgreSQL in the service's own schema, with the dashboard. Per service, also with `-M true`. |
+| `--Messaging` | `none` | `outbox`: MassTransit on RabbitMQ with a transactional outbox in the service's database. `direct`: straight to the broker; a message is lost if the broker is down. See [Messaging/README.md](template/src/common/NamespaceRoot.ProductName.Common.Infrastructure/Messaging/README.md). |
+| `-I`, `--Infisical` | `false` | Secrets from Infisical: the shared folder and the service's folder overlay configuration, so code reads a secret like any other setting. Lives in `Common`: pass with `-M false`; a service generated later with `-I` uses it from there. |
+| `--FeatureFlags` | `false` | Platform feature flags, described below. Pass with `-M false` for `Common`, and to each service generated later that should read the flags. |
+| `--HierarchyRules` | `false` | Access rules over a tenant tree stored as materialized paths (`IHierarchicalEntity`, `HierarchyRules`): may a tenant see another one in its subtree or among its direct children. Lives in `Common`: pass with `-M false`. |
+| `--HttpPort` | free port | Port of the service in `launchSettings.json`. Without it, a free port from 5000-5999 on the generating machine, so services generated one after another do not share a port. |
 
 ## 3. What the template gives you
 
