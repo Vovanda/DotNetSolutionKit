@@ -65,7 +65,7 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--HttpPort` | free port | Port in `launchSettings.json` and on the host under compose; without it, a free port from 5000-5999 on the generating machine, so services generated one after another do not share a port. |
 
 `-I`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage` and `--ClickHouse` add files to `Common`, so they have to be
-passed with `-M false`, when `Common` is generated. Pass `-I`, `--DiffApi` and `--FeatureFlags` again to
+passed with `-M false`, when `Common` is generated. Pass `-I`, `--DiffApi`, `--FeatureFlags`, `--Storage` and `--ClickHouse` again to
 each service generated later that should use them: they change the service's code too, and the service
 then wires what `Common` already has. A service generated without them leaves them out.
 
