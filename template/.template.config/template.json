@@ -70,6 +70,12 @@
       "defaultValue": "false",
       "description": "Read secrets from Infisical: the shared folder and the service's folder overlay configuration"
     },
+    "FeatureFlags": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Add platform feature flags: a shared features.json, the catalogue and store, and GET/PUT /api/v1/features"
+    },
     "HierarchyRules": {
       "type": "parameter",
       "datatype": "bool",
@@ -110,6 +116,15 @@
           "exclude": [
             "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Configuration/Secrets/**",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Secrets/**"
+          ]
+        },
+        {
+          "condition": "(!FeatureFlags)",
+          "exclude": [
+            "src/common/NamespaceRoot.ProductName.Common/FeatureManagement/**",
+            "src/common/NamespaceRoot.ProductName.Common.Application/FeatureManagement/**",
+            "src/common/NamespaceRoot.ProductName.Common.Web/FeatureManagement/**",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/FeatureManagement/**"
           ]
         },
         {

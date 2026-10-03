@@ -8,6 +8,7 @@
     "Hangfire": { "shortName": "H" },
     "Infisical": { "shortName": "I" },
     "Messaging": { "shortName": "" },
-    "HierarchyRules": { "shortName": "" }
+    "HierarchyRules": { "shortName": "" },
+    "FeatureFlags": { "shortName": "" }
   }
 }

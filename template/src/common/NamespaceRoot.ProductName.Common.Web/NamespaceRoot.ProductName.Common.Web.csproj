@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -24,7 +24,9 @@
         <PackageReference Include="SharpGrip.FluentValidation.AutoValidation.Mvc" />
         <PackageReference Include="Swashbuckle.AspNetCore" />
         <!-- [FeatureGate] for endpoints behind a flag. -->
+        <!--#if (FeatureFlags) -->
         <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
+        <!--#endif -->
     </ItemGroup>
 
 </Project>

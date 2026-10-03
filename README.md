@@ -57,6 +57,8 @@ Parameters:
 - `--HierarchyRules`: add access rules over a tenant tree stored as materialized paths
   (`IHierarchicalEntity`, `HierarchyRules`): whether a tenant may see another one in its subtree or
   among its direct children. Off by default; it lives in `Common`, so pass it with `-M false`.
+- `--FeatureFlags`: add platform feature flags, described below. Off by default. Pass it with
+  `-M false` for `Common`, and again to each service generated later that should read the flags.
 
 ## 3. What the template gives you
 
@@ -108,7 +110,7 @@ Parameters:
 
 ### Feature flags
 
-Flags are data. They live in one `features.json` that ships from `Common` and is read by every
+Generated only with `--FeatureFlags`. Flags are data. They live in one `features.json` that ships from `Common` and is read by every
 service, so a feature means the same thing in all of them, and a flag that only the UI reacts to
 needs no deployment.
 

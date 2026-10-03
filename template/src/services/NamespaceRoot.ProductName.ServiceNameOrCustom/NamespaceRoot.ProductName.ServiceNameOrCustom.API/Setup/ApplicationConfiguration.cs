@@ -1,4 +1,6 @@
+//#if (FeatureFlags)
 using NamespaceRoot.ProductName.Common.Application.FeatureManagement;
+//#endif
 //#if (Infisical)
 using NamespaceRoot.ProductName.Common.Infrastructure.Configuration.Secrets;
 //#endif
@@ -8,10 +10,12 @@ internal static class ApplicationConfiguration
 {
     public static IConfigurationBuilder SetupAppConfiguration(this IConfigurationBuilder builder, IHostEnvironment env)
     {
+//#if (FeatureFlags)
         // Platform feature flags, shipped from Common so every service reads the same file and a
         // feature means one thing across the platform. First, so everything below can override it.
         builder.AddPlatformFeatures();
 
+//#endif
         // Always base config
         builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 

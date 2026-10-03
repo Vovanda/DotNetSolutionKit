@@ -14,6 +14,7 @@
       <PackageReference Include="LinqSpecs" />
     </ItemGroup>
 
+    <!--#if (FeatureFlags) -->
     <ItemGroup>
       <!-- Travels with a ProjectReference, so every service that depends on Common gets the same file in
            its output and reads the same flags. That is what makes a feature mean one thing platform-wide
@@ -23,4 +24,5 @@
         <TargetPath>features.json</TargetPath>
       </Content>
     </ItemGroup>
+    <!--#endif -->
 </Project>

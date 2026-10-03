@@ -30,15 +30,16 @@ internal static class WebApi
         // Errors are RFC 9457 problems with a correlation identifier; see Common.Web/Errors.
         builder.Services.AddPlatformErrorHandling(builder.Environment);
         
-        builder.Services.AddControllers(options =>
+        var mvc = builder.Services.AddControllers(options =>
         {
             options.Filters.Add<PermissionAuthorizationFilter>();
-        })
-        // Controllers that ship with the platform rather than with this service - the feature list
-        // among them, so every service answers about flags the same way instead of each writing its
-        // own endpoint.
-        // Invalid model state is answered by the default factory with a validation problem.
-        .AddApplicationPart(typeof(Common.Web.FeatureManagement.FeaturesController).Assembly);
+        });
+//#if (FeatureFlags)
+
+        // The feature list endpoint ships with the platform, so every service answers about flags the
+        // same way instead of each writing its own endpoint.
+        mvc.AddApplicationPart(typeof(Common.Web.FeatureManagement.FeaturesController).Assembly);
+//#endif
         
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddMemoryCache();
