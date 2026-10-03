@@ -36,6 +36,9 @@ jobs:
             more: -N Acme -P Shop -S Billing -H false
           - name: direct bus
             first: -N Acme -P Shop -S Orders -M false --Messaging direct
+          - name: xunit tests
+            first: -N Acme -P Shop -S Orders -M false --TestFramework xunit --Messaging outbox --Audit true
+            more: -N Acme -P Shop -S Billing --TestFramework xunit
           - name: dotted names
             first: -N Acme.Corp -P Retail.Shop -S Sales.Orders -M false --Messaging outbox --DiffApi true
             more: -N Acme.Corp -P Retail.Shop -S Sales.Billing --Messaging outbox --DiffApi true

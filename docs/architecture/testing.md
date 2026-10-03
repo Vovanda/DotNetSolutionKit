@@ -8,6 +8,11 @@ stubs for time and the user, and the rule checks. It carries no test framework; 
 project picks one, and sets `TestSkip.Handler` to how that framework skips a test. `Common.Tests` is the
 test project of `Common` itself.
 
+`--TestFramework xunit` generates the service's tests on xUnit v3 instead of NUnit; the infrastructure
+is the same. An xUnit integration test carries its category as a trait,
+`[Trait(TestCategories.TraitName, TestCategories.Integration)]`, so the filters
+`TestCategory=Integration` and `TestCategory!=Integration` select it as they select an NUnit category.
+
 ## A service test
 
 A base class builds the context for one class under test: the class, its real repositories and the

@@ -14,9 +14,14 @@ namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Tests.Tests;
 /// The switches are environment variables because the service reads them after its files; they are set
 /// for the duration of the test, so the fixture does not run in parallel with others.
 /// </remarks>
+//#if (TestFramework == "xunit")
+[Collection(nameof(ServiceContainerTests))]
+public sealed class ServiceContainerTests : IDisposable
+//#else
 [TestFixture]
 [NonParallelizable]
 internal class ServiceContainerTests
+//#endif
 {
     private static readonly Dictionary<string, string> SwitchedOff = new()
     {
@@ -29,8 +34,12 @@ internal class ServiceContainerTests
 
     private readonly Dictionary<string, string?> _previous = new();
 
+//#if (TestFramework == "xunit")
+    public ServiceContainerTests()
+//#else
     [SetUp]
     public void SwitchDependenciesOff()
+//#endif
     {
         foreach (var (name, value) in SwitchedOff)
         {
@@ -39,14 +48,22 @@ internal class ServiceContainerTests
         }
     }
 
+//#if (TestFramework == "xunit")
+    public void Dispose()
+//#else
     [TearDown]
     public void Restore()
+//#endif
     {
         foreach (var (name, value) in _previous)
             Environment.SetEnvironmentVariable(name, value);
     }
 
+//#if (TestFramework == "xunit")
+    [Fact(DisplayName = "Every registered service resolves, as the service checks at startup")]
+//#else
     [Test(Description = "Every registered service resolves, as the service checks at startup")]
+//#endif
     public async Task Should_BuildTheContainer()
     {
         await using var app = SchemaHost.Build([], AppContext.BaseDirectory);
@@ -54,3 +71,9 @@ internal class ServiceContainerTests
         app.Services.ShouldNotBeNull();
     }
 }
+//#if (TestFramework == "xunit")
+
+/// <summary>The environment variables are process-wide: the fixture runs alone.</summary>
+[CollectionDefinition(nameof(ServiceContainerTests), DisableParallelization = true)]
+public sealed class ServiceContainerTestsCollection;
+//#endif

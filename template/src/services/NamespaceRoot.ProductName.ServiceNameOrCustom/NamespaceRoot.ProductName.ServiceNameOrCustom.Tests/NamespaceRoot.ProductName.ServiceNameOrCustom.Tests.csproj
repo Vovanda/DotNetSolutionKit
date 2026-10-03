@@ -10,8 +10,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <!--#if (TestFramework == "xunit") -->
+        <PackageReference Include="xunit.v3" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+        <!--#else -->
         <PackageReference Include="NUnit" />
         <PackageReference Include="NUnit3TestAdapter" />
+        <!--#endif -->
         <PackageReference Include="coverlet.collector" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
         <PackageReference Include="Shouldly" />

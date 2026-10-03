@@ -2,8 +2,9 @@
   "version": "2.6.0",
   "releaseNotes": {
     "2.6.0": {
-      "headline": "A service's tests no longer depend on NUnit through the shared infrastructure.",
+      "headline": "A service's tests can be NUnit or xUnit, on one shared test infrastructure.",
       "highlights": [
+        "--TestFramework xunit generates a service's tests on xUnit v3; an integration test carries its category as the trait TestCategory, so CI selects it as it selects an NUnit category.",
         "Common.Testing holds the test execution contexts, the PostgreSQL test databases, the stubs and the rule checks, with no test framework; Common.Tests and the services' tests reference it. TestSkip lets each test framework say how it skips a test.",
         "Updating an earlier solution: a service's test project references Common.Testing instead of Common.Tests, and sets TestSkip.Handler; see upgrading."
       ]

@@ -13,7 +13,11 @@ namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Tests.Integration;
 /// </summary>
 /// <example>
 /// <code>
+//#if (TestFramework == "xunit")
+/// [Fact, Trait(TestCategories.TraitName, TestCategories.Integration)]
+//#else
 /// [Test, Category(TestCategories.Integration)]
+//#endif
 /// public async Task Should_RejectADuplicateNumber()
 /// {
 ///     await using var ctx = await PostgresDbTestExecutionContext&lt;OrderService&gt;.CreateAsync();

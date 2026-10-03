@@ -135,6 +135,16 @@
       "defaultValue": "false",
       "description": "An audit journal of entity changes, published through the outbox; takes effect only with --Messaging outbox"
     },
+    "TestFramework": {
+      "type": "parameter",
+      "datatype": "choice",
+      "defaultValue": "nunit",
+      "choices": [
+        { "choice": "nunit", "description": "NUnit" },
+        { "choice": "xunit", "description": "xUnit v3" }
+      ],
+      "description": "Test framework of the service's tests; Common's own tests stay on NUnit"
+    },
     "AuditEnabled": {
       "type": "computed",
       "value": "(Audit && Messaging == \"outbox\")"
