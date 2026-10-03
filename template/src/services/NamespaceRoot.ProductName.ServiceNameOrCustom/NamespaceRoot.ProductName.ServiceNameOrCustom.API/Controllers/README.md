@@ -114,8 +114,8 @@ public static class SampleRoutes
 2. The controller only delegates. It returns the service's `Task<T>` directly, without
    `async`/`await`, and holds no logic of its own.
 3. Actions return a concrete response type instead of `IActionResult`, so Swagger documents it.
-4. Successful responses return the DTO as is. Only errors are wrapped: the global exception
-   handler and the model-state factory return an `ErrorResponse` envelope.
+4. Successful responses return the DTO as is. Errors are RFC 9457 problems written by the shared
+   error handling in `Common.Web/Errors`; a controller does not build error bodies.
 5. No try/catch in controllers. Throw the exceptions from `Common/Exceptions`
    (`NotFoundException`, `ConflictException` and the rest); the global handler maps them to status
    codes.

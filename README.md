@@ -2,7 +2,8 @@
 
 > **BREAKING CHANGES SINCE OCTOBER 2026. DO NOT APPLY THIS TEMPLATE WITH `--force` OVER A SOLUTION
 > GENERATED FROM AN EARLIER VERSION.** Namespaces, project references, package management and
-> versioning changed, and the overwritten solution will not build. Use the template for new
+> versioning changed, and the overwritten solution will not build. Error responses changed shape for
+> API clients: the `ErrorResponse` envelope is gone, errors are RFC 9457 problems. Use the template for new
 > solutions; port changes into existing ones by hand.
 
 A `dotnet new` template for microservices on .NET 8 and PostgreSQL. It generates a set of shared
@@ -98,8 +99,12 @@ Parameters:
 - Package versions are declared once, in `src/Directory.Packages.props`; a `.csproj` references a
   package by name only. Every version stays on the .NET 8 line: no package pulls in .NET 9
   libraries, directly or transitively.
-- A global `IExceptionHandler` maps exceptions to one error shape. Errors come back in an
-  `ErrorResponse` envelope; successful responses return the DTO as is.
+- Errors are RFC 9457 problems (`application/problem+json`): `status`, `title`, `detail`, a `code`
+  for client code to match on, `traceId` and `correlationId`; validation failures add `errors` with
+  field names as they appear in the JSON. One shape covers thrown exceptions (mapped in
+  `Common.Web/Errors/PlatformExceptionMapper`), model validation and empty 404/405 responses. A
+  service adds its own exception rules by registering an `IExceptionMapping`. Successful responses
+  return the DTO as is.
 
 ### Feature flags
 

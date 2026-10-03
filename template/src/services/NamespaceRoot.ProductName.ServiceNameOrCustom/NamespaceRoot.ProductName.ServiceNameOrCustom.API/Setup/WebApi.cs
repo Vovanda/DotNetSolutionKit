@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using NamespaceRoot.ProductName.Common.Infrastructure.Security;
-using NamespaceRoot.ProductName.Common.Web.Misc;
+using NamespaceRoot.ProductName.Common.Web.Errors;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup.Interceptors;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup;
@@ -27,11 +27,8 @@ internal static class WebApi
     {
         // Apply centralized JSON configuration
         builder.SetupJson();
-        // Register the custom handler
-        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-    
-        // MANDATORY: Register ProblemDetails service to support UseExceptionHandler()
-        builder.Services.AddProblemDetails();
+        // Errors are RFC 9457 problems with a correlation identifier; see Common.Web/Errors.
+        builder.Services.AddPlatformErrorHandling(builder.Environment);
         
         builder.Services.AddControllers(options =>
         {
@@ -40,22 +37,8 @@ internal static class WebApi
         // Controllers that ship with the platform rather than with this service — the feature list
         // among them, so every service answers about flags the same way instead of each writing its
         // own endpoint.
-        .AddApplicationPart(typeof(Common.Web.FeatureManagement.FeaturesController).Assembly).ConfigureApiBehaviorOptions(options =>
-        {
-            // This is the bridge between MVC Validation and your ErrorResponse contract
-            options.InvalidModelStateResponseFactory = context =>
-            {
-                // We pass the naming policy from our central JsonSetup to avoid desync
-                var errorResponse = ErrorResponseHelper.ValidationError(
-                    context.ModelState, 
-                    JsonSetup.CommonOptions.PropertyNamingPolicy);
-
-                return new ObjectResult(errorResponse)
-                {
-                    StatusCode = StatusCodes.Status400BadRequest
-                };
-            };
-        });
+        // Invalid model state is answered by the default factory with a validation problem.
+        .AddApplicationPart(typeof(Common.Web.FeatureManagement.FeaturesController).Assembly);
         
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddMemoryCache();

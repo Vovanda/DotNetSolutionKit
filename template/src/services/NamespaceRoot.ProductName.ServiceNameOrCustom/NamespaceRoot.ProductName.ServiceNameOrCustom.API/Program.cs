@@ -1,5 +1,6 @@
 using System.Reflection;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
+using NamespaceRoot.ProductName.Common.Web.Errors;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup.Swagger;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
@@ -61,10 +62,11 @@ try
     }
 
     // --- Middleware ---
-    app.UseLogging()
+    app.UsePlatformTracing()
+        .UseLogging()
         .UseWebServer()
         .UseAppCors()
-        .UseAppErrorHandling()
+        .UsePlatformErrorHandling()
         .UseAppAuthentication()
         .UseAppAuthorization()
         .UseSwaggerPage()
