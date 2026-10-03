@@ -61,6 +61,7 @@ mindmap
 - [Secrets from Infisical](features/secrets.md): `-I`
 - [Feature flags](features/feature-flags.md): `--FeatureFlags`
 - [API diff](features/api-diff.md): `--DiffApi`
+- [CI on GitHub Actions](features/ci.md): `--GitHubCiCd`
 - [Access rules over a tenant tree](features/hierarchy-rules.md): `--HierarchyRules`
 - [Object storage](features/object-storage.md): S3-compatible, `--Storage`
 - [ClickHouse](features/clickhouse.md): `--ClickHouse`

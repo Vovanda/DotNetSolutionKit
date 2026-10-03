@@ -96,4 +96,5 @@ The test projects reference `coverlet.collector`, so coverage needs no setup:
 dotnet test --collect:"XPlat Code Coverage"
 ```
 
-Each test project writes a Cobertura report under `TestResults/`.
+Each test project writes a Cobertura report under `TestResults/`. With `--GitHubCiCd`, CI merges the reports
+of the unit and integration runs and can fail on a branch coverage threshold; see [CI](../features/ci.md).

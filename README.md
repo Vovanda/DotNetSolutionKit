@@ -34,6 +34,7 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 | `--Messaging` | `none` | [Message bus](docs/features/messaging.md): `outbox` or `direct`. |
 | `-I`, `--Infisical` | `false` | [Secrets and settings from Infisical](docs/features/secrets.md). |
 | `--DiffApi` | `false` | [API contract diff](docs/features/api-diff.md) on pull requests. |
+| `--GitHubCiCd` | `false` | [CI on GitHub Actions](docs/features/ci.md): build, tests on real servers, coverage, secret scan. |
 | `--FeatureFlags` | `false` | [Feature flags](docs/features/feature-flags.md). |
 | `--HierarchyRules` | `false` | [Access rules over a tenant tree](docs/features/hierarchy-rules.md). |
 | `--Storage` | `false` | [Object storage](docs/features/object-storage.md), S3-compatible. |
