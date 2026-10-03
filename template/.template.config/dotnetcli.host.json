@@ -10,6 +10,7 @@
     "Messaging": { "shortName": "" },
     "HierarchyRules": { "shortName": "" },
     "FeatureFlags": { "shortName": "" },
-    "HttpPort": { "shortName": "" }
+    "HttpPort": { "shortName": "" },
+    "DiffApi": { "shortName": "" }
   }
 }

@@ -47,6 +47,10 @@ dlldata.c
 project.lock.json
 artifacts/
 
+# API contracts written by scripts/generate-api-schemas.sh; CI generates them on both sides of a
+# pull request, so they are never committed.
+src/services/*/*.API/api-schema/
+
 *_i.c
 *_p.c
 *_i.h

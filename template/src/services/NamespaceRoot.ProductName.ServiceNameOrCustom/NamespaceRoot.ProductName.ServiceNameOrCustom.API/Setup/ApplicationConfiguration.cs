@@ -4,11 +4,15 @@ using NamespaceRoot.ProductName.Common.Application.FeatureManagement;
 //#if (Infisical)
 using NamespaceRoot.ProductName.Common.Infrastructure.Configuration.Secrets;
 //#endif
+//#if (DiffApi)
+using NamespaceRoot.ProductName.Common.Web.Setup;
+//#endif
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup;
 
 internal static class ApplicationConfiguration
 {
-    public static IConfigurationBuilder SetupAppConfiguration(this IConfigurationBuilder builder, IHostEnvironment env)
+    public static IConfigurationBuilder SetupAppConfiguration(
+        this IConfigurationBuilder builder, IHostEnvironment env, string[] args)
     {
 //#if (FeatureFlags)
         // Platform feature flags, shipped from Common so every service reads the same file and a
@@ -41,7 +45,21 @@ internal static class ApplicationConfiguration
         // section of configuration; the machine identity comes from environment variables, added above.
         // The arguments are fallbacks for when configuration says nothing: the service's own folder, and
         // a store that may be missing only on a developer machine.
+//#if (DiffApi)
+        // Skipped for --schema-only: a build agent producing the API document holds no store identity.
+        if (!SchemaOnlyMode.IsEnabled(args))
+        {
+            builder.AddPlatformSecrets("/servicenameorcustom", optional: env.IsEnvironment("Local"));
+        }
+//#else
         builder.AddPlatformSecrets("/servicenameorcustom", optional: env.IsEnvironment("Local"));
+//#endif
+
+//#endif
+//#if (DiffApi)
+        // A schema-only run turns every infrastructure switch off, last so it wins over the files and
+        // the environment.
+        builder.AddSchemaOnlyOverrides(args);
 
 //#endif
         return builder;

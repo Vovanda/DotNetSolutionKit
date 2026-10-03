@@ -93,6 +93,12 @@
       },
       "replaces": "5054"
     },
+    "DiffApi": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Generate the OpenAPI contract of each service without its infrastructure (--schema-only --dump-schema), and diff it on pull requests"
+    },
     "FeatureFlags": {
       "type": "parameter",
       "datatype": "bool",
@@ -139,6 +145,16 @@
           "exclude": [
             "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Configuration/Secrets/**",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Secrets/**"
+          ]
+        },
+        {
+          "condition": "(!DiffApi)",
+          "exclude": [
+            "src/common/NamespaceRoot.ProductName.Common.Web/Setup/SchemaOnlyMode.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Web/Setup/SchemaDump.cs",
+            "scripts/generate-api-schemas.sh",
+            "scripts/normalise_api_schema.py",
+            ".github/workflows/api-diff.yml"
           ]
         },
         {

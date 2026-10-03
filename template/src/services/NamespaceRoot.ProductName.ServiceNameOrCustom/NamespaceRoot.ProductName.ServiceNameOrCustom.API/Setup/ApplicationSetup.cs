@@ -2,6 +2,9 @@
 using NamespaceRoot.ProductName.Common.Application.FeatureManagement;
 //#endif
 using NamespaceRoot.ProductName.Common.Application.Configuration;
+//#if (DiffApi)
+using NamespaceRoot.ProductName.Common.Web.Setup;
+//#endif
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Application;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure;
 
@@ -31,7 +34,16 @@ internal static class ApplicationSetup
         services.AddApplicationServices();
         
         // Register Infrastructure Layer services
+//#if (DiffApi)
+        // A schema-only run must not touch infrastructure: it registers no database, no broker and no
+        // jobs, and only has to get far enough to describe the API.
+        if (!SchemaOnlyMode.IsEnabled())
+        {
+            services.AddInfrastructureServices(builder.Configuration);
+        }
+//#else
         services.AddInfrastructureServices(builder.Configuration);
+//#endif
 
         return builder;
     }

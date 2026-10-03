@@ -1,6 +1,9 @@
 using System.Reflection;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
 using NamespaceRoot.ProductName.Common.Web.Errors;
+//#if (DiffApi)
+using NamespaceRoot.ProductName.Common.Web.Setup;
+//#endif
 using NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup.Swagger;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
@@ -9,36 +12,30 @@ using Serilog;
 
 try
 {
-    var builder = WebApplication.CreateBuilder(args);
+//#if (DiffApi)
+    var schemaOnly = SchemaOnlyMode.IsEnabled(args);
 
-    // --- Logging configuration ---
-    builder.SetupLogging();
-    
-    // --- DI validation configuration ---
-    // In every environment: a missing registration or a scoped service resolved from the root then
-    // fails the start, instead of the first request or background job that happens to need it.
-    builder.Host.UseDefaultServiceProvider((_, options) =>
-    {
-        options.ValidateScopes = true;
-        options.ValidateOnBuild = true;
-    });
+//#endif
+    // Services and configuration live in SchemaHost, which the schema generator builds without
+    // starting: one description of the application, whether it is about to serve traffic or only to
+    // say what its API looks like.
+    var app = SchemaHost.Build(args);
+//#if (DiffApi)
 
-    // --- Application configuration ---
-    builder.Configuration.SetupAppConfiguration(builder.Environment);
+    // Asked only for the contract: write it and stop, before anything touches the infrastructure.
+    if (SchemaDump.TryWrite(app, args))
+        return;
 
-    // --- Application services setup ---
-    builder.SetupWebApi()
-        .SetupAppServices()
-        .SetupAppAuthentication()
-        .SetupAppAuthorization()
-        .SetupHealthChecks()
-        .SetupSwaggerPage()
-        .SetupValidation()
-        .SetupCors();
-
-    var app = builder.Build();
+    var dbEnabled = app.Configuration.GetSection("Database").GetValue<bool>("Enabled", defaultValue: true);
+//#if (Hangfire)
+    var hangfireEnabled = app.Configuration.GetSection("HangfireSettings").GetValue<bool>("Enabled", defaultValue: true);
+//#endif
+//#endif
     
     // --- Database Initialization ---
+//#if (DiffApi)
+    if (dbEnabled)
+//#endif
     using (var scope = app.Services.CreateScope())
     {
         var services = scope.ServiceProvider;
@@ -66,14 +63,32 @@ try
         .UseLogging()
         .UseWebServer()
         .UseAppCors()
-        .UsePlatformErrorHandling()
-        .UseAppAuthentication()
-        .UseAppAuthorization()
-        .UseSwaggerPage()
-//#if (Hangfire)
-        .UseAppHangfire()
+        .UsePlatformErrorHandling();
+
+//#if (DiffApi)
+    // Nothing to authenticate against on a schema-only run: the schemes were never registered.
+    if (!schemaOnly)
+    {
+        app.UseAppAuthentication().UseAppAuthorization();
+    }
+//#else
+    app.UseAppAuthentication().UseAppAuthorization();
 //#endif
-        .UseWebApi();
+
+    app.UseSwaggerPage();
+//#if (Hangfire)
+//#if (DiffApi)
+
+    if (hangfireEnabled)
+    {
+        app.UseAppHangfire();
+    }
+//#else
+    app.UseAppHangfire();
+//#endif
+//#endif
+
+    app.UseWebApi();
 
     // --- Health checks ---
     app.MapHealthEndpoints();
