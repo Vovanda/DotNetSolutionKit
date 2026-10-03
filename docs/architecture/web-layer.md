@@ -69,6 +69,16 @@ found on the service's controllers, `v1`, `v2`, `v10` in numeric order, and an `
 endpoint. A route without a version, such as `internal/jobs`, is listed only in `all`. The
 [API diff](../features/api-diff.md) compares the `all` document.
 
+A string property with a closed set of values names where the values live, and the schema lists them:
+
+```csharp
+[SchemaValuesFrom(typeof(OrderStatuses), nameof(OrderStatuses.All))]
+public string Status { get; init; }
+```
+
+The member is a static list of strings, or a dictionary whose keys are the values. The property stays a
+string on the wire; the document gains its `enum` from the same list the code checks against.
+
 ## What a service keeps
 
 ```csharp

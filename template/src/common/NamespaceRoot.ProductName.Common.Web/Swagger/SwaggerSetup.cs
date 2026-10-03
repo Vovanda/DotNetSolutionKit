@@ -103,6 +103,7 @@ public static class SwaggerSetup
             options.OperationFilter<AuthorizationOperationFilter>();
             options.OperationFilter<PermissionsOperationFilter>();
             options.OperationFilter<PaginationOperationFilter>();
+            options.SchemaFilter<SchemaValuesFromFilter>();
             options.DocumentFilter<VersionedDocumentFilter>();
 
             var xmlFile = $"{serviceAssembly.GetName().Name}.xml";
