@@ -27,9 +27,10 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 A release can also be installed from its package: download `SawKing.DotNetSolutionKit.<version>.nupkg` from
 the [releases](https://github.com/sawking-tech/DotNetSolutionKit/releases) and run `dotnet new install <file>`.
 
-What the generated solutions look like, with their CI running:
-[DotNetSolutionKit.Samples](https://github.com/sawking-tech/DotNetSolutionKit.Samples), one branch per combination
-of flags, regenerated from each release.
+What the generated solutions look like:
+[DotNetSolutionKit.Samples](https://github.com/sawking-tech/DotNetSolutionKit.Samples), a branch each for the full kit,
+a single service and a gateway with services. Regenerating them from each release is
+[#4](https://github.com/sawking-tech/DotNetSolutionKit/issues/4).
 
 | Parameter | Default | What it does |
 |---|---|---|
