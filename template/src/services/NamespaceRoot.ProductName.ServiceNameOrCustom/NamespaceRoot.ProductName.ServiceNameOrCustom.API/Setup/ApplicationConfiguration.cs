@@ -1,4 +1,7 @@
 using NamespaceRoot.ProductName.Common.Application.FeatureManagement;
+//#if (Infisical)
+using NamespaceRoot.ProductName.Common.Infrastructure.Configuration.Secrets;
+//#endif
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup;
 
 internal static class ApplicationConfiguration
@@ -28,6 +31,15 @@ internal static class ApplicationConfiguration
         // Always connect environment variables (secrets, dynamic parameters)
         builder.AddEnvironmentVariables();
 
+//#if (Infisical)
+        // The secret store goes last, so a value it holds wins over anything shipped in the image. Its
+        // connection (project, environment, folders, whether it is required) is read from the Infisical
+        // section of configuration; the machine identity comes from environment variables, added above.
+        // The arguments are fallbacks for when configuration says nothing: the service's own folder, and
+        // a store that may be missing only on a developer machine.
+        builder.AddPlatformSecrets("/servicenameorcustom", optional: env.IsEnvironment("Local"));
+
+//#endif
         return builder;
     }
 }

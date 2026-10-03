@@ -36,6 +36,22 @@
       "fileRename": "ServiceNameOrCustom",
       "description": "Service name or custom (e.g. Domain.Service)"
     },
+    "ServiceNameLower": {
+      "type": "generated",
+      "generator": "casing",
+      "parameters": {
+        "source": "ServiceNameOrCustom",
+        "toLower": true
+      },
+      "replaces": "servicenameorcustom",
+      "description": "Lower-case service name, used where a path is expected, such as the Infisical folder"
+    },
+    "Infisical": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Read secrets from Infisical: the shared folder and the service's folder overlay configuration"
+    },
     "Minimal": {
       "type": "parameter",
       "datatype": "bool",
@@ -57,6 +73,13 @@
           "rename": {
             ".gitignore.template": ".gitignore"
           }
+        },
+        {
+          "condition": "(!Infisical)",
+          "exclude": [
+            "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Configuration/Secrets/**",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Secrets/**"
+          ]
         },
         {
           "exclude": [

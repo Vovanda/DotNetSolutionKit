@@ -1,4 +1,4 @@
-<Project>
+﻿<Project>
   <!--
     Central package management: every package version in the solution is declared here once,
     and a .csproj references a package by name only. A service generated with -M true into an
@@ -13,6 +13,9 @@
     <PackageVersion Include="Hangfire.AspNetCore" Version="1.8.25" />
     <PackageVersion Include="Hangfire.Console" Version="1.4.3" />
     <PackageVersion Include="Hangfire.PostgreSql" Version="1.20.13" />
+    <!--#if (Infisical) -->
+    <PackageVersion Include="Infisical.Sdk" Version="3.0.4" />
+    <!--#endif -->
     <PackageVersion Include="JetBrains.Annotations" Version="2026.2.0" />
     <PackageVersion Include="LinqSpecs" Version="3.2.0" />
     <PackageVersion Include="MassTransit.EntityFrameworkCore" Version="8.4.1" />
