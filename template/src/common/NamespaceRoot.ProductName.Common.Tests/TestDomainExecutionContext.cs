@@ -1,5 +1,5 @@
 using NamespaceRoot.ProductName.Common.Domain.Context;
-using NamespaceRoot.ProductName.Common.Tests.Stabs;
+using NamespaceRoot.ProductName.Common.Tests.Stubs;
 
 namespace NamespaceRoot.ProductName.Common.Tests;
 

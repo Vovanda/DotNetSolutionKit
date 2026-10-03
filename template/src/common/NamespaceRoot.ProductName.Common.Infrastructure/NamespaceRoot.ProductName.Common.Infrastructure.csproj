@@ -24,6 +24,7 @@
     <ItemGroup>
         <ProjectReference Include="..\NamespaceRoot.ProductName.Common\NamespaceRoot.ProductName.Common.csproj" />
         <ProjectReference Include="..\NamespaceRoot.ProductName.Common.Application\NamespaceRoot.ProductName.Common.Application.csproj" />
+        <ProjectReference Include="..\NamespaceRoot.ProductName.Common.Contracts\NamespaceRoot.ProductName.Common.Contracts.csproj" />
     </ItemGroup>
 
     <ItemGroup>

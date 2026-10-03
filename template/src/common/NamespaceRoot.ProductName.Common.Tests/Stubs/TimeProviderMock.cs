@@ -1,4 +1,4 @@
-namespace NamespaceRoot.ProductName.Common.Tests.Stabs;
+namespace NamespaceRoot.ProductName.Common.Tests.Stubs;
 
 public class TimeProviderMock : TimeProvider
 {

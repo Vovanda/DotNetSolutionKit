@@ -1,5 +1,5 @@
 using NamespaceRoot.ProductName.Common.Domain.Context;
-using NamespaceRoot.ProductName.ServiceNameOrCustom.Tests.Misc.Stabs;
+using NamespaceRoot.ProductName.ServiceNameOrCustom.Tests.Misc.Stubs;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Tests.Misc;
 

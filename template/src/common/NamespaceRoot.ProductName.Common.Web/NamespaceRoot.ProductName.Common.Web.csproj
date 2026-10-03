@@ -19,6 +19,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+        <PackageReference Include="Serilog" />
         <PackageReference Include="Swashbuckle.AspNetCore" />
         <!-- [FeatureGate] for endpoints behind a flag. -->
         <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
