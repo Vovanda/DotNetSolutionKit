@@ -35,7 +35,7 @@ try
     using (var scope = app.Services.CreateScope())
     {
         var services = scope.ServiceProvider;
-        var dbContext = services.GetRequiredService<ServiceNameOrCustomDbContext>();
+        var dbContext = services.GetRequiredService<ServiceIdentifierDbContext>();
         var logger = services.GetRequiredService<ILogger<MigrationRunner>>();
         
         // Run Migrations

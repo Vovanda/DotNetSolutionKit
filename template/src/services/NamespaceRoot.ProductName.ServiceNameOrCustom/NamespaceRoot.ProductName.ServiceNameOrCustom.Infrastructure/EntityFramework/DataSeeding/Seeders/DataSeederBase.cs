@@ -6,11 +6,11 @@ namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFra
 public abstract class DataSeederBase
 {
     protected readonly ILogger Logger;
-    protected readonly ServiceNameOrCustomDbContext DbContext;
+    protected readonly ServiceIdentifierDbContext DbContext;
     protected readonly IDomainExecutionContext SeedContext;
 
     protected DataSeederBase(
-        ServiceNameOrCustomDbContext dbContext,
+        ServiceIdentifierDbContext dbContext,
         ILogger logger)
     {
         Logger = logger;

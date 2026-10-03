@@ -9,10 +9,10 @@ using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramewor
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
 
 [SuppressMessage("ReSharper", "RedundantExtendsListEntry")]
-public class ServiceNameOrCustomDbContext(DbContextOptions<ServiceNameOrCustomDbContext> options)
+public class ServiceIdentifierDbContext(DbContextOptions<ServiceIdentifierDbContext> options)
     : DbContextBase(options), IUnitOfWork
 {
-    public static readonly string DefaultSchemaName = "ServiceNameOrCustom".ToLowerInvariant();
+    public static readonly string DefaultSchemaName = "servicenameorcustom";
     
     // Add DbSet here
 

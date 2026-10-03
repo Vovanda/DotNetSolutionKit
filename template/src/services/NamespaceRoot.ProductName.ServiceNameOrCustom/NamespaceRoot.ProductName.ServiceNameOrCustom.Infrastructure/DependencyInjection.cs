@@ -43,7 +43,7 @@ public static class DependencyInjection
         var serviceName = typeof(DomainMarker).Namespace!;
 
         // 1. Guard for Main Database Schema
-        PostgresSchemaGuard.EnsureExclusiveSchema(connectionString, ServiceNameOrCustomDbContext.DefaultSchemaName, serviceName);
+        PostgresSchemaGuard.EnsureExclusiveSchema(connectionString, ServiceIdentifierDbContext.DefaultSchemaName, serviceName);
 
         // Domain events: handlers from the application layer, run in three phases around SaveChanges and
         // the transaction by the interceptors attached to the context below.
@@ -51,19 +51,19 @@ public static class DependencyInjection
 
         // AddDbContext, not the pool: interceptors resolved per scope (the domain events', the outbox's)
         // are not re-attached to a context handed back by the pool, and they would quietly do nothing.
-        services.AddDbContext<ServiceNameOrCustomDbContext>((sp, options) =>
+        services.AddDbContext<ServiceIdentifierDbContext>((sp, options) =>
         {
             options.UseNpgsql(connectionString,
-                x => { x.MigrationsHistoryTable("__EFMigrationsHistory", ServiceNameOrCustomDbContext.DefaultSchemaName); });
+                x => { x.MigrationsHistoryTable("__EFMigrationsHistory", ServiceIdentifierDbContext.DefaultSchemaName); });
             options.ApplyDomainEventInterceptors(sp);
         });
 
-        services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<ServiceNameOrCustomDbContext>());
+        services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<ServiceIdentifierDbContext>());
 
 //#if (Messaging == "outbox")
         // The bus, with the outbox in this service's schema: a message and the change that caused it
         // commit together. Consumers are found in this assembly.
-        services.AddMessaging<ServiceNameOrCustomDbContext>(
+        services.AddMessaging<ServiceIdentifierDbContext>(
             configuration, "servicenameorcustom", typeof(InfrastructureMarker).Assembly);
 
 //#elif (Messaging == "direct")
@@ -100,7 +100,7 @@ public static class DependencyInjection
     private static IServiceCollection AddBackgroundJobs(this IServiceCollection services, string connectionString)
     {
         var serviceName = typeof(DomainMarker).Namespace!;
-        var hangfireSchemaName = $"{ServiceNameOrCustomDbContext.DefaultSchemaName}_hangfire";
+        var hangfireSchemaName = $"{ServiceIdentifierDbContext.DefaultSchemaName}_hangfire";
 
         // Guard for Hangfire Schema
         PostgresSchemaGuard.EnsureExclusiveSchema(connectionString, hangfireSchemaName, serviceName);

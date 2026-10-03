@@ -7,13 +7,13 @@ using Npgsql;
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
 
 [UsedImplicitly]
-public class ServiceNameOrCustomDbContextFactory : IDesignTimeDbContextFactory<ServiceNameOrCustomDbContext>
+public class ServiceIdentifierDbContextFactory : IDesignTimeDbContextFactory<ServiceIdentifierDbContext>
 {
-    private static DbContextOptions<ServiceNameOrCustomDbContext> GetSqlServerOptions(string connectionString)
+    private static DbContextOptions<ServiceIdentifierDbContext> GetSqlServerOptions(string connectionString)
     {
-        return new DbContextOptionsBuilder<ServiceNameOrCustomDbContext>()
+        return new DbContextOptionsBuilder<ServiceIdentifierDbContext>()
             .UseNpgsql(connectionString,
-                x => { x.MigrationsHistoryTable("__EFMigrationsHistory", ServiceNameOrCustomDbContext.DefaultSchemaName); })
+                x => { x.MigrationsHistoryTable("__EFMigrationsHistory", ServiceIdentifierDbContext.DefaultSchemaName); })
             .Options;
     }
 
@@ -59,7 +59,7 @@ public class ServiceNameOrCustomDbContextFactory : IDesignTimeDbContextFactory<S
         return connectionString;
     }
 
-    public ServiceNameOrCustomDbContext CreateDbContext(string[] args)
+    public ServiceIdentifierDbContext CreateDbContext(string[] args)
     {
         var connectionString = GetConnectionString();
 
@@ -67,6 +67,6 @@ public class ServiceNameOrCustomDbContextFactory : IDesignTimeDbContextFactory<S
         var target = new NpgsqlConnectionStringBuilder(connectionString);
         Console.WriteLine($"Database: {target.Host}:{target.Port}/{target.Database} as {target.Username}");
 
-        return new ServiceNameOrCustomDbContext(GetSqlServerOptions(connectionString));
+        return new ServiceIdentifierDbContext(GetSqlServerOptions(connectionString));
     }
 }

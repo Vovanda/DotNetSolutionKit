@@ -42,9 +42,9 @@ Parameters:
 
 | Parameter | Default | What it does |
 |---|---|---|
-| `-N`, `--NamespaceRoot` | `MyCompany` | Organization name, the root namespace. |
-| `-P`, `--ProductName` | `Product` | Product name. |
-| `-S`, `--ServiceNameOrCustom` | `Service` | Service name; a dotted name such as `Domain.Service` works too. |
+| `-N`, `--NamespaceRoot` | `MyCompany` | Organization name, the root namespace. May be dotted. |
+| `-P`, `--ProductName` | `Product` | Product name. May be dotted. |
+| `-S`, `--ServiceNameOrCustom` | `Service` | Service name. May be dotted, see below. |
 | `-M`, `--Minimal` | `true` | `true` generates only the service folder, `false` the full kit: `Common` projects and `All.sln`. |
 | `-H`, `--Hangfire` | `true` | Background jobs on Hangfire, stored in PostgreSQL in the service's own schema, with the dashboard. Per service, also with `-M true`. |
 | `--Messaging` | `none` | `outbox`: MassTransit on RabbitMQ with a transactional outbox in the service's database. `direct`: straight to the broker; a message is lost if the broker is down. See [Messaging/README.md](template/src/common/NamespaceRoot.ProductName.Common.Infrastructure/Messaging/README.md). |
@@ -53,6 +53,13 @@ Parameters:
 | `--FeatureFlags` | `false` | Platform feature flags, described below. Pass with `-M false` for `Common`, and to each service generated later that should read the flags. |
 | `--HierarchyRules` | `false` | Access rules over a tenant tree stored as materialized paths (`IHierarchicalEntity`, `HierarchyRules`): may a tenant see another one in its subtree or among its direct children. Lives in `Common`: pass with `-M false`. |
 | `--HttpPort` | free port | Port of the service in `launchSettings.json`. Without it, a free port from 5000-5999 on the generating machine, so services generated one after another do not share a port. |
+
+Any of `-N`, `-P` and `-S` may be dotted. `-N Acme.Corp -P Shop.Online -S Sales.Orders` generates
+`Acme.Corp.Shop.Online.Sales.Orders.API` and the rest of the projects under that name. A dotted service name
+lets a domain be split into services that each stay small, such as `Sales.Orders` and `Sales.Invoicing`,
+instead of growing one shared project for the whole of `Sales`. Where a dot cannot go, the name is
+derived: C# identifiers drop the dots (`SalesOrdersDbContext`), and the database schema, the Infisical
+folder and queue names replace them with underscores (`sales_orders`).
 
 ## 3. What the template gives you
 

@@ -16,7 +16,7 @@ internal static class HealthChecks
 //#if (Hangfire)
             .AddHangfire(options => options.MinimumAvailableServers = 1, name: "hangfire", tags: [HealthConstants.ReadyTag])
 //#endif
-            .AddDbContextCheck<ServiceNameOrCustomDbContext>(name: "postgres", tags: [HealthConstants.ReadyTag]);
+            .AddDbContextCheck<ServiceIdentifierDbContext>(name: "postgres", tags: [HealthConstants.ReadyTag]);
         return builder;
     }
 

@@ -37,15 +37,34 @@
       "fileRename": "ServiceNameOrCustom",
       "description": "Service name or custom (e.g. Domain.Service)"
     },
-    "ServiceNameLower": {
+    "ServiceIdentifier": {
+      "type": "generated",
+      "generator": "regex",
+      "parameters": {
+        "source": "ServiceNameOrCustom",
+        "steps": [ { "regex": "\\.", "replacement": "" } ]
+      },
+      "replaces": "ServiceIdentifier",
+      "fileRename": "ServiceIdentifier",
+      "description": "Service name without dots, for C# identifiers such as the DbContext class (Sales.Orders -> SalesOrders)"
+    },
+    "ServiceNameLowerDotted": {
       "type": "generated",
       "generator": "casing",
       "parameters": {
         "source": "ServiceNameOrCustom",
         "toLower": true
+      }
+    },
+    "ServiceNameLower": {
+      "type": "generated",
+      "generator": "regex",
+      "parameters": {
+        "source": "ServiceNameLowerDotted",
+        "steps": [ { "regex": "\\.", "replacement": "_" } ]
       },
       "replaces": "servicenameorcustom",
-      "description": "Lower-case service name, used where a path is expected, such as the Infisical folder"
+      "description": "Lower-case service name with underscores for dots (Sales.Orders -> sales_orders), for the database schema, the Infisical folder and queue names"
     },
     "Hangfire": {
       "type": "parameter",

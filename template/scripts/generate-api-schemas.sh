@@ -42,7 +42,8 @@ for csproj in src/services/*/*.API/*.API.csproj; do
     project=$(dirname "$csproj")
     assembly=$(basename "$csproj" .csproj)
     service=$(basename "$project" .API)
-    key=$(echo "${service##*.}" | tr '[:upper:]' '[:lower:]')
+    # The full name, not its last segment: Sales.Orders and Purchasing.Orders are different services.
+    key=$(echo "$service" | tr '[:upper:]' '[:lower:]')
     log=$(mktemp)
     echo "==> $key"
 
