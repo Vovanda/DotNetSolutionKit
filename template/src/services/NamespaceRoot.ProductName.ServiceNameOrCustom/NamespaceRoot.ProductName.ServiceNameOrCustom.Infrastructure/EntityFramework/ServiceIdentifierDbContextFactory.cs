@@ -9,7 +9,9 @@ namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFra
 [UsedImplicitly]
 public class ServiceIdentifierDbContextFactory : IDesignTimeDbContextFactory<ServiceIdentifierDbContext>
 {
-    private static DbContextOptions<ServiceIdentifierDbContext> GetSqlServerOptions(string connectionString)
+    private const string PlaceholderConnectionString = "Host=localhost;Database=design-time-placeholder";
+
+    private static DbContextOptions<ServiceIdentifierDbContext> GetNpgsqlOptions(string connectionString)
     {
         return new DbContextOptionsBuilder<ServiceIdentifierDbContext>()
             .UseNpgsql(connectionString,
@@ -52,7 +54,14 @@ public class ServiceIdentifierDbContextFactory : IDesignTimeDbContextFactory<Ser
     
         if (string.IsNullOrEmpty(connectionString))
         {
-            throw new Exception("Connection string 'DefaultConnection' not found in config files");
+            // Adding a migration compares the model with the snapshot and never opens a connection,
+            // so a freshly generated service can get its first migration before any database exists.
+            // Commands that do connect (database update, migrations script --idempotent against a
+            // live database) fail on this placeholder with a connection error naming localhost.
+            Console.WriteLine(
+                "Connection string 'DefaultConnection' not found: using a placeholder. " +
+                "Enough to add a migration; set ConnectionStrings__DefaultConnection to touch a database.");
+            return PlaceholderConnectionString;
         }
 
         Console.WriteLine("Successfully found connection string");
@@ -65,8 +74,8 @@ public class ServiceIdentifierDbContextFactory : IDesignTimeDbContextFactory<Ser
 
         // Name the target database without the credentials: this output lands in terminals and CI logs.
         var target = new NpgsqlConnectionStringBuilder(connectionString);
-        Console.WriteLine($"Database: {target.Host}:{target.Port}/{target.Database} as {target.Username}");
+        Console.WriteLine($"Database: {target.Host}:{target.Port}/{target.Database} as {target.Username ?? "(no user)"}");
 
-        return new ServiceIdentifierDbContext(GetSqlServerOptions(connectionString));
+        return new ServiceIdentifierDbContext(GetNpgsqlOptions(connectionString));
     }
 }

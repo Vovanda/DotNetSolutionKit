@@ -41,6 +41,17 @@ public sealed class MigrationRunner
 
             preMigrationHook?.Invoke(context);
 
+            // A generated service starts with no migrations, and the start would otherwise look
+            // fine: nothing pending, "up to date", and then every query fails on a missing table.
+            if (!context.Database.GetMigrations().Any())
+            {
+                logger.LogCritical(
+                    "{Context} has no migrations, so the database has none of its tables. Add the first one: " +
+                    "dotnet ef migrations add Initial -p <the Infrastructure project> -s <the Infrastructure project> " +
+                    "-o EntityFramework/Migrations",
+                    context.GetType().Name);
+            }
+
             var pendingMigrations = context.Database.GetPendingMigrations().ToList();
 
             if (pendingMigrations.Count > 0)

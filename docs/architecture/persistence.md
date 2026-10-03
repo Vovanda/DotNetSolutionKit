@@ -30,6 +30,9 @@ alternatives, a database or a database user per service, are infrastructure the 
 derived from the schema name. Two replicas of one service starting together do not migrate the same
 schema twice; the second waits for the first and finds nothing to do.
 
+A service with no migrations at all logs a fatal line naming the command that adds the first one; see
+[generating a solution](../getting-started/generating-a-solution.md#add-the-first-migration).
+
 ## Repositories
 
 A repository takes a query as a specification, and filtering, paging, sorting and includes are written

@@ -80,6 +80,20 @@ Where a dot cannot go, the name is derived from the service name:
 | C# identifiers | without dots | `SalesOrdersDbContext` |
 | Database schema, Infisical folder, queue names | lower case, dots replaced by underscores | `sales_orders` |
 
+## Add the first migration
+
+A generated service has a model and no migrations, so its database starts without tables. Add the first
+migration before the first run; the command needs no database:
+
+```bash
+cd src/services/MyCompany.MyProduct.Orders
+dotnet ef migrations add Initial   -p MyCompany.MyProduct.Orders.Infrastructure   -s MyCompany.MyProduct.Orders.Infrastructure   -o EntityFramework/Migrations
+```
+
+The migration also creates the tables of the outbox, when the service was generated with
+`--Messaging outbox`. A service started without migrations logs a fatal line with this command, and every
+query to a missing table fails.
+
 ## Configure and run locally
 
 `appsettings.json` and `appsettings.Local.json` ship with the required values empty and a `_comment_*`
