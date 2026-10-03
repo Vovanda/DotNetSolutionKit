@@ -255,7 +255,8 @@ ModelManifest.xml
 .idea/
 
 #ignore secrets
-*secret*
+*[Ss]ecret*
+!template/**/appsettings.Secrets.json
 *certificates*
 *.env
 

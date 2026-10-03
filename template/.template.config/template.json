@@ -61,10 +61,13 @@
         {
           "exclude": [
             ".git/**",
-            ".idea/**",
-            ".vs/**",
-            "bin/**",
-            "obj/**",
+            "**/.idea/**",
+            "**/.vs/**",
+            "**/[Bb]in/**",
+            "**/[Oo]bj/**",
+            "**/logs/**",
+            "**/*.user",
+            "**/*.DotSettings.user",
             ".template.config/**"
           ]
         }
@@ -80,8 +83,13 @@
         },
         {
           "exclude": [
-            ".idea/**",
-            ".vs/**",
+            "**/.idea/**",
+            "**/.vs/**",
+            "**/[Bb]in/**",
+            "**/[Oo]bj/**",
+            "**/logs/**",
+            "**/*.user",
+            "**/*.DotSettings.user",
             "manual-add-projects.sh",
             "NamespaceRoot.ProductName.All.sln"
           ]
@@ -93,7 +101,8 @@
   "postActions": [
     {
       "condition": "true",
-      "actionId": "00000000-0000-0000-0000-000000000000",
+      "actionId": "00000000-0000-0000-0000-000000000001",
+      "continueOnError": true,
       "description": "After generating services, verify and add projects to All.sln",
       "manualInstructions": [
         { "text": "1. Navigate to services folder: cd ./src/services\n2. Run script: ./manual-add-projects.sh\n3. The script will check all service projects and add them to All.sln, skipping already added ones." }
