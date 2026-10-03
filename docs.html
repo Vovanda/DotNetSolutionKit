@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en" class="preload">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DotNetSolutionKit - documentation</title>
+<meta name="description" content="The documents of DotNetSolutionKit, a dotnet new template for .NET 8 microservices on PostgreSQL: generating a solution, the architecture, every feature switch, operations and the decisions behind them.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site/site.css?v=75">
+<link rel="stylesheet" href="site/docs.css?v=75">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css">
+<script src="site/config.js?v=75"></script>
+<script src="site/boot.js?v=75"></script>
+</head>
+<body>
+<div id="main">
+<div id="cols">
+  <aside id="sidebar" aria-label="Documents">
+    <div class="side-head">
+      <span class="side-title">Documents</span>
+      <button id="side-lang" type="button" title="Читать по-русски" aria-label="Читать по-русски">RU</button>
+      <button id="side-theme" type="button" title="Theme: follows the device" aria-label="Theme">◐</button>
+      <button id="side-swap" type="button" title="Move the panel to the other side" aria-label="Move the panel to the other side">⇄</button>
+      <button id="side-close" type="button" title="Close" aria-label="Close the panel">✕</button>
+    </div>
+    <div class="side-body"><div id="menu">
+      <!-- Rendered here as well as by the script: without it a crawler, a link preview or a
+           reader with no JavaScript gets an empty page. The script replaces this on load.
+           Generated from the shelf in site/config.js. -->
+        <h2>Getting started</h2>
+        <ul>
+          <li><a href="#generating" data-id="generating">Generating a solution</a></li>
+          <li><a href="#upgrading" data-id="upgrading">Versions of the template</a></li>
+          <li><a href="#overview" data-id="overview">The documentation at a glance</a></li>
+          <li><a href="#roadmap" data-id="roadmap">Roadmap</a></li>
+        </ul>
+        <h2>Architecture</h2>
+        <ul>
+          <li><a href="#layers" data-id="layers">Projects and layers</a></li>
+          <li><a href="#web-layer" data-id="web-layer">Web layer</a></li>
+          <li><a href="#errors" data-id="errors">Errors</a></li>
+          <li><a href="#validation" data-id="validation">Validation and pagination</a></li>
+          <li><a href="#auth" data-id="auth">Authentication and permissions</a></li>
+          <li><a href="#persistence" data-id="persistence">Persistence</a></li>
+          <li><a href="#domain-events" data-id="domain-events">Domain events</a></li>
+          <li><a href="#testing" data-id="testing">Testing</a></li>
+        </ul>
+        <h2>Features</h2>
+        <ul>
+          <li><a href="#jobs" data-id="jobs">Background jobs</a></li>
+          <li><a href="#messaging" data-id="messaging">Message bus</a></li>
+          <li><a href="#secrets" data-id="secrets">Secrets from Infisical</a></li>
+          <li><a href="#feature-flags" data-id="feature-flags">Feature flags</a></li>
+          <li><a href="#api-diff" data-id="api-diff">API diff</a></li>
+          <li><a href="#ci" data-id="ci">CI on GitHub Actions</a></li>
+          <li><a href="#hierarchy-rules" data-id="hierarchy-rules">Access rules over a tenant tree</a></li>
+          <li><a href="#storage" data-id="storage">Object storage</a></li>
+          <li><a href="#clickhouse" data-id="clickhouse">ClickHouse</a></li>
+          <li><a href="#audit" data-id="audit">Audit journal</a></li>
+          <li><a href="#gateway" data-id="gateway">API gateway</a></li>
+        </ul>
+        <h2>Operations</h2>
+        <ul>
+          <li><a href="#docker" data-id="docker">Docker</a></li>
+          <li><a href="#deployment" data-id="deployment">Deployment</a></li>
+          <li><a href="#health" data-id="health">Health</a></li>
+          <li><a href="#startup-checks" data-id="startup-checks">Startup checks</a></li>
+          <li><a href="#switching-off" data-id="switching-off">Switching dependencies off</a></li>
+        </ul>
+        <h2>Decisions</h2>
+        <ul>
+          <li><a href="#adr-001" data-id="adr-001">ADR-001: Domain events in three phases</a></li>
+          <li><a href="#adr-002" data-id="adr-002">ADR-002: Repositories on specifications</a></li>
+          <li><a href="#adr-003" data-id="adr-003">ADR-003: The API document from the built application</a></li>
+          <li><a href="#adr-004" data-id="adr-004">ADR-004: The product version by hand</a></li>
+          <li><a href="#adr-005" data-id="adr-005">ADR-005: How a service is tested</a></li>
+        </ul>
+      </div></div>
+  </aside>
+
+  <div id="below">
+    <div class="bar">
+      <div class="wrap bar-inner">
+        <button id="burger" type="button" aria-expanded="false" aria-controls="sidebar" title="Sections of this page">≡</button>
+  <a class="bar__mark" href="./">
+    <img src="site/mark.svg?v=75" alt="" width="28" height="28">
+    DotNetSolutionKit
+  </a>
+        <span class="spacer"></span>
+  <a href="./"><span lang="en">About</span><span lang="ru">О шаблоне</span></a>
+  <a href="docs.html" aria-current="page"><span lang="en">Docs</span><span lang="ru">Документы</span></a>
+  <a href="https://github.com/sawking-tech/DotNetSolutionKit" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+
+    <main class="doc wrap" id="doc">
+      <h1>The documents of the template</h1>
+      <p>DotNetSolutionKit is a <code>dotnet new</code> template for .NET 8 microservices on PostgreSQL. These are its documents: how to generate a solution, how a service is built, what each switch adds, how it runs in production and why it is made the way it is.</p>
+      <p>Every document below is a markdown file in the repository, and each link goes to its source.</p>
+      <h3>Getting started</h3>
+      <ul>
+        <li><a href="#generating">Generating a solution</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/getting-started/generating-a-solution.md">docs/getting-started/generating-a-solution.md</a></span></li>
+        <li><a href="#upgrading">Versions of the template</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/getting-started/upgrading.md">docs/getting-started/upgrading.md</a></span></li>
+        <li><a href="#overview">The documentation at a glance</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/README.md">docs/README.md</a></span></li>
+        <li><a href="#roadmap">Roadmap</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/roadmap.md">docs/roadmap.md</a></span></li>
+      </ul>
+      <h3>Architecture</h3>
+      <ul>
+        <li><a href="#layers">Projects and layers</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/architecture/projects-and-layers.md">docs/architecture/projects-and-layers.md</a></span></li>
+        <li><a href="#web-layer">Web layer</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/architecture/web-layer.md">docs/architecture/web-layer.md</a></span></li>
+        <li><a href="#errors">Errors</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/architecture/errors.md">docs/architecture/errors.md</a></span></li>
+        <li><a href="#validation">Validation and pagination</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/architecture/validation-and-pagination.md">docs/architecture/validation-and-pagination.md</a></span></li>
+        <li><a href="#auth">Authentication and permissions</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/architecture/authentication-and-permissions.md">docs/architecture/authentication-and-permissions.md</a></span></li>
+        <li><a href="#persistence">Persistence</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/architecture/persistence.md">docs/architecture/persistence.md</a></span></li>
+        <li><a href="#domain-events">Domain events</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/architecture/domain-events.md">docs/architecture/domain-events.md</a></span></li>
+        <li><a href="#testing">Testing</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/architecture/testing.md">docs/architecture/testing.md</a></span></li>
+      </ul>
+      <h3>Features</h3>
+      <ul>
+        <li><a href="#jobs">Background jobs</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/features/background-jobs.md">docs/features/background-jobs.md</a></span></li>
+        <li><a href="#messaging">Message bus</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/features/messaging.md">docs/features/messaging.md</a></span></li>
+        <li><a href="#secrets">Secrets from Infisical</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/features/secrets.md">docs/features/secrets.md</a></span></li>
+        <li><a href="#feature-flags">Feature flags</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/features/feature-flags.md">docs/features/feature-flags.md</a></span></li>
+        <li><a href="#api-diff">API diff</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/features/api-diff.md">docs/features/api-diff.md</a></span></li>
+        <li><a href="#ci">CI on GitHub Actions</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/features/ci.md">docs/features/ci.md</a></span></li>
+        <li><a href="#hierarchy-rules">Access rules over a tenant tree</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/features/hierarchy-rules.md">docs/features/hierarchy-rules.md</a></span></li>
+        <li><a href="#storage">Object storage</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/features/object-storage.md">docs/features/object-storage.md</a></span></li>
+        <li><a href="#clickhouse">ClickHouse</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/features/clickhouse.md">docs/features/clickhouse.md</a></span></li>
+        <li><a href="#audit">Audit journal</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/features/audit.md">docs/features/audit.md</a></span></li>
+        <li><a href="#gateway">API gateway</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/features/api-gateway.md">docs/features/api-gateway.md</a></span></li>
+      </ul>
+      <h3>Operations</h3>
+      <ul>
+        <li><a href="#docker">Docker</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/operations/docker.md">docs/operations/docker.md</a></span></li>
+        <li><a href="#deployment">Deployment</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/operations/deployment.md">docs/operations/deployment.md</a></span></li>
+        <li><a href="#health">Health</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/operations/health.md">docs/operations/health.md</a></span></li>
+        <li><a href="#startup-checks">Startup checks</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/operations/startup-checks.md">docs/operations/startup-checks.md</a></span></li>
+        <li><a href="#switching-off">Switching dependencies off</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/operations/switching-dependencies-off.md">docs/operations/switching-dependencies-off.md</a></span></li>
+      </ul>
+      <h3>Decisions</h3>
+      <ul>
+        <li><a href="#adr-001">ADR-001: Domain events in three phases</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/adr/001-three-phase-domain-events.md">docs/adr/001-three-phase-domain-events.md</a></span></li>
+        <li><a href="#adr-002">ADR-002: Repositories on specifications</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/adr/002-repositories-on-specifications.md">docs/adr/002-repositories-on-specifications.md</a></span></li>
+        <li><a href="#adr-003">ADR-003: The API document from the built application</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/adr/003-api-schema-generation.md">docs/adr/003-api-schema-generation.md</a></span></li>
+        <li><a href="#adr-004">ADR-004: The product version by hand</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/adr/004-product-version-by-hand.md">docs/adr/004-product-version-by-hand.md</a></span></li>
+        <li><a href="#adr-005">ADR-005: How a service is tested</a> <span class="src">· <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/docs/adr/005-testing-a-service.md">docs/adr/005-testing-a-service.md</a></span></li>
+      </ul>
+    </main>
+
+    <footer>
+  <div class="wrap">
+    <p lang="en">DotNetSolutionKit is made by <a href="https://sawking.tech/cv">Vladimir Savkin</a>, systems architect. Source, releases and samples: <a href="https://github.com/sawking-tech/DotNetSolutionKit">github.com/sawking-tech/DotNetSolutionKit</a>.</p>
+    <p lang="ru">DotNetSolutionKit сделал <a href="https://sawking.tech/cv">Владимир Савкин</a>, системный архитектор. Исходники, релизы и примеры: <a href="https://github.com/sawking-tech/DotNetSolutionKit">github.com/sawking-tech/DotNetSolutionKit</a>.</p>
+    <p><span lang="en">Made at</span><span lang="ru">Сделано в</span> <a href="https://sawking.tech">sawking.tech</a>.</p>
+  </div>
+</footer>
+  </div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/15.0.7/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
+<script src="site/panel.js?v=75"></script>
+<script src="site/docs.js?v=75"></script>
+<script>
+/* Transitions come back only once the panel and the sheet stand where storage says - two frames
+   later, so the browser has laid the page out and painted it at rest. This lives in the page, next
+   to the class it removes: from a cached script it might never run, and the page would keep every
+   animation switched off. */
+requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove("preload")));
+</script>
+</body>
+</html>

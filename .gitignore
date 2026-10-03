@@ -267,3 +267,6 @@ ModelManifest.xml
 #ignore local files (for developers)
 *.Local.cs
 .env.local
+
+# browser screenshots and logs of local checks
+.playwright-mcp/

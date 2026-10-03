@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en" class="preload">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DotNetSolutionKit - a dotnet new template for microservices on .NET 8</title>
+<meta name="description" content="A dotnet new template for microservices on .NET 8 and PostgreSQL: shared Common libraries, layered services, errors, validation, persistence, domain events, background jobs and tests already wired, the rest behind flags.">
+<link rel="canonical" href="https://dnsk.sawking.tech/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DotNetSolutionKit">
+<meta property="og:url" content="https://dnsk.sawking.tech/">
+<meta property="og:title" content="DotNetSolutionKit - a dotnet new template for microservices on .NET 8">
+<meta property="og:description" content="Shared Common libraries and layered services with the host, errors, persistence, domain events, jobs and tests wired; the rest behind flags.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DotNetSolutionKit - a dotnet new template for microservices on .NET 8">
+<meta name="twitter:description" content="Shared Common libraries and layered services with the host, errors, persistence, domain events, jobs and tests wired; the rest behind flags.">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "DotNetSolutionKit",
+  "url": "https://dnsk.sawking.tech/",
+  "codeRepository": "https://github.com/sawking-tech/DotNetSolutionKit",
+  "programmingLanguage": "C#",
+  "runtimePlatform": ".NET 8",
+  "license": "https://opensource.org/licenses/MIT",
+  "author": {"@type": "Person", "name": "Vladimir Savkin", "url": "https://sawking.tech/cv"},
+  "keywords": "dotnet new template, microservices, .NET 8, PostgreSQL, clean architecture, domain events, outbox"
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site/site.css?v=75">
+<link rel="stylesheet" href="site/hero.css?v=75">
+<script src="site/config.js?v=75"></script>
+<script src="site/boot.js?v=75"></script>
+</head>
+<body>
+
+<div id="main">
+<!-- ==== HERO: the emblem of the template ==== -->
+<div id="cols">
+  <aside id="sidebar" aria-label="Sections of this page">
+    <div class="side-head">
+      <span class="side-title"><span lang="en">About</span><span lang="ru">О шаблоне</span></span>
+      <button id="side-lang" type="button" title="Читать по-русски" aria-label="Читать по-русски">RU</button>
+      <button id="side-theme" type="button" title="Theme: follows the device" aria-label="Theme">◐</button>
+      <button id="side-swap" type="button" title="Move the panel to the other side" aria-label="Move the panel to the other side">⇄</button>
+      <button id="side-close" type="button" title="Close" aria-label="Close the panel">✕</button>
+    </div>
+    <!-- The panel of the documentation page, with this page's own sections in it: the same shelf,
+         the same style, the contents of the page it stands on. -->
+    <div class="side-body"><div id="menu">
+        <h2><span lang="en">On this page</span><span lang="ru">На этой странице</span></h2>
+        <ul>
+          <li><a href="#top"><span lang="en">DotNetSolutionKit</span><span lang="ru">DotNetSolutionKit</span></a></li>
+          <li><a href="#features"><span lang="en">What you get</span><span lang="ru">Что вы получаете</span></a></li>
+          <li><a href="#install"><span lang="en">Try it</span><span lang="ru">Попробовать</span></a></li>
+          <li><a href="#parameters"><span lang="en">Parameters</span><span lang="ru">Параметры</span></a></li>
+          <li><a href="#documentation"><span lang="en">Documentation</span><span lang="ru">Документация</span></a></li>
+          <li><a href="#license"><span lang="en">License</span><span lang="ru">Лицензия</span></a></li>
+        </ul>
+      </div></div>
+  </aside>
+
+  <div id="below">
+    <div class="bar">
+      <div class="wrap bar-inner">
+        <button id="burger" type="button" aria-expanded="false" aria-controls="sidebar" title="Sections of this page">≡</button>
+  <a class="bar__mark" href="./">
+    <!-- the hand of the SawKing Tech mark -->
+    <img src="site/mark.svg?v=75" alt="" width="28" height="28">
+    DotNetSolutionKit
+  </a>
+        <span class="spacer"></span>
+  <a href="./" aria-current="page"><span lang="en">About</span><span lang="ru">О шаблоне</span></a>
+  <a href="docs.html"><span lang="en">Docs</span><span lang="ru">Документы</span></a>
+  <a href="https://github.com/sawking-tech/DotNetSolutionKit" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+
+    <header class="hero hero--kit wrap" id="top">
+      <div class="hero__inner">
+        <h1 class="logo-head"><svg class="emblem" viewBox="236 34 328 328" role="img" aria-label="DotNetSolutionKit">
+          <!-- The SawKing Tech mark: the hand and the graph traced from it, in its own 800x400 grid.
+               The band lies over the wrist; under it the hand is drawn whole, so a longer name
+               only narrows the band. -->
+          <defs>
+            <!-- three colours blended as a triangle: the disc in one, the C# purple glowing in from a corner,
+                 the green from behind the name, so its brightest point is hidden in the band -->
+            <radialGradient id="disc-b" gradientUnits="userSpaceOnUse" cx="503.9" cy="138" r="180"><stop class="disc-b" offset="0" stop-opacity="0.75"/><stop class="disc-b" offset="1" stop-opacity="0"/></radialGradient><radialGradient id="disc-c" gradientUnits="userSpaceOnUse" cx="400" cy="268" r="180"><stop class="disc-c" offset="0" stop-opacity="0.9"/><stop class="disc-cc" offset="0.45" stop-opacity="0.45"/><stop class="disc-cc" offset="1" stop-opacity="0"/></radialGradient>
+            <mask id="under-green" maskUnits="userSpaceOnUse" x="310" y="192" width="188" height="74"><rect x="310" y="192" width="188" height="74" fill="#fff"/><path d="M409.2 214.4C416.2 209.2 431.6 197 439.7 195.2C444.9 194 449.5 198.2 450 203.3C450.5 209.7 442.5 213.7 437.9 216.7Z"/></mask>
+          </defs>
+          <!-- Everything drawn is cut out of the disc, as in the SawKing Tech mark: the band, the hand,
+               the graph and its labels are holes through which the ground shows. In the mask black cuts,
+               white keeps the disc: the graph's circles are white, so no edge is cut through them. -->
+          <mask id="cut" maskUnits="userSpaceOnUse" x="236" y="34" width="328" height="328">
+            <rect x="236" y="34" width="328" height="328" fill="#fff"/>
+            <rect x="236" y="248.75" width="328" height="38.5" fill="#000"/>
+          <g class="ink" stroke-width="2">
+            <g class="rise rise--graph" style="--i:3"><g class="far"><path class="dep" d="M411.8 124.5Q456.7 144.7 498.1 168.4"/><path class="tip" d="M493.5 168.4L499.4 169.1L495.8 164.4"/></g><path class="dep" d="M369.5 161.6Q379.7 144.5 396.1 128.6"/><path class="tip" d="M394.8 133L397.1 127.6L391.6 129.7"/><path class="dep" d="M372 168.7Q389.9 174.6 403.3 175.7"/><path class="tip" d="M399.2 177.7L404.8 175.8L399.5 173.1"/><path class="dep" d="M414.5 165.8Q409.3 147.8 405.8 130.9"/><path class="tip" d="M408.9 134.4L405.5 129.4L404.4 135.3"/><path class="dep" d="M412.5 117.9Q434.4 109.3 450 108.8"/><path class="tip" d="M446.1 111.2L451.5 108.7L445.9 106.6"/><path class="dep" d="M424.7 167.4Q439.9 146.9 455.9 117.1"/><path class="tip" d="M456 121.7L456.6 115.8L452 119.6"/><path class="dep" d="M471.7 113A111.2 111.2 0 0 1 505.4 162.5"/><path class="tip" d="M502 159.4L505.8 163.9L506.3 158"/><path class="dep" d="M430.9 177.9Q464.7 177.3 496.8 174.4"/><path class="tip" d="M493.1 177.1L498.3 174.3L492.6 172.5"/><text class="label" x="344.7" y="170.8" text-anchor="middle">API</text><text class="label" x="381.3" y="115.8" text-anchor="middle">APP</text><text class="label" x="387" y="192.9" text-anchor="middle">INFRA</text><text class="label" x="429.4" y="103.9" text-anchor="middle">DOMAIN</text><text class="label" x="495.1" y="195.3" text-anchor="middle">COMMON</text><circle fill="#fff" cx="364.9" cy="167.2" r="7.2"/><circle fill="#fff" cx="417.7" cy="178.6" r="13.2"/><circle fill="#fff" cx="403.2" cy="120.1" r="9.6"/><circle fill="#fff" cx="462.6" cy="106.1" r="11.4"/><circle fill="#fff" cx="508.5" cy="173.8" r="10.2"/></g>
+            <g class="rise rise--hand" style="--i:0"><path d="M447.8 209.3C454.4 204.4 468.7 192.4 475.9 201.7C479.1 205.9 476.9 209.6 474.8 213.4" stroke-linecap="butt" mask="url(#under-green)"/>
+<path d="M333.8 241.9C351.3 262.3 407.7 267.1 432.5 259.9C450 254.9 466.4 244.6 480.9 233.8C485.7 230.1 495.3 226.3 494.7 219C494.3 214 490 210.5 485.1 210.6C473 211.1 453.2 226 440.4 230.6" stroke-linecap="butt"/>
+<path d="M409.2 214.4C416 209.4 432.1 196.6 440 195.1C444.9 194.2 449.3 198.1 449.9 202.8C450.9 210.2 440.5 215 435.4 218.4" stroke-linecap="butt"/>
+<path d="M338 207.3C349.6 203.8 362.2 198 374.5 198.6C385.6 199.2 393.3 207.4 402.5 212.3C405.3 213.8 408.8 214.5 411.9 215.4C418.3 217.4 431.2 214.3 436.5 219.2C437.8 220.4 438.5 222.3 439.1 224L439.1 224C439.5 225.6 441 228.2 440.7 229.9C438.4 245.6 392.1 237 382.2 233.5"/>
+<path d="M321.9 198.1L335.9 199.7A3 3 0 0 1 338.5 203L333.1 247.1A3 3 0 0 1 329.8 249.7L315.8 248A3 3 0 0 1 313.1 244.7L318.6 200.7A3 3 0 0 1 321.9 198.1Z"/></g>
+          </g>
+          </mask>
+          <g mask="url(#cut)"><circle class="disc-a" cx="400" cy="198" r="155"/><circle cx="400" cy="198" r="155" fill="url(#disc-b)"/><circle cx="400" cy="198" r="155" fill="url(#disc-c)"/></g>
+          <text class="name" x="400" y="276.7" text-anchor="middle">DOTNET SOLUTION KIT</text>
+        </svg></h1>
+        <p class="hero__line" lang="en">A <code>dotnet new</code> template for .NET 8 and PostgreSQL. It creates the structure of a solution and the projects of its microservices, already wired together. The rest comes with flags.</p>
+        <p class="hero__line" lang="ru">Шаблон <code>dotnet new</code> для .NET 8 и PostgreSQL. Создаёт структуру решения и проекты микросервисов, уже связанные между собой. Остальное включается флагами.</p>
+        <p class="hero__cmd"><code>dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders -M false</code></p>
+      </div>
+    </header>
+
+    <main>
+  <!-- ==== WHAT YOU GET ==== -->
+  <section id="features">
+    <div class="wrap">
+      <h2 lang="en">Start with the business logic</h2>
+      <h2 lang="ru">Начните сразу с бизнес-логики</h2>
+      <p class="lede" lang="en">Setting up a new microservice usually eats a week: layers, errors, auth, logging, tests, Docker, CI. Here it takes one command, and the first commit is already the product.</p>
+      <p class="lede" lang="ru">Настройка нового микросервиса обычно съедает неделю: слои, ошибки, авторизация, логи, тесты, Docker, CI. Здесь это одна команда, и первый коммит уже про продукт.</p>
+      <div class="cols">
+        <p lang="en"><b>A new service in one command.</b> <code>dotnet new</code> adds it to the solution with its layers, references, tests and deployment files in place.</p>
+        <p lang="ru"><b>Новый сервис одной командой.</b> <code>dotnet new</code> добавляет его в решение сразу со слоями, ссылками, тестами и файлами деплоя.</p>
+        <p lang="en"><b>The boring part is done.</b> Errors in one format, validation, authorization, health checks, background jobs and one request ID that follows a call through every service and log.</p>
+        <p lang="ru"><b>Рутина уже сделана.</b> Ошибки в одном формате, валидация, авторизация, проверки здоровья, фоновые задачи и один ID запроса, который проходит через все сервисы и логи.</p>
+        <p lang="en"><b>Only what you need.</b> A message bus, secrets from Infisical, object storage, ClickHouse, an audit journal, an API gateway - each is a flag, switched on when you need it.</p>
+        <p lang="ru"><b>Только то, что нужно.</b> Шина сообщений, секреты из Infisical, объектное хранилище, ClickHouse, журнал аудита, API-шлюз - каждое включается флагом, когда понадобится.</p>
+        <p lang="en"><b>Ready for production.</b> Docker images, compose or Kubernetes, blue-green deployment and CI on GitHub Actions with tests on a real database.</p>
+        <p lang="ru"><b>Готово к продакшену.</b> Docker-образы, compose или Kubernetes, blue-green деплой и CI на GitHub Actions с тестами на настоящей базе.</p>
+        <p lang="en"><b>See it before you use it.</b> <a href="https://github.com/sawking-tech/DotNetSolutionKit.Samples">DotNetSolutionKit.Samples</a> holds generated solutions to read through: the full kit, a single service, and a gateway with services.</p>
+        <p lang="ru"><b>Посмотрите до того, как взять.</b> В <a href="https://github.com/sawking-tech/DotNetSolutionKit.Samples">DotNetSolutionKit.Samples</a> лежат сгенерированные решения: полный комплект, один сервис и шлюз с сервисами.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==== INSTALL ==== -->
+  <section id="install">
+    <div class="wrap">
+      <h2 lang="en">Try it in a minute</h2>
+      <h2 lang="ru">Попробуйте за минуту</h2>
+      <p lang="en">Download <code>SawKing.DotNetSolutionKit.&lt;version&gt;.nupkg</code> from the <a href="https://github.com/sawking-tech/DotNetSolutionKit/releases">releases</a> and install it:</p>
+      <p lang="ru">Скачайте <code>SawKing.DotNetSolutionKit.&lt;version&gt;.nupkg</code> со страницы <a href="https://github.com/sawking-tech/DotNetSolutionKit/releases">релизов</a> и установите:</p>
+      <p class="hero__cmd"><code>dotnet new install SawKing.DotNetSolutionKit.&lt;version&gt;.nupkg</code></p>
+      <p lang="en">The shared libraries, the solution and the first service:</p>
+      <p lang="ru">Общие библиотеки, решение и первый сервис:</p>
+      <p class="hero__cmd"><code>dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders -M false</code></p>
+      <p lang="en">Every next service:</p>
+      <p lang="ru">Каждый следующий сервис:</p>
+      <p class="hero__cmd"><code>dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing</code></p>
+    </div>
+  </section>
+
+  <!-- ==== README: the parameters ==== -->
+  <section id="parameters">
+    <div class="wrap">
+      <h2 lang="en">Parameters</h2>
+      <h2 lang="ru">Параметры</h2>
+      <div class="scroller">
+        <table>
+          <thead><tr><th><span lang="en">Parameter</span><span lang="ru">Параметр</span></th><th><span lang="en">Default</span><span lang="ru">По умолчанию</span></th><th><span lang="en">What it does</span><span lang="ru">Что делает</span></th></tr></thead>
+          <tbody>
+            <tr><td><code>-N</code>, <code>--NamespaceRoot</code></td><td><code>MyCompany</code></td><td><span lang="en">Organization name, the root namespace. May be dotted.</span><span lang="ru">Название организации, корневое пространство имён. Может быть с точками.</span></td></tr>
+            <tr><td><code>-P</code>, <code>--ProductName</code></td><td><code>Product</code></td><td><span lang="en">Product name. May be dotted.</span><span lang="ru">Название продукта. Может быть с точками.</span></td></tr>
+            <tr><td><code>-S</code>, <code>--ServiceNameOrCustom</code></td><td><code>Service</code></td><td><span lang="en">Service name. May be dotted.</span><span lang="ru">Название сервиса. Может быть с точками.</span></td></tr>
+            <tr><td><code>-M</code>, <code>--Minimal</code></td><td><code>true</code></td><td><span lang="en"><code>true</code> generates only the service folder, <code>false</code> the full kit.</span><span lang="ru"><code>true</code> создаёт только папку сервиса, <code>false</code> весь комплект.</span></td></tr>
+            <tr><td><code>-H</code>, <code>--Hangfire</code></td><td><code>true</code></td><td><span lang="en"><a href="docs.html#jobs">Background jobs</a> on Hangfire.</span><span lang="ru"><a href="docs.html#jobs">Фоновые задачи</a> на Hangfire.</span></td></tr>
+            <tr><td><code>--Messaging</code></td><td><code>none</code></td><td><span lang="en"><a href="docs.html#messaging">Message bus</a>: <code>outbox</code> or <code>direct</code>.</span><span lang="ru"><a href="docs.html#messaging">Шина сообщений</a>: <code>outbox</code> или <code>direct</code>.</span></td></tr>
+            <tr><td><code>-I</code>, <code>--Infisical</code></td><td><code>false</code></td><td><span lang="en"><a href="docs.html#secrets">Secrets and settings from Infisical</a>.</span><span lang="ru"><a href="docs.html#secrets">Секреты и настройки из Infisical</a>.</span></td></tr>
+            <tr><td><code>--DiffApi</code></td><td><code>false</code></td><td><span lang="en"><a href="docs.html#api-diff">API contract diff</a> on pull requests.</span><span lang="ru"><a href="docs.html#api-diff">Дифф контракта API</a> в пулл-реквестах.</span></td></tr>
+            <tr><td><code>--GitHubCiCd</code></td><td><code>false</code></td><td><span lang="en"><a href="docs.html#ci">CI on GitHub Actions</a>: build, tests on real servers, coverage, secret scan.</span><span lang="ru"><a href="docs.html#ci">CI на GitHub Actions</a>: сборка, тесты на настоящих серверах, покрытие, поиск секретов.</span></td></tr>
+            <tr><td><code>--FeatureFlags</code></td><td><code>false</code></td><td><span lang="en"><a href="docs.html#feature-flags">Feature flags</a>.</span><span lang="ru"><a href="docs.html#feature-flags">Фича-флаги</a>.</span></td></tr>
+            <tr><td><code>--HierarchyRules</code></td><td><code>false</code></td><td><span lang="en"><a href="docs.html#hierarchy-rules">Access rules over a tenant tree</a>.</span><span lang="ru"><a href="docs.html#hierarchy-rules">Правила доступа по дереву тенантов</a>.</span></td></tr>
+            <tr><td><code>--Storage</code></td><td><code>false</code></td><td><span lang="en"><a href="docs.html#storage">Object storage</a>, S3-compatible.</span><span lang="ru"><a href="docs.html#storage">Объектное хранилище</a>, совместимое с S3.</span></td></tr>
+            <tr><td><code>--ClickHouse</code></td><td><code>false</code></td><td><span lang="en"><a href="docs.html#clickhouse">ClickHouse</a>: connections, schema check, readiness.</span><span lang="ru"><a href="docs.html#clickhouse">ClickHouse</a>: подключения, проверка схемы, готовность.</span></td></tr>
+            <tr><td><code>--TestFramework</code></td><td><code>nunit</code></td><td><span lang="en">Test framework of the service's tests: <code>nunit</code> or <code>xunit</code> (v3).</span><span lang="ru">Тестовый фреймворк тестов сервиса: <code>nunit</code> или <code>xunit</code> (v3).</span></td></tr>
+            <tr><td><code>--Audit</code></td><td><code>false</code></td><td><span lang="en"><a href="docs.html#audit">Audit journal</a> of entity changes, through the outbox; with <code>--Messaging outbox</code>.</span><span lang="ru"><a href="docs.html#audit">Журнал аудита</a> изменений сущностей, через outbox; с <code>--Messaging outbox</code>.</span></td></tr>
+            <tr><td><code>--ApiGateway</code></td><td><code>false</code></td><td><span lang="en">An <a href="docs.html#gateway">API gateway</a> on YARP in place of a service, with <code>-M true</code>.</span><span lang="ru"><a href="docs.html#gateway">API-шлюз</a> на YARP вместо сервиса, с <code>-M true</code>.</span></td></tr>
+            <tr><td><code>--Deploy</code></td><td><code>compose</code></td><td><span lang="en"><a href="docs.html#deployment">Deployment files</a>: <code>compose</code>, <code>k8s</code> or <code>none</code>.</span><span lang="ru"><a href="docs.html#deployment">Файлы развёртывания</a>: <code>compose</code>, <code>k8s</code> или <code>none</code>.</span></td></tr>
+            <tr><td><code>--HttpPort</code></td><td><span lang="en">free port</span><span lang="ru">свободный порт</span></td><td><span lang="en">Port in <code>launchSettings.json</code> and on the host under compose.</span><span lang="ru">Порт в <code>launchSettings.json</code> и на хосте под compose.</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p lang="en">Details, dotted names and running locally: <a href="docs.html#generating">generating a solution</a>.</p>
+      <p lang="ru">Подробности, имена с точками и локальный запуск: <a href="docs.html#generating">генерация решения</a>.</p>
+    </div>
+  </section>
+
+  <!-- ==== README: documentation ==== -->
+  <section id="documentation">
+    <div class="wrap">
+      <h2 lang="en">Documentation</h2>
+      <h2 lang="ru">Документация</h2>
+      <p lang="en">Everything else is in the <a href="docs.html">docs</a>: the architecture, each feature, operations, the decisions behind the parts that depart from common practice, and the <a href="docs.html#roadmap">roadmap</a>.</p>
+      <p lang="ru">Всё остальное - в <a href="docs.html">документации</a>: архитектура, каждая возможность, эксплуатация, решения по тем частям, что отходят от общепринятой практики, и <a href="docs.html#roadmap">дорожная карта</a>.</p>
+      <p lang="en">Version 2 is not compatible with version 1: do not apply it with <code>--force</code> over a solution generated from v1. How to move an existing solution: <a href="docs.html#upgrading">what changed in v2</a>.</p>
+      <p lang="ru">Версия 2 несовместима с версией 1: не накатывайте её с <code>--force</code> поверх решения из v1. Как перенести существующее решение: <a href="docs.html#upgrading">что изменилось в v2</a>.</p>
+      <p lang="en">What each version brings: <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/version.json">version.json</a> and the <a href="https://github.com/sawking-tech/DotNetSolutionKit/releases">releases</a>. How versions are made: <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/CONTRIBUTING.md">contributing</a>.</p>
+      <p lang="ru">Что приносит каждая версия: <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/version.json">version.json</a> и <a href="https://github.com/sawking-tech/DotNetSolutionKit/releases">релизы</a>. Как выпускаются версии: <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/CONTRIBUTING.md">contributing</a>.</p>
+    </div>
+  </section>
+
+  <!-- ==== README: license ==== -->
+  <section id="license">
+    <div class="wrap">
+      <h2 lang="en">License</h2>
+      <h2 lang="ru">Лицензия</h2>
+      <p lang="en">This project is licensed under the MIT License. See the <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/LICENSE">LICENSE</a> file for details.</p>
+      <p lang="ru">Проект распространяется по лицензии MIT. Подробности - в файле <a href="https://github.com/sawking-tech/DotNetSolutionKit/blob/master/LICENSE">LICENSE</a>.</p>
+    </div>
+  </section>
+
+    </main>
+
+<footer>
+  <div class="wrap">
+    <p lang="en">DotNetSolutionKit is made by <a href="https://sawking.tech/cv">Vladimir Savkin</a>, systems architect. Source, releases and samples: <a href="https://github.com/sawking-tech/DotNetSolutionKit">github.com/sawking-tech/DotNetSolutionKit</a>.</p>
+    <p lang="ru">DotNetSolutionKit сделал <a href="https://sawking.tech/cv">Владимир Савкин</a>, системный архитектор. Исходники, релизы и примеры: <a href="https://github.com/sawking-tech/DotNetSolutionKit">github.com/sawking-tech/DotNetSolutionKit</a>.</p>
+    <p><span lang="en">Made at</span><span lang="ru">Сделано в</span> <a href="https://sawking.tech">sawking.tech</a>.</p>
+  </div>
+</footer>
+  </div>
+</div>
+</div>
+
+<script src="site/panel.js?v=75"></script>
+<script src="site/sections.js?v=75"></script>
+<script>
+/* Transitions come back only once the panel and the sheet stand where storage says - two frames
+   later, so the browser has laid the page out and painted it at rest. This lives in the page, next
+   to the class it removes: from a cached script it might never run, and the page would keep every
+   animation switched off. */
+requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove("preload")));
+</script>
+</body>
+</html>
