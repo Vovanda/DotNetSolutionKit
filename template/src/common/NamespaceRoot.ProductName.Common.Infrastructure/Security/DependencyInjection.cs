@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using NamespaceRoot.ProductName.Common.Application.Execution;
 using NamespaceRoot.ProductName.Common.Domain.Context;
 
 namespace NamespaceRoot.ProductName.Common.Infrastructure.Security;
@@ -33,6 +34,9 @@ public static class DependencyInjection
             
             return new ApplicationExecutionContext(actor, timeProvider);
         });
+
+        // The system as the actor, for work no person asked for.
+        services.AddSingleton<ISystemExecutionContextFactory, SystemExecutionContextFactory>();
 
         return services;
     }

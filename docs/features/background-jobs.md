@@ -41,7 +41,8 @@ What the template adds to plain Hangfire:
   interceptors can see, so events raised by a job are dispatched as in a request.
 - **The actor travels with the job.** `JobActorPropagationFilter` records who enqueued a job and restores
   that user while the job runs, so what the job writes is attributed to them. A scheduled run has no such
-  user and runs as the system.
+  user and runs as the system. A job that acts on its own account even when someone enqueued it takes
+  its context from `ISystemExecutionContextFactory.Create()`.
 - **`/ready` checks Hangfire.** The health check fails when no Hangfire server is running.
 
 ## Why Hangfire

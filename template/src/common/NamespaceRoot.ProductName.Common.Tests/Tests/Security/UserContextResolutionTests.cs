@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using NamespaceRoot.ProductName.Common.Application.Execution;
 using NamespaceRoot.ProductName.Common.Domain.Context;
 using NamespaceRoot.ProductName.Common.Infrastructure.Security;
 
@@ -55,5 +56,20 @@ internal class UserContextResolutionTests
 
         actor.ShouldBeSameAs(SystemUserContext.Instance);
         actor.AuthContext.Type.ShouldBe(AuthMethod.System);
+    }
+
+    [Test(Description = "Work no person asked for acts as the system, even inside a job someone enqueued")]
+    public void Should_ActAsTheSystem_When_TheSystemContextIsAskedFor()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton(TimeProvider.System);
+        services.AddExecutionContext();
+        using var provider = services.BuildServiceProvider();
+        using var _ = JobActorContext.Use(new JobTriggeredByUserContext(TriggeredById, "operator@example.com", tenantId: null));
+
+        var context = provider.GetRequiredService<ISystemExecutionContextFactory>().Create();
+
+        context.Actor.ShouldBeSameAs(SystemUserContext.Instance);
+        context.TimeProvider.ShouldBeSameAs(TimeProvider.System);
     }
 }
