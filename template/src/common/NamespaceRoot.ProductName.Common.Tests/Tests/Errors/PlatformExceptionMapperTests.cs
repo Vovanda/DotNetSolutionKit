@@ -114,7 +114,7 @@ internal class PlatformExceptionMapperTests
     }
 
     [Test]
-    public void A_failed_validator_lists_every_failing_field()
+    public void A_failed_validator_is_a_422_listing_every_failing_field()
     {
         var problem = Mapper().Map(new FluentValidation.ValidationException(
         [
@@ -123,7 +123,7 @@ internal class PlatformExceptionMapperTests
             new ValidationFailure("Email", "Email is invalid"),
         ]));
 
-        problem.Status.ShouldBe(400);
+        problem.Status.ShouldBe(422);
         Code(problem).ShouldBe(ErrorConstants.Codes.ValidationError);
         var errors = problem.ShouldBeAssignableTo<HttpValidationProblemDetails>()!.Errors;
         errors["Name"].Length.ShouldBe(2);

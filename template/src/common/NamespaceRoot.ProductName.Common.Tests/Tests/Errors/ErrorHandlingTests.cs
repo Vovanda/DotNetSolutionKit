@@ -94,11 +94,11 @@ internal class ErrorHandlingTests
     }
 
     [Test(Description = "A body failing its validator is a validation problem naming fields as the JSON does")]
-    public async Task Should_WriteAValidationProblemWithJsonFieldNames_When_TheBodyIsInvalid()
+    public async Task Should_WriteA422ValidationProblemWithJsonFieldNames_When_TheBodyIsInvalid()
     {
         var response = await _client.PostAsJsonAsync("/validation-probe", new ProbeRequest { Name = "", Tags = ["a"] });
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType!.MediaType.ShouldBe(ProblemJson);
         var problem = await ReadAsync(response);
         var fields = problem.GetProperty("errors").EnumerateObject().Select(field => field.Name).ToList();

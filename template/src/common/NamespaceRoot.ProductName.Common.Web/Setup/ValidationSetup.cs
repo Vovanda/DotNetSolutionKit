@@ -1,16 +1,21 @@
 using System.Reflection;
 using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using NamespaceRoot.ProductName.Common.Web.Pagination;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
+using SharpGrip.FluentValidation.AutoValidation.Mvc.Results;
 
 namespace NamespaceRoot.ProductName.Common.Web.Setup;
 
 /// <summary>
 /// FluentValidation for controllers: every validator in the given assemblies runs before the action,
-/// and an invalid request is answered with 400 and <c>ValidationProblemDetails</c>. Page and page size
-/// are checked against <see cref="PaginationContract"/> the same way.
+/// and an invalid request is answered with 422 and <c>ValidationProblemDetails</c>. Model binding errors
+/// and page bounds (<see cref="PaginationContract"/>) are answered the same way.
 /// </summary>
 public static class ValidationSetup
 {
@@ -31,8 +36,40 @@ public static class ValidationSetup
         ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
 
         services.AddValidatorsFromAssemblies(assemblies);
-        services.AddFluentValidationAutoValidation();
+        services.AddFluentValidationAutoValidation(configuration =>
+            configuration.OverrideDefaultResultFactoryWith<UnprocessableEntityResultFactory>());
+
+        // ASP.NET Core answers invalid model state with 400; the platform answers every invalid
+        // argument with one status, so a client handles one kind of input error.
+        services.Configure<ApiBehaviorOptions>(options => options.InvalidModelStateResponseFactory = context =>
+            new UnprocessableEntityObjectResult(context.HttpContext.RequestServices
+                .GetRequiredService<ProblemDetailsFactory>()
+                .CreateValidationProblemDetails(
+                    context.HttpContext, context.ModelState, StatusCodes.Status422UnprocessableEntity)));
+
         services.Configure<MvcOptions>(options => options.Filters.Add<PaginationValidationFilter>());
         return services;
+    }
+
+    /// <summary>
+    /// Answers a failed validator with 422 instead of the 400 SharpGrip uses by default.
+    /// </summary>
+    /// <remarks>
+    /// The problem is created again rather than given a new status: the one SharpGrip passes in already
+    /// carries the type and title of a 400.
+    /// </remarks>
+    private sealed class UnprocessableEntityResultFactory : IFluentValidationAutoValidationResultFactory
+    {
+        public Task<IActionResult> CreateActionResult(
+            ActionExecutingContext context,
+            ValidationProblemDetails validationProblemDetails,
+            IDictionary<IValidationContext, ValidationResult> validationResults)
+        {
+            var problem = context.HttpContext.RequestServices
+                .GetRequiredService<ProblemDetailsFactory>()
+                .CreateValidationProblemDetails(
+                    context.HttpContext, context.ModelState, StatusCodes.Status422UnprocessableEntity);
+            return Task.FromResult<IActionResult>(new UnprocessableEntityObjectResult(problem));
+        }
     }
 }

@@ -40,12 +40,12 @@ internal class ValidationSetupTests
         await _app.DisposeAsync();
     }
 
-    [Test(Description = "An invalid body is rejected with 400 and the failing field, before the action runs")]
-    public async Task Should_Return400_When_TheBodyFailsItsValidator()
+    [Test(Description = "An invalid body is rejected with 422 and the failing field, before the action runs")]
+    public async Task Should_Return422_When_TheBodyFailsItsValidator()
     {
         var response = await _client.PostAsJsonAsync("/validation-probe", new ProbeRequest { Name = "", Tags = ["a"] });
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
         var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
         problem!.Errors.Keys.ShouldContain(key => key.Equals(nameof(ProbeRequest.Name), StringComparison.OrdinalIgnoreCase));
     }
@@ -59,11 +59,11 @@ internal class ValidationSetupTests
     }
 
     [Test(Description = "A rule chain stops at its first failure, so a null rejected by NotNull is not dereferenced by Must")]
-    public async Task Should_Return400_When_ANullFailsTheFirstRuleOfAChain()
+    public async Task Should_Return422_When_ANullFailsTheFirstRuleOfAChain()
     {
         var response = await _client.PostAsJsonAsync("/validation-probe", new ProbeRequest { Name = "ok", Tags = null });
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
     }
 }
 

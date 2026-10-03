@@ -71,16 +71,19 @@ public sealed class PlatformExceptionMapper
     }
 
     /// <summary>
-    /// A 400 problem listing the rejected fields, in the shape ASP.NET Core uses for model validation.
+    /// A problem listing the rejected fields, in the shape ASP.NET Core uses for model validation. 422 by
+    /// default, like every validation failure of the platform.
     /// </summary>
     public static HttpValidationProblemDetails ValidationProblem(
         IDictionary<string, string[]> errors,
         string? detail = null,
-        string code = ErrorConstants.Codes.ValidationError)
+        string code = ErrorConstants.Codes.ValidationError,
+        int status = StatusCodes.Status422UnprocessableEntity)
     {
         var problem = new HttpValidationProblemDetails(errors)
         {
-            Status = StatusCodes.Status400BadRequest,
+            Status = status,
+            Title = TitleOf(status),
             Detail = detail,
         };
         problem.Extensions[CodeExtension] = code;
@@ -112,7 +115,8 @@ public sealed class PlatformExceptionMapper
         InconsistentDataException { ParameterName: { } parameter } ex => ValidationProblem(
             new Dictionary<string, string[]> { [parameter] = [ex.Message] },
             ex.Message,
-            ErrorConstants.Codes.BadRequest),
+            ErrorConstants.Codes.BadRequest,
+            StatusCodes.Status400BadRequest),
 
         InconsistentDataException ex => Problem(
             StatusCodes.Status400BadRequest, ex.Message, ErrorConstants.Codes.BadRequest),

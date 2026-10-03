@@ -11,7 +11,7 @@ namespace NamespaceRoot.ProductName.Common.Web.Pagination;
 /// Rejects a page or page size outside <see cref="PaginationContract"/> before the action runs.
 /// </summary>
 /// <remarks>
-/// The answer is the same 400 validation problem as any other invalid argument, so a client handles one
+/// The answer is the same 422 validation problem as any other invalid argument, so a client handles one
 /// kind of input error. Without the check, a page size of a million reaches the database.
 /// </remarks>
 public sealed class PaginationValidationFilter : IActionFilter
@@ -30,9 +30,9 @@ public sealed class PaginationValidationFilter : IActionFilter
 
         var problem = context.HttpContext.RequestServices
             .GetRequiredService<ProblemDetailsFactory>()
-            .CreateValidationProblemDetails(context.HttpContext, context.ModelState, StatusCodes.Status400BadRequest);
+            .CreateValidationProblemDetails(context.HttpContext, context.ModelState, StatusCodes.Status422UnprocessableEntity);
 
-        context.Result = new BadRequestObjectResult(problem);
+        context.Result = new UnprocessableEntityObjectResult(problem);
     }
 
     public void OnActionExecuted(ActionExecutedContext context)

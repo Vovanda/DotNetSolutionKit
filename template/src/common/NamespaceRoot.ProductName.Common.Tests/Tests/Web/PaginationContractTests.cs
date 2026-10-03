@@ -71,12 +71,12 @@ internal sealed class PaginationContractTests
     public void Should_RespectRequestSpecificMaximum(int pageSize, bool shouldFail)
         => PaginationContract.Validate(new LimitedPagination(1, pageSize)).Any().ShouldBe(shouldFail);
 
-    [Test(Description = "Out-of-bounds paging is a 400 validation problem, and the action never runs")]
-    public async Task Should_Return400BeforeTheAction_When_PaginationIsInvalid()
+    [Test(Description = "Out-of-bounds paging is a 422 validation problem, and the action never runs")]
+    public async Task Should_Return422BeforeTheAction_When_PaginationIsInvalid()
     {
         var response = await _client.GetAsync("/paging-probe?page=0&pageSize=1001");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType!.MediaType.ShouldBe("application/problem+json");
         var problem = JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
         var fields = problem.GetProperty("errors").EnumerateObject().Select(field => field.Name).ToList();
@@ -94,11 +94,11 @@ internal sealed class PaginationContractTests
     }
 
     [Test(Description = "A request-specific limit is enforced over the default one")]
-    public async Task Should_Return400_When_TheRequestSpecificLimitIsExceeded()
+    public async Task Should_Return422_When_TheRequestSpecificLimitIsExceeded()
     {
         var response = await _client.GetAsync("/paging-probe/limited?page=1&pageSize=201");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
     }
 
     [Test(Description = "An action that opts out is not checked")]
