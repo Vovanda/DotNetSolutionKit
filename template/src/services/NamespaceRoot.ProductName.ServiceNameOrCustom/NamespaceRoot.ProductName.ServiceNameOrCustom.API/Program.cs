@@ -14,11 +14,12 @@ try
     builder.SetupLogging();
     
     // --- DI validation configuration ---
-    builder.Host.UseDefaultServiceProvider((context, options) =>
+    // In every environment: a missing registration or a scoped service resolved from the root then
+    // fails the start, instead of the first request or background job that happens to need it.
+    builder.Host.UseDefaultServiceProvider((_, options) =>
     {
-        var isLocal = context.HostingEnvironment.IsEnvironment("Local");
-        options.ValidateScopes = isLocal;    // Scoped services don't resolve via root
-        options.ValidateOnBuild = isLocal;   // Validate that all dependencies can be built
+        options.ValidateScopes = true;
+        options.ValidateOnBuild = true;
     });
 
     // --- Application configuration ---
