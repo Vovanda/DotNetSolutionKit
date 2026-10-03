@@ -1,5 +1,19 @@
 # Contributing
 
+## Changes
+
+Every change reaches `master` through a pull request; `master` takes no direct pushes.
+
+- The pull request runs [template.yml](.github/workflows/template.yml): it generates a solution for each
+  combination of flags, builds it, runs its tests and scans it for secrets. It has to be green before the
+  merge.
+- A change in what a generated solution does comes with a test of that behaviour in the template's tests.
+- Documentation and the site (`docs/`, `index.html`, `docs.html`, `site/`) go through a pull request too.
+  They are not part of the template's package and need no new version.
+
+After a release, [DotNetSolutionKit.Samples](https://github.com/sawking-tech/DotNetSolutionKit.Samples)
+regenerates its branches from it within a day and runs their CI; its `nightly` branch follows `master`.
+
 ## Versions and releases
 
 The template follows semantic versioning. Its version and release notes are in [version.json](version.json),
