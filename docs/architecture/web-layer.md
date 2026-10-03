@@ -41,6 +41,13 @@ differently, and clients comparing the strings get it wrong across a daylight-sa
 8. The service's own middleware, from `beforeEndpoints`: the Hangfire dashboard, for instance.
 9. Controllers, `/health` and `/ready`.
 
+## Swagger documents
+
+The version of an endpoint is the `api/v{n}` segment of its route. Swagger shows one document per version
+found on the service's controllers, `v1`, `v2`, `v10` in numeric order, and an `all` document with every
+endpoint. A route without a version, such as `internal/jobs`, is listed only in `all`. The
+[API diff](../features/api-diff.md) compares the `all` document.
+
 ## What a service keeps
 
 ```csharp
