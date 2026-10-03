@@ -70,6 +70,12 @@
       "defaultValue": "false",
       "description": "Read secrets from Infisical: the shared folder and the service's folder overlay configuration"
     },
+    "HierarchyRules": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Add access rules over a tenant tree stored as materialized paths (IHierarchicalEntity, HierarchyRules)"
+    },
     "Minimal": {
       "type": "parameter",
       "datatype": "bool",
@@ -104,6 +110,14 @@
           "exclude": [
             "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Configuration/Secrets/**",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Secrets/**"
+          ]
+        },
+        {
+          "condition": "(!HierarchyRules)",
+          "exclude": [
+            "src/common/NamespaceRoot.ProductName.Common/Domain/IHierarchicalEntity.cs",
+            "src/common/NamespaceRoot.ProductName.Common/Domain/Policy/**",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Tests/Domain/Policy/**"
           ]
         },
         {

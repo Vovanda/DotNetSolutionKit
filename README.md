@@ -53,6 +53,9 @@ Parameters:
 - `-I` (Infisical): read secrets from Infisical. The shared folder and the service's folder overlay
   configuration, so code reads a secret like any other setting. Pass it together with `-M false`, since
   the secret store lives in `Common`; a service generated later with `-I` uses it from there.
+- `--HierarchyRules`: add access rules over a tenant tree stored as materialized paths
+  (`IHierarchicalEntity`, `HierarchyRules`): whether a tenant may see another one in its subtree or
+  among its direct children. Off by default; it lives in `Common`, so pass it with `-M false`.
 
 ## 3. What the template gives you
 
