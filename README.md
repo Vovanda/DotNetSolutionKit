@@ -2,6 +2,9 @@
 
 Made by [SawKing Tech](https://sawking.tech/). Author: Vladimir Savkin.
 
+Site: [dnsk.sawking.tech](https://dnsk.sawking.tech/). Documentation, in English and Russian:
+[dnsk.sawking.tech/docs.html](https://dnsk.sawking.tech/docs.html).
+
 > **Version 2 breaks version 1. Do not apply this template with `--force` over a solution generated from
 > v1:** namespaces, project references, package management, versioning and the shape of error responses
 > changed, and the overwritten solution will not build. Use v2 for new solutions; port changes into
@@ -59,7 +62,9 @@ Details, dotted names and running locally:
 ## Documentation
 
 Everything else is in [docs](docs/README.md): the architecture, each feature, operations, the decisions
-behind the parts that depart from common practice, and the roadmap.
+behind the parts that depart from common practice, and the roadmap. The
+[site](https://dnsk.sawking.tech/docs.html) shows the same documents with a menu and rendered diagrams, in
+English and Russian.
 
 What each version brings: [version.json](version.json) and the
 [releases](https://github.com/sawking-tech/DotNetSolutionKit/releases). How versions are made:
