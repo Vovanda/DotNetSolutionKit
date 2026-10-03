@@ -1,0 +1,56 @@
+# Web layer
+
+The host of every service is built from three calls in `Common.Web`, so the pipeline is the same in all
+services and a fix to it reaches them with a `Common` update.
+
+| Call | Registers or adds |
+|---|---|
+| `builder.AddPlatformLogging()` | Serilog from the `Serilog` section, with the version and the module on every line; health probes kept out of the log |
+| `builder.AddPlatformWebApi(serviceAssembly, mvc => ...)` | JSON (camelCase, nulls omitted), [errors](errors.md), controllers with the [permission check](authentication-and-permissions.md), [validation](validation-and-pagination.md), Swagger, CORS from the `Cors` section, the execution context |
+| `app.UsePlatformPipeline(serviceAssembly, authenticate, beforeEndpoints)` | the middleware, in the order below, and the endpoints |
+
+## The pipeline
+
+1. Correlation: reads or creates `X-Correlation-Id`, puts it on every log line of the request and on the
+   response.
+2. Request logging: one line per request with method, path, status and duration. It comes after
+   correlation, so the line carries the identifier.
+3. Routing.
+4. CORS. Before error handling, so an error reaches a browser with CORS headers instead of as an opaque
+   network failure.
+5. Error handling: exceptions and empty 4xx/5xx responses become [problems](errors.md).
+6. Authentication and authorization. After error handling, so their failures are problems too.
+7. Swagger.
+8. The service's own middleware, from `beforeEndpoints`: the Hangfire dashboard, for instance.
+9. Controllers, `/health` and `/ready`.
+
+## What a service keeps
+
+```csharp
+// SchemaHost.Build
+builder.AddPlatformLogging();
+builder.Configuration.SetupAppConfiguration(builder.Environment, args);
+builder.AddPlatformWebApi(typeof(SchemaHost).Assembly);
+builder.SetupAppServices()          // its own registrations
+    .SetupHealthChecks();           // its database, its jobs
+builder.SetupAppAuthentication();   // its authentication handler
+
+// Program
+var app = SchemaHost.Build(args);
+// migrations and seeding
+app.UsePlatformPipeline(typeof(Program).Assembly, beforeEndpoints: pipeline => pipeline.UseAppHangfire());
+app.Run();
+```
+
+Configuration, the service's own registrations, health checks, the authentication handler and the
+database setup stay in the service; everything else is shared. `SchemaHost.Build` describes the
+application once, for `Program` and for the [API document](../adr/003-api-schema-generation.md).
+
+The DI container is validated when it is built, in every environment: a missing registration or a scoped
+service taken from the root fails the start, not the first request that needs it.
+
+## Tests
+
+`Common.Tests` builds a host with `AddPlatformWebApi` and `UsePlatformPipeline` on a test server and
+checks health, an unknown route answered as a problem with the correlation identifier, and CORS for a
+configured origin.

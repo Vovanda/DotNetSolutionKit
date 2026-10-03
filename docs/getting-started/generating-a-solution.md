@@ -1,0 +1,101 @@
+# Generating a solution
+
+## Install the template
+
+The template lives in the `template` folder of this repository, next to its `.template.config`:
+
+```bash
+dotnet new install /path/to/DotNetSolutionKit/template
+```
+
+After pulling changes, install it again over the old one:
+
+```bash
+dotnet new install /path/to/DotNetSolutionKit/template --force
+```
+
+## Generate
+
+The first run generates the shared `Common` projects, the root solution file and the first service.
+Pass `-M false` for it:
+
+```bash
+dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders -M false
+```
+
+Every further service is generated with the default `-M true`, which creates the service folder only and
+uses the `Common` already there:
+
+```bash
+dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
+```
+
+Then add the new projects to the global solution file:
+
+```bash
+cd src/services
+chmod +x manual-add-projects.sh # on Linux and macOS
+./manual-add-projects.sh
+```
+
+## Parameters
+
+| Parameter | Default | What it does |
+|---|---|---|
+| `-N`, `--NamespaceRoot` | `MyCompany` | Organization name, the root namespace. May be dotted. |
+| `-P`, `--ProductName` | `Product` | Product name. May be dotted. |
+| `-S`, `--ServiceNameOrCustom` | `Service` | Service name. May be dotted. |
+| `-M`, `--Minimal` | `true` | `true` generates only the service folder, `false` the full kit: `Common` projects and `All.sln`. |
+| `-H`, `--Hangfire` | `true` | [Background jobs](../features/background-jobs.md) on Hangfire. Per service, also with `-M true`. |
+| `--Messaging` | `none` | [Message bus](../features/messaging.md): `outbox` or `direct`. Per service. |
+| `-I`, `--Infisical` | `false` | [Secrets from Infisical](../features/secrets.md). |
+| `--DiffApi` | `false` | [API contract diff](../features/api-diff.md) on pull requests. |
+| `--FeatureFlags` | `false` | [Feature flags](../features/feature-flags.md). |
+| `--HierarchyRules` | `false` | [Access rules over a tenant tree](../features/hierarchy-rules.md). |
+| `--HttpPort` | free port | Port in `launchSettings.json`; without it, a free port from 5000-5999 on the generating machine, so services generated one after another do not share a port. |
+
+`-I`, `--DiffApi`, `--FeatureFlags` and `--HierarchyRules` add files to `Common`, so they have to be
+passed with `-M false`, when `Common` is generated. Pass `-I`, `--DiffApi` and `--FeatureFlags` again to
+each service generated later that should use them: they change the service's code too, and the service
+then wires what `Common` already has. A service generated without them leaves them out.
+
+## Dotted names
+
+Any of `-N`, `-P` and `-S` may contain dots:
+
+```bash
+dotnet new DotNetSolutionKit -N Acme.Corp -P Shop.Online -S Sales.Orders -M false
+```
+
+generates `Acme.Corp.Shop.Online.Sales.Orders.API` and the rest of the projects under that name. A dotted
+service name lets a domain be split into small services, such as `Sales.Orders` and `Sales.Invoicing`,
+instead of one shared project for the whole of `Sales`. A dotted product name keeps the origin in every
+namespace of a fork or a downloaded copy, where the repository name is gone.
+
+Where a dot cannot go, the name is derived from the service name:
+
+| Where | Form | Example |
+|---|---|---|
+| Namespaces, projects, folders | as given | `Acme.Corp.Shop.Online.Sales.Orders` |
+| C# identifiers | without dots | `SalesOrdersDbContext` |
+| Database schema, Infisical folder, queue names | lower case, dots replaced by underscores | `sales_orders` |
+
+## Configure and run locally
+
+`appsettings.json` and `appsettings.Local.json` ship with the required values empty and a `_comment_*`
+key next to each one saying what goes there. Put your local values into `appsettings.Secrets.json` in the
+same folder. It is read only in the `Local` environment, the generated `.gitignore` keeps it out of the
+repository, and environment variables override it.
+
+In other environments, pass the same keys as environment variables, for example
+`ConnectionStrings__DefaultConnection`.
+
+The `local` launch profile sets `ASPNETCORE_ENVIRONMENT=Local`, so a plain `dotnet run` reads the secrets
+file:
+
+```bash
+dotnet run --project src/services/MyCompany.MyProduct.Orders/MyCompany.MyProduct.Orders.API
+```
+
+A misconfigured service stops at startup rather than at the first request; see
+[startup checks](../operations/startup-checks.md).

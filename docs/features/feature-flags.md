@@ -1,20 +1,23 @@
-# Feature Flags
+# Feature flags
+
+Generated with `--FeatureFlags`, off by default. Pass it with `-M false`, and to each service generated
+later that reads the flags.
 
 A flag answers one question: *is this behaviour on right now?* Everything here follows from treating
-the answer as **data** rather than as code — data that ships in one file, is read the same way by every
+the answer as **data** rather than as code - data that ships in one file, is read the same way by every
 service, can be changed on a running system, and carries enough about itself that nobody has to ask who
 added it or whether it can go.
 
 ## Why one file
 
 A flag that lives in a service's `appsettings.json` means whatever that service thinks it means. Two
-services then disagree about the same feature, and a flag that spans them — a migration, a kill switch,
-a redesign visible in three places — has to be set in three files, in the right order, without anyone
+services then disagree about the same feature, and a flag that spans them - a migration, a kill switch,
+a redesign visible in three places - has to be set in three files, in the right order, without anyone
 forgetting the third.
 
 So flags live in a single `features.json` that ships from `Common`. It travels with the project
 reference, lands in every service's output, and is read by all of them. One flag, one meaning, one place
-to change it. Adding a flag that only the UI reacts to needs no code at all — a new entry in the file is
+to change it. Adding a flag that only the UI reacts to needs no code at all - a new entry in the file is
 the whole change.
 
 The file is also the fallback. When an external store is wired up and unreachable, the platform keeps
@@ -42,16 +45,16 @@ running on what the file says instead of failing to start or silently answering 
 | Field | Meaning |
 |---|---|
 | `enabled` | The default value, used by any environment the `environments` map does not name. |
-| `effect` | `enables` or `disables` — whether *on* means the feature works or is withheld. |
+| `effect` | `enables` or `disables` - whether *on* means the feature works or is withheld. |
 | `environments` | Per-environment override, matched against the running `IHostEnvironment.EnvironmentName`, case-insensitively. This is what lets one shared file serve every stand. |
 | `tags` | Free labels for grouping in a management view: an area, a release, a squad. |
 | `description` | What the flag does, written for whoever finds it in a year. |
 | `owner` | Who to ask. A flag with no owner is a flag nobody dares delete. |
-| `expiresAt` | When it should be gone. Past that date the flag is reported as **expired** — it keeps working, but the debt is visible instead of remembered. |
+| `expiresAt` | When it should be gone. Past that date the flag is reported as **expired** - it keeps working, but the debt is visible instead of remembered. |
 | `ticket` | Where the decision was recorded. Deliberately a plain string: it survives a change of tracker. |
 
 Keys are lower kebab-case, dotted for sub-features (`billing.invoice.recurring`), and are matched
-without regard to case in both directions — `Checkout.New-Flow` and `checkout.new-flow` are one flag.
+without regard to case in both directions - `Checkout.New-Flow` and `checkout.new-flow` are one flag.
 What is reported back is always the spelling declared in the file, so a management view shows the
 canonical name rather than whatever a caller typed.
 
@@ -64,17 +67,22 @@ Values resolve through `IConfiguration`, so they are layered, and the order is d
 
 ```mermaid
 flowchart LR
-    F["features.json<br/>ships from Common"] --> S["External store<br/>optional, e.g. a secrets manager"]
-    S --> E["Environment variables<br/>Features__checkout.new-flow__enabled"]
-    E --> C["IFeatureCatalog"]
+    F["features.json<br/>ships from Common"] --> A["appsettings*.json"]
+    A --> E["Environment variables<br/>Features__checkout.new-flow__enabled"]
+    E --> S["External store<br/>optional: Infisical with -I"]
+    S --> C["IFeatureCatalog"]
     C --> M["IFeatureManager / FeatureGate"]
     C --> H["GET /api/v1/features"]
 ```
 
-Later layers win. Each state reports **which layer decided it** — `File`, `Store`, `EnvironmentVariable`
-or `Default` — which exists for one situation that is otherwise unexplainable from the outside: an
-operator switches a flag off, nothing happens, because an environment variable on the host sits above
-the file. Without the source in the response, that is an afternoon of confusion.
+Later layers win. Each state reports **which layer decided it** - `File`, `Store`, `EnvironmentVariable`
+or `Default` - which exists for one situation that is otherwise unexplainable from the outside: an
+operator switches a flag off in the file, nothing happens, because an environment variable or the store
+sits above it. Without the source in the response, that is an afternoon of confusion.
+
+The external store is read once, at startup. A snapshot of the store on disk, used while the store is
+unreachable, and an `important` marker that pins a flag to the file's value are planned in
+[#3](https://github.com/Vovanda/DotNetSolutionKit/issues/3).
 
 The file is registered with `reloadOnChange`, and the catalogue reads configuration on **every call**
 rather than caching. That is what makes an edit apply to a running service. Caching a value here would
@@ -95,7 +103,7 @@ services.AddPlatformFeatureManagement(configuration);
 ```
 
 `AddPlatformFeatures` anchors the file to the application's base directory rather than the content
-root. The file ships in the build output, and a relative path resolves against the content root — the
+root. The file ships in the build output, and a relative path resolves against the content root - the
 project directory under `dotnet run`, the application directory in a container. Anchoring makes both
 agree instead of working in one and silently reading nothing in the other.
 
@@ -104,13 +112,13 @@ After it:
 | Use | What |
 |---|---|
 | Evaluate in code | `IFeatureManager` from `Microsoft.FeatureManagement`, backed by the shared file |
-| Guard an endpoint | `[FeatureGate(FeatureKeys.SomeFeature)]` — the route is absent while the flag is off |
-| Read the platform view | `IFeatureCatalog` — value plus owner, expiry, tags and the deciding layer |
+| Guard an endpoint | `[FeatureGate(FeatureKeys.SomeFeature)]` - the route is absent while the flag is off |
+| Read the platform view | `IFeatureCatalog` - value plus owner, expiry, tags and the deciding layer |
 | Change a value | `IFeatureStore`, or `PUT /api/v1/features/{key}` |
 
 `Microsoft.FeatureManagement` is used rather than replaced: its evaluation, its snapshots and its
 `[FeatureGate]` are already written and tested. What this adds is the schema, the shared file, the
-source reporting and the write path — not another evaluation engine.
+source reporting and the write path - not another evaluation engine.
 
 Keys are named through constants:
 
@@ -118,7 +126,7 @@ Keys are named through constants:
 if (_features.IsEnabled(FeatureKeys.CheckoutNewFlow)) { … }
 ```
 
-`FeatureKeys` is maintained by hand. Generating it from the JSON was considered and dropped — a source
+`FeatureKeys` is maintained by hand. Generating it from the JSON was considered and dropped - a source
 generator maintained forever, to save writing one line, is a bad trade. A test keeps the two honest
 instead: every constant must name a flag the file declares. A flag only the UI reacts to needs no
 constant at all.
@@ -128,7 +136,7 @@ constant at all.
 `IFeatureStore` writes to the file: atomically, through a temporary file and a move, so a reader never
 sees half a document. It changes **only the value**. Description, owner, expiry and ticket are decisions
 someone recorded, and a write that quietly dropped them would turn the file from a record into state.
-A key nothing declares is refused, by name — inventing flags at runtime is how a catalogue stops
+A key nothing declares is refused, by name - inventing flags at runtime is how a catalogue stops
 describing the system.
 
 Over HTTP:
@@ -138,7 +146,7 @@ GET  /api/v1/features        → every flag, with value, source, expiry and meta
 PUT  /api/v1/features/{key}  → { "enabled": true, "environment": "Staging" }
 ```
 
-`GET` is anonymous. Nothing in the list is secret, and a client needs it before anyone signs in — a
+`GET` is anonymous. Nothing in the list is secret, and a client needs it before anyone signs in - a
 login screen that cannot tell which of two login flows to draw is not a hypothetical. `PUT` requires
 authorization: it changes how the platform behaves.
 
@@ -147,7 +155,7 @@ authorization: it changes how the platform behaves.
 
 ## Retiring a flag
 
-Every flag ends. `[BehindFeature("key")]` marks the code that exists *because* of the flag — the class,
+Every flag ends. `[BehindFeature("key")]` marks the code that exists *because* of the flag - the class,
 the method, the property that goes when the flag goes:
 
 ```csharp
@@ -183,25 +191,25 @@ and every declared key keeps the agreed shape.
 The recommendation is deliberately not "call the backend before drawing anything".
 
 **The frontend owns its own flag provider.** It has flags of its own that the backend has no opinion
-about — an experiment in a layout, a UI affordance, something a designer wants to try. Those live in the
+about - an experiment in a layout, a UI affordance, something a designer wants to try. Those live in the
 frontend's own configuration, in the same shape.
 
 **The backend is one more source, above the frontend's own.** `GET /api/v1/features` returns the
-platform view; the provider merges it over its local flags — overriding what matches and adding what it
+platform view; the provider merges it over its local flags - overriding what matches and adding what it
 does not have. That gives one useful property: whatever ends up being the shared store (a secrets
 manager, a database, a management UI) becomes the single source of truth for *both* backend and
 frontend, without either side being rebuilt.
 
 Practical shape:
 
-- Fetch the list when the app loads, and again where it matters — a route change, an admin screen, after
+- Fetch the list when the app loads, and again where it matters - a route change, an admin screen, after
   a user action that depends on one. Asking the backend as the user moves around is ordinary web
   application behaviour, not something to engineer around.
 - Treat a failed fetch as "keep the local values", never as "everything is off". A network blip must not
   turn features off for everyone.
 - Read flags through the provider only. A component that reaches for configuration directly is the
   component that keeps working after a flag is retired.
-- Draw from the flag, but never trust it for permission — the server decides what is allowed, every
+- Draw from the flag, but never trust it for permission - the server decides what is allowed, every
   time.
 
 A management UI is then a small application over the same two endpoints: `GET` to list, `PUT` to change,
