@@ -63,6 +63,43 @@ it (`logs -f`, `down`, `ps`).
   proxy or a gateway in front publishes it further.
 - All services share one database, each in its own schema; see [persistence](../architecture/persistence.md).
 
+## Blue-green under compose
+
+`compose.sh up` recreates the containers, and the service does not answer while they restart.
+`bluegreen.sh` switches without a gap, on one host:
+
+```bash
+deploy/build-images.sh
+deploy/compose/bluegreen.sh up          # start the other color, switch the edge to it, stop the old one
+deploy/compose/bluegreen.sh rollback    # start the previous color again and switch back
+deploy/compose/bluegreen.sh status
+```
+
+```mermaid
+flowchart LR
+    U([client]) --> E["edge: nginx<br/>EDGE_BIND:EDGE_PORT"]
+    E -- active --> B["blue: the services"]
+    E -. after the switch .-> G["green: the services"]
+    B --> I[("infrastructure:<br/>PostgreSQL, RabbitMQ")]
+    G --> I
+```
+
+- A color is a compose project of the services, `<prefix>-blue` or `<prefix>-green`. PostgreSQL and
+  RabbitMQ are a project of their own, shared by both colors; each color reaches them under their usual
+  names on its own network.
+- An nginx edge is the entry point. `up` starts the other color, waits until it is ready, points the
+  edge at it and reloads nginx; requests in flight finish on the old color.
+- The old color is then stopped, not removed: its jobs and consumers would otherwise go on running the
+  old code. `rollback` starts it again and switches back; nothing is rebuilt. `KEEP_OLD=1` leaves it
+  running for an instant rollback.
+- `ENTRY` names the service the edge proxies to: the gateway, or the one service when there is only one.
+- Both colors share the database while they overlap, so a migration has to leave the schema usable by
+  the version still running: add first, remove in a later release.
+- It needs docker compose 2.24 or later, for the `!reset` in the override it generates.
+
+Checked under continuous requests to the edge: a deploy and a rollback, 39 and 33 requests, all
+answered 200, each ending on the expected commit.
+
 ## Kubernetes
 
 ```bash

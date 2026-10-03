@@ -8,7 +8,6 @@ date.
 | What | Issue |
 |---|---|
 | `--ApiGateway`: Swagger of the services through the gateway, and permissions asked from a separate service | [#5](https://github.com/Vovanda/DotNetSolutionKit/issues/5) |
-| Blue-green deployment under compose: two stacks, a proxy switched with one reload | - |
 | Cookie-only tokens, with CSRF protection for each deployment shape | [#6](https://github.com/Vovanda/DotNetSolutionKit/issues/6) |
 | Feature flags: an on-disk snapshot of the external store, and an `important` marker in `features.json` | [#3](https://github.com/Vovanda/DotNetSolutionKit/issues/3) |
 | A sample repository generated from the template, one branch per combination of flags | [#4](https://github.com/Vovanda/DotNetSolutionKit/issues/4) |
