@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using Npgsql;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
 
@@ -61,8 +62,11 @@ public class ServiceNameOrCustomDbContextFactory : IDesignTimeDbContextFactory<S
     public ServiceNameOrCustomDbContext CreateDbContext(string[] args)
     {
         var connectionString = GetConnectionString();
-        Console.WriteLine($"ConnectionString: {connectionString}");
-        
+
+        // Name the target database without the credentials: this output lands in terminals and CI logs.
+        var target = new NpgsqlConnectionStringBuilder(connectionString);
+        Console.WriteLine($"Database: {target.Host}:{target.Port}/{target.Database} as {target.Username}");
+
         return new ServiceNameOrCustomDbContext(GetSqlServerOptions(connectionString));
     }
 }
