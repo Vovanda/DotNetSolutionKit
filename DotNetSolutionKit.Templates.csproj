@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The template as a NuGet package: dotnet new install SawKing.DotNetSolutionKit.
+    Packed by .github/workflows/release.yml on a tag, with the version from version.json.
+    Pack from a clean checkout: everything under template/ that is not ignored here goes in.
+  -->
+
+  <PropertyGroup>
+    <_VersionJson>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)version.json'))</_VersionJson>
+    <Version>$([System.Text.RegularExpressions.Regex]::Match($(_VersionJson), '&quot;version&quot;\s*:\s*&quot;([^&quot;]+)&quot;').Groups[1].Value)</Version>
+
+    <PackageType>Template</PackageType>
+    <PackageId>SawKing.DotNetSolutionKit</PackageId>
+    <Title>DotNet Solution Kit</Title>
+    <Authors>Vladimir Savkin</Authors>
+    <Company>SawKing Tech</Company>
+    <Description>A .NET 8 microservice solution template for high-load systems, proven in production. Layered services on PostgreSQL; RabbitMQ with a transactional outbox, Hangfire jobs, ClickHouse, object storage, a YARP gateway, deployment files and CI are one flag away, wired and tested.</Description>
+    <PackageTags>dotnet-new;templates;microservices;solution;postgresql;masstransit;hangfire;clickhouse;yarp</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Vovanda/DotNetSolutionKit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Vovanda/DotNetSolutionKit</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <!-- The template has dot-files of its own (.github, .gitattributes, .dockerignore) that pack would skip. -->
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+    <!-- NU5128: a template package has no assemblies. NU5123: the template's own paths pass 200 characters;
+         the template engine reads them from the package, and installing it on Windows was checked. -->
+    <NoWarn>$(NoWarn);NU5128;NU5123</NoWarn>
+    <EnableDefaultItems>false</EnableDefaultItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="template\**\*"
+             Exclude="template\**\bin\**;template\**\obj\**;template\**\.vs\**;template\**\.idea\**;template\**\*.user;template\**\TestResults\**;template\**\logs\**" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <Compile Remove="**\*" />
+  </ItemGroup>
+
+</Project>

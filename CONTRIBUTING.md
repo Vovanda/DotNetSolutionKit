@@ -14,3 +14,7 @@ in the same shape as a generated solution's ([ADR-004](docs/adr/004-product-vers
 - a release is a tag `v<version>` on the commit where `version` names it. The tag starts
   `.github/workflows/release.yml`, which refuses a tag that does not match `version.json` and publishes a
   GitHub release with that version's notes. `scripts/release-notes.sh <version>` prints the same text.
+
+The release also packs the template, `DotNetSolutionKit.Templates.csproj`, and attaches the package to the
+GitHub release. With the repository secret `NUGET_API_KEY` set, it publishes the package to nuget.org as
+`SawKing.DotNetSolutionKit`. A version there cannot be deleted, only unlisted.

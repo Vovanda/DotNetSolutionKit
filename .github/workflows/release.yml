@@ -32,3 +32,27 @@ jobs:
           bash scripts/release-notes.sh "$version" > notes.md
           headline=$(jq -r --arg v "$version" '.releaseNotes[$v].headline' version.json)
           gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME: $headline" --notes-file notes.md --verify-tag
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # The package goes on the release in any case, so a version can be installed from a file.
+      - name: Pack and attach the template package
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          dotnet pack DotNetSolutionKit.Templates.csproj --configuration Release -o package
+          gh release upload "$GITHUB_REF_NAME" package/*.nupkg
+
+      # nuget.org only with its key in the repository secrets. A version published there cannot be
+      # deleted, only unlisted, so it goes out from a tag that passed the template checks.
+      - name: Publish to nuget.org
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "::notice::NUGET_API_KEY is not set; the package is only attached to the release."
+            exit 0
+          fi
+          dotnet nuget push package/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate

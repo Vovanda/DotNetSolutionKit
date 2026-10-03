@@ -111,6 +111,24 @@ jobs:
           TEST_S3: ServiceUrl=http://localhost:8333;Bucket=tests;AccessKey=tester;SecretKey=test-do-not-use
         run: dotnet test src/services/*.All.sln --configuration Release --no-build --filter "TestCategory=Integration"
 
+  # The template as users install it once published: packed, installed from the package, generated.
+  package:
+    name: Installed from the package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Pack, install, generate, build
+        run: |
+          dotnet pack DotNetSolutionKit.Templates.csproj --configuration Release -o "$RUNNER_TEMP/package"
+          dotnet new install "$RUNNER_TEMP"/package/*.nupkg
+          mkdir "$RUNNER_TEMP/solution" && cd "$RUNNER_TEMP/solution"
+          dotnet new DotNetSolutionKit -N Acme -P Shop -S Orders -M false --GitHubCiCd true
+          test -f .github/workflows/ci.yml && test -f tools/gitleaks/.gitleaks.toml
+          dotnet build src/services/*.All.sln --configuration Release
+
   # Names that must not appear in the template. The list is a repository secret, LEAK_PATTERN (an extended
   # regular expression), so the check does not publish the names it guards. Without the secret, as in a
   # fork, the check is skipped.
