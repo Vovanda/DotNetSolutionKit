@@ -10,8 +10,13 @@ namespace NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup.Interceptors;
 /// Authorization filter that checks for permissions specified via <see cref="RequiredPermissionsAttribute"/>.
 /// Uses <see cref="IPermissionService"/> to verify that the current user has the required permissions.
 /// </summary>
+/// <remarks>
+/// The filter runs for every action, so it resolves <see cref="IPermissionService"/> only for an action
+/// that requires permissions. Taken in the constructor, a missing registration failed every action of the
+/// service with 500, including those that require nothing.
+/// </remarks>
 [UsedImplicitly]
-internal sealed class PermissionAuthorizationFilter(IPermissionService permissionService) : IAsyncAuthorizationFilter
+internal sealed class PermissionAuthorizationFilter : IAsyncAuthorizationFilter
 {
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
@@ -22,6 +27,11 @@ internal sealed class PermissionAuthorizationFilter(IPermissionService permissio
             .ToList();
 
         if (requiredPermissions.Count == 0) return;
+
+        var permissionService = context.HttpContext.RequestServices.GetService<IPermissionService>()
+            ?? throw new InvalidOperationException(
+                $"The action requires permissions, but no {nameof(IPermissionService)} is registered. " +
+                "Register an implementation that answers which permissions the current user has.");
 
         var hasAccess = await permissionService.UserHasAllPermissionsAsync(
             requiredPermissions, 
