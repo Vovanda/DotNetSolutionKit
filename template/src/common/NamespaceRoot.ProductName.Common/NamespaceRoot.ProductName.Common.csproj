@@ -7,11 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="JetBrains.Annotations" Version="2025.2.0" />
+      <PackageReference Include="JetBrains.Annotations" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="LinqSpecs" Version="3.2.0" />
+      <PackageReference Include="LinqSpecs" />
     </ItemGroup>
 
     <ItemGroup>

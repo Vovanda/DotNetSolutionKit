@@ -11,15 +11,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.Linq.Dynamic.Core" Version="1.7.1" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
+        <PackageReference Include="System.Linq.Dynamic.Core" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+        <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
         <!-- IHostEnvironment, to resolve a flag against the environment the service is running as. -->
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
         <!-- IFeatureManager, [FeatureGate] and the snapshots are already written and tested; what we add
              is the schema, the shared file and the write path, not another evaluation engine. -->
-        <PackageReference Include="Microsoft.FeatureManagement" Version="3.5.0" />
+        <PackageReference Include="Microsoft.FeatureManagement" />
     </ItemGroup>
 
 </Project>

@@ -70,6 +70,9 @@ Parameters:
   comments become the descriptions.
 - `TestExecutionContext` in `Common.Tests` runs integration tests against a real DI container.
 - Nerdbank.GitVersioning derives the version from git history.
+- Package versions are declared once, in `src/Directory.Packages.props`; a `.csproj` references a
+  package by name only. Every version stays on the .NET 8 line: no package pulls in .NET 9
+  libraries, directly or transitively.
 - A global `IExceptionHandler` maps exceptions to one error shape. Errors come back in an
   `ErrorResponse` envelope; successful responses return the DTO as is.
 
