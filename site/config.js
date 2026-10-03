@@ -53,11 +53,11 @@ window.SITE = {
       ["switching-off", "docs/operations/switching-dependencies-off", ["Switching dependencies off", "Отключение зависимостей"], true],
     ]},
     { group: ["Decisions", "Решения"], docs: [
-      ["adr-001", "docs/adr/001-three-phase-domain-events", ["ADR-001: Domain events in three phases", "ADR-001: доменные события в три фазы"], false],
-      ["adr-002", "docs/adr/002-repositories-on-specifications", ["ADR-002: Repositories on specifications", "ADR-002: репозитории на спецификациях"], false],
-      ["adr-003", "docs/adr/003-api-schema-generation", ["ADR-003: The API document from the built application", "ADR-003: документ API из собранного приложения"], false],
-      ["adr-004", "docs/adr/004-product-version-by-hand", ["ADR-004: The product version by hand", "ADR-004: версия продукта вручную"], false],
-      ["adr-005", "docs/adr/005-testing-a-service", ["ADR-005: How a service is tested", "ADR-005: как тестируется сервис"], false],
+      ["adr-001", "docs/adr/001-three-phase-domain-events", ["ADR-001: Domain events in three phases", "ADR-001: доменные события в три фазы"], true],
+      ["adr-002", "docs/adr/002-repositories-on-specifications", ["ADR-002: Repositories on specifications", "ADR-002: репозитории на спецификациях"], true],
+      ["adr-003", "docs/adr/003-api-schema-generation", ["ADR-003: The API document from the built application", "ADR-003: документ API из собранного приложения"], true],
+      ["adr-004", "docs/adr/004-product-version-by-hand", ["ADR-004: The product version by hand", "ADR-004: версия продукта вручную"], true],
+      ["adr-005", "docs/adr/005-testing-a-service", ["ADR-005: How a service is tested", "ADR-005: как тестируется сервис"], true],
     ]},
   ],
 };

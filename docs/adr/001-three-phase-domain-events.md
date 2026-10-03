@@ -76,14 +76,12 @@ other services, published from pre-save into the outbox.
 
 ## Consequences
 
-What this gives:
-
-- **Atomic where it must be.** A message to another service leaves through the outbox only if the write
-  commits.
-- **Side effects only after success.** An e-mail or a job never goes out for a write that rolled back.
-- **Compensation in one place.** A rollback handler gets the exception and the events of the failed write.
-- **Use cases stay short.** A use case raises events on the aggregate and saves; it does not decide when
-  reactions run, and the handler's interface states when it runs.
-- **Works the same everywhere.** Requests, consumers and jobs dispatch through the same pipeline, and so
-  do tests on the in-memory database: `InMemoryTestExecutionContext` publishes the scope in `ActAsync`,
-  see [ADR-005](005-testing-a-service.md).
+- A message to another service leaves through the outbox only if the write commits.
+- An e-mail or a job never goes out for a write that rolled back.
+- Compensation sits in one place: a rollback handler gets the exception and the events of the failed
+  write.
+- A use case raises events on the aggregate and saves. It does not decide when reactions run; the
+  handler's interface states that.
+- Requests, consumers and jobs dispatch through the same pipeline, and so do tests on the in-memory
+  database: `InMemoryTestExecutionContext` publishes the scope in `ActAsync`, see
+  [ADR-005](005-testing-a-service.md).

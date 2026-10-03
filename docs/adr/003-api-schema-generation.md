@@ -53,7 +53,7 @@ the service's: version 9 needs the .NET 9 runtime, so on .NET 8 it runs only wit
 `DOTNET_ROLL_FORWARD=LatestMajor`. And every service needs a factory class for it.
 
 **3. Start each service and fetch the document over HTTP.** It needs a port, a readiness wait and a
-process to kill, and each can fail. It failed in the worst way: the script stopped `dotnet run`, which is
+process to kill, and each can fail. It failed without a sign: the script stopped `dotnet run`, which is
 only a launcher, so the service kept its port; the next service could not bind, and the request was
 answered by the one still running. Every document came back as the first service's, and the run reported
 success.
@@ -69,10 +69,8 @@ success.
 
 ## Consequences
 
-What this gives:
-
-- **No port, no readiness wait, no process to kill**, so the failures of option 3 cannot happen.
-- **No infrastructure and no secrets** needed to produce the document, which is what a build agent has.
-- **The document describes the real application**, because `Program` and the generator build it the same
-  way.
-- **Fast:** a document per service in seconds, with no process juggling.
+- No port, no readiness wait and no process to kill, so the failures of option 3 cannot happen.
+- Producing the document needs no infrastructure and no secrets, which matches what a build agent has.
+- The document describes the application that runs, because `Program` and the generator build it the
+  same way.
+- A document per service takes seconds.

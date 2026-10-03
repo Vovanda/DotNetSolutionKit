@@ -11,7 +11,7 @@ Two styles are common for testing a .NET service.
   arrangement rather than the code. A query that filters wrongly, a missing `Include`, an entity never
   added to the context: none of it can fail such a test.
 - **Integration tests through the host** (`WebApplicationFactory` against a real database). They check
-  the real thing, but each needs a database, they are slow, and they are hard to run in parallel. A team
+  the code against a real database, but each needs a database, they are slow, and they are hard to run in parallel. A team
   ends up writing a unit test and an integration test for the same scenario, or skipping one.
 
 Most of what a service does sits between the two: a use case loads aggregates through repositories,
@@ -150,21 +150,18 @@ catching anything new.
 
 ## Consequences
 
-What this gives:
-
-- **Tests catch real mistakes.** The class under test runs with its real repositories and context, so a
-  wrong query or a missing save fails a test.
-- **Fast.** Most tests need no database, no network and no host.
-- **Parallel.** A database per test and no shared state, so every fixture runs in parallel.
-- **Isolation where it is wanted.** A test replaces exactly the collaborators it chooses with `Register`
-  and keeps the rest real: one service can be tested with a real repository and a mocked mail sender, the
-  next with both real.
-- **A container for each need.** The contexts form a ladder, and a test takes the smallest that fits:
-  `TestExecutionContext` for a container alone, `ServiceTestExecutionContext<TService>` for a class
-  without a database, `DbTestExecutionContext<TDbContext>` for a database without a class under test,
+- The class under test runs with its real repositories and context, so a wrong query or a missing save
+  fails a test.
+- Most tests need no database, no network and no host.
+- A database per test and no shared state let every fixture run in parallel.
+- A test replaces exactly the collaborators it chooses with `Register` and keeps the rest real: one
+  service can be tested with a real repository and a mocked mail sender, the next with both real.
+- The contexts form a ladder, and a test takes the smallest that fits: `TestExecutionContext` for a
+  container alone, `ServiceTestExecutionContext<TService>` for a class without a database,
+  `DbTestExecutionContext<TDbContext>` for a database without a class under test,
   `ServiceDbTestExecutionContext<TService, TDbContext>` for both, and `InMemoryTestExecutionContext` for
   both on the in-memory provider with domain events wired.
-- **Fluent tests.** `ArrangeAsync`, `ActAsync` and `AssertAsync` read as the three steps of the test, one
-  call each, with no host, port or HTTP client to set up.
-- **No duplicates.** A scenario gets one test of the cheapest kind that covers it; integration tests are
-  written only for the cases listed above.
+- `ArrangeAsync`, `ActAsync` and `AssertAsync` read as the three steps of the test, one call each, with
+  no host, port or HTTP client to set up.
+- A scenario gets one test of the cheapest kind that covers it; integration tests are written only for
+  the cases listed above.
