@@ -1,4 +1,5 @@
 using System.Reflection;
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup.Swagger;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;

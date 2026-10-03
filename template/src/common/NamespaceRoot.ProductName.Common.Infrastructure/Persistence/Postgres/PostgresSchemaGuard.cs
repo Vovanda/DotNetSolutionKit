@@ -7,9 +7,14 @@ namespace NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
 /// </summary>
 public static class PostgresSchemaGuard
 {
+    private const string PostgresStartingUpSqlState = "57P03";
+    private static readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(2);
+    private const int MaxRetries = 15;
+
     /// <summary>
     /// Ensures that the specified PostgreSQL schema is either empty or owned by the current service.
     /// This prevents accidental schema sharing between different microservices.
+    /// Retries up to <see cref="MaxRetries"/> times when the database is still starting up (SQLSTATE 57P03).
     /// </summary>
     /// <param name="connectionString">PostgreSQL database connection string.</param>
     /// <param name="schemaName">The schema name to validate (e.g., 'auth' or 'auth_hangfire').</param>
@@ -17,8 +22,7 @@ public static class PostgresSchemaGuard
     /// <exception cref="InvalidOperationException">Thrown when the schema is already occupied by another service.</exception>
     public static void EnsureExclusiveSchema(string connectionString, string schemaName, string serviceName)
     {
-        using var conn = new NpgsqlConnection(connectionString);
-        conn.Open();
+        using var conn = OpenWithRetry(connectionString);
 
         using var transaction = conn.BeginTransaction();
         try
@@ -73,5 +77,37 @@ public static class PostgresSchemaGuard
             transaction.Rollback();
             throw;
         }
+    }
+
+    private static NpgsqlConnection OpenWithRetry(string connectionString)
+    {
+        for (var attempt = 0; attempt < MaxRetries; attempt++)
+        {
+            var conn = new NpgsqlConnection(connectionString);
+            try
+            {
+                conn.Open();
+                return conn;
+            }
+            catch (PostgresException ex) when (ex.SqlState == PostgresStartingUpSqlState)
+            {
+                conn.Dispose();
+                if (attempt == MaxRetries - 1)
+                    throw;
+
+                Console.Error.WriteLine(
+                    $"[PostgresSchemaGuard] Database is starting up (57P03), retrying in {RetryDelay.TotalSeconds}s " +
+                    $"(attempt {attempt + 1}/{MaxRetries})...");
+                Thread.Sleep(RetryDelay);
+            }
+            catch
+            {
+                conn.Dispose();
+                throw;
+            }
+        }
+
+        // unreachable
+        throw new InvalidOperationException("Unexpected retry loop exit.");
     }
 }
