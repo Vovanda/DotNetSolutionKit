@@ -37,6 +37,23 @@ rejected and throw out of the validator.
 A value that does not bind, such as text where a number is expected or a body that is not valid JSON,
 answers the same way.
 
+## Text people read
+
+A field one person types and another reads (a name, a comment, a message) is checked after
+normalisation, so an invisible character cannot hide markup from the check:
+
+```csharp
+RuleFor(c => c.Name).MustBeSafeNormalizedText().MustBeWithinNormalizedLength(100);
+RuleFor(c => c.Email).MustBeNormalizedEmailAddress();
+```
+
+`PlainText.Normalize` trims, applies Unicode normalisation and drops format characters: zero-width
+spaces, the BOM, direction overrides. `<scr` + a zero-width space + `ipt>` holds no tag until something
+strips that character, so a check on the raw value would pass it. `MustBeSafeText` refuses angle brackets
+and control characters other than tab and line breaks; the length rule counts what will be stored.
+An address is checked as an address: `javascript:alert(1)` holds no markup and is still refused by
+`MustBeEmailAddress`.
+
 ## Pagination
 
 A request that pages implements `IPaginationRequest` (`Page`, `PageSize`). Before the action, the page has
