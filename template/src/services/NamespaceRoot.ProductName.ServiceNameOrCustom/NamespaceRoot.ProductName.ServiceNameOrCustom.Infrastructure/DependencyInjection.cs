@@ -7,12 +7,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using NamespaceRoot.ProductName.Common.Application.Configuration;
 using NamespaceRoot.ProductName.Common.Domain.Persistence;
 using NamespaceRoot.ProductName.Common.Domain.Specifications;
 using NamespaceRoot.ProductName.Common.Infrastructure.Configuration;
 //#if (Messaging != "none")
 using NamespaceRoot.ProductName.Common.Infrastructure.Messaging;
 //#endif
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Application;
@@ -34,16 +36,31 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Database
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
-        if (string.IsNullOrEmpty(connectionString))
-            throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-        
-        // Unique name for this microservice (used for schema ownership)
-        var serviceName = typeof(DomainMarker).Namespace!;
+        // What this run uses: Database, HangfireSettings and RabbitMq each have an Enabled switch.
+        var switches = DependencySwitches.Read(configuration);
 
-        // 1. Guard for Main Database Schema
-        PostgresSchemaGuard.EnsureExclusiveSchema(connectionString, ServiceIdentifierDbContext.DefaultSchemaName, serviceName);
+        // Database
+        string connectionString;
+        if (switches.Database)
+        {
+            connectionString = configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
+            if (string.IsNullOrEmpty(connectionString))
+                throw new InvalidOperationException(
+                    "Connection string 'DefaultConnection' not found. Set ConnectionStrings__DefaultConnection, " +
+                    $"or run without a database: {DependencySwitches.DatabaseKey}=false.");
+
+            // Unique name for this microservice (used for schema ownership)
+            var serviceName = typeof(DomainMarker).Namespace!;
+
+            // 1. Guard for Main Database Schema
+            PostgresSchemaGuard.EnsureExclusiveSchema(connectionString, ServiceIdentifierDbContext.DefaultSchemaName, serviceName);
+        }
+        else
+        {
+            // The context stays registered so everything built on it still resolves; opening a
+            // connection answers 503 instead.
+            connectionString = SwitchedOffDatabase.ConnectionString;
+        }
 
         // Domain events: handlers from the application layer, run in three phases around SaveChanges and
         // the transaction by the interceptors attached to the context below.
@@ -55,6 +72,8 @@ public static class DependencyInjection
         {
             options.UseNpgsql(connectionString,
                 x => { x.MigrationsHistoryTable("__EFMigrationsHistory", ServiceIdentifierDbContext.DefaultSchemaName); });
+            if (!switches.Database)
+                options.UseSwitchedOffDatabase();
             options.ApplyDomainEventInterceptors(sp);
         });
 
@@ -81,8 +100,13 @@ public static class DependencyInjection
         services.AddInfrastructureConfiguration();
         
 //#if (Hangfire)
-        // Background jobs
-        services.AddBackgroundJobs(connectionString);
+        // Background jobs, with their settings validated only when the job server runs. Off together
+        // with the database: the database is their storage.
+        if (switches.Jobs)
+        {
+            services.AddValidatedOptions<IHangfireSettings, HangfireSettings>(HangfireSettings.SectionName);
+            services.AddBackgroundJobs(connectionString);
+        }
 
 //#endif
         // Data Seeding
@@ -138,9 +162,6 @@ public static class DependencyInjection
     private static void AddInfrastructureConfiguration(this IServiceCollection services)
     {
         services.AddValidatedOptions<ICorsSettings, CorsSettings>(CorsSettings.SectionName);
-//#if (Hangfire)
-        services.AddValidatedOptions<IHangfireSettings, HangfireSettings>(HangfireSettings.SectionName);
-//#endif
     }
     
     /// <summary>

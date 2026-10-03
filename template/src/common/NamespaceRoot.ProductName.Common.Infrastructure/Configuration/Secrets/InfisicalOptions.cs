@@ -62,6 +62,12 @@ public sealed class InfisicalOptions
     public bool Optional { get; set; }
 
     /// <summary>
+    /// Whether the store is read at all. Off, the service takes every value from its files and
+    /// environment: for a service generated with the store and run before one exists.
+    /// </summary>
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>
     /// Whether enough is configured to read anything at all.
     /// </summary>
     public bool IsConfigured =>

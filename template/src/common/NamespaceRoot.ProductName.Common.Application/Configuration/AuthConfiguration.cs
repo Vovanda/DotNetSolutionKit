@@ -55,13 +55,25 @@ public class RefreshTokenConfiguration : IRefreshTokenConfiguration
     public int SecurityAlertThrottleSeconds { get; init; } = 3600;
 }
 
-public class InternalApiConfiguration : IInternalApiConfiguration
+/// <remarks>
+/// The key is optional: without one, every call that presents an API key is refused, so a service
+/// generated and deployed before services call each other starts with its internal API closed rather
+/// than failing to start.
+/// </remarks>
+public class InternalApiConfiguration : IInternalApiConfiguration, IValidatableObject
 {
     public const string SectionName = "InternalApi";
 
-    [Required(ErrorMessage = "Internal API key is required")]
-    [MinLength(16, ErrorMessage = "Internal API key must be at least 16 characters")]
+    private const int MinimumKeyLength = 16;
+
     public string ApiKey { get; init; } = string.Empty;
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (ApiKey.Length is > 0 and < MinimumKeyLength)
+            yield return new ValidationResult(
+                $"Internal API key must be at least {MinimumKeyLength} characters", [nameof(ApiKey)]);
+    }
 }
 
 public class AuthConfiguration : IAuthConfiguration

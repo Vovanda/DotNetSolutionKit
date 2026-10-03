@@ -1,3 +1,4 @@
+using NamespaceRoot.ProductName.Common.Application.Configuration;
 //#if (FeatureFlags)
 using NamespaceRoot.ProductName.Common.Application.FeatureManagement;
 //#endif
@@ -56,6 +57,14 @@ internal static class ApplicationConfiguration
 //#endif
 
 //#endif
+        // With the database switched off, what is stored in it goes off too: the job server, and the bus
+        // when it delivers through the outbox.
+//#if (Messaging == "outbox")
+        builder.AddDependencyOverrides(busNeedsDatabase: true);
+//#else
+        builder.AddDependencyOverrides(busNeedsDatabase: false);
+//#endif
+
 //#if (DiffApi)
         // A schema-only run turns every infrastructure switch off, last so it wins over the files and
         // the environment.

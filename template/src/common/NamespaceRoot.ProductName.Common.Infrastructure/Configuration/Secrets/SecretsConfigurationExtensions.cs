@@ -35,6 +35,11 @@ public static class SecretsConfigurationExtensions
         var options = new InfisicalOptions { ServicePath = servicePath, Optional = optional };
         builder.Build().GetSection(InfisicalOptions.SectionName).Bind(options);
 
+        if (!options.Enabled)
+        {
+            return builder;
+        }
+
         // Bind() does not overwrite with an empty value, so a path supplied by configuration wins over the
         // argument only when it was actually set.
         if (string.IsNullOrWhiteSpace(options.ServicePath))

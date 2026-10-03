@@ -1,4 +1,5 @@
 using System.Reflection;
+using NamespaceRoot.ProductName.Common.Application.Configuration;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
 using NamespaceRoot.ProductName.Common.Web.Setup;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup;
@@ -21,26 +22,25 @@ try
     // Asked only for the contract: write it and stop, before anything touches the infrastructure.
     if (SchemaDump.TryWrite(app, args))
         return;
+//#endif
 
-    var dbEnabled = app.Configuration.GetSection("Database").GetValue<bool>("Enabled", defaultValue: true);
-//#if (Hangfire)
-    var hangfireEnabled = app.Configuration.GetSection("HangfireSettings").GetValue<bool>("Enabled", defaultValue: true);
-//#endif
-//#endif
-    
+    // Each dependency can be switched off in configuration; what is off is not registered, not
+    // validated and not checked for readiness, and the log says so once, here.
+    var switches = DependencySwitches.Read(app.Configuration);
+    if (switches.SwitchedOff.Count > 0)
+        app.Logger.LogWarning("Running without: {SwitchedOff}", string.Join(", ", switches.SwitchedOff.Select(key => $"{key}=false")));
+
     // --- Database Initialization ---
-//#if (DiffApi)
-    if (dbEnabled)
-//#endif
-    using (var scope = app.Services.CreateScope())
+    if (switches.Database)
     {
+        using var scope = app.Services.CreateScope();
         var services = scope.ServiceProvider;
         var dbContext = services.GetRequiredService<ServiceIdentifierDbContext>();
         var logger = services.GetRequiredService<ILogger<MigrationRunner>>();
-        
+
         // Run Migrations
         MigrationRunner.RunMigrations(dbContext, logger);
-        
+
         // Data Seeding
         try
         {
@@ -60,16 +60,18 @@ try
 //#if (Hangfire)
     app.UsePlatformPipeline(typeof(Program).Assembly, authenticate: !schemaOnly, beforeEndpoints: pipeline =>
     {
-        if (hangfireEnabled)
-        {
+        if (switches.Jobs)
             pipeline.UseAppHangfire();
-        }
     });
 //#else
     app.UsePlatformPipeline(typeof(Program).Assembly, authenticate: !schemaOnly);
 //#endif
 //#elif (Hangfire)
-    app.UsePlatformPipeline(typeof(Program).Assembly, beforeEndpoints: pipeline => pipeline.UseAppHangfire());
+    app.UsePlatformPipeline(typeof(Program).Assembly, beforeEndpoints: pipeline =>
+    {
+        if (switches.Jobs)
+            pipeline.UseAppHangfire();
+    });
 //#else
     app.UsePlatformPipeline(typeof(Program).Assembly);
 //#endif
