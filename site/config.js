@@ -17,10 +17,10 @@ window.SITE = {
      and the page shows it to a reader of Russian. */
   shelf: [
     { group: ["Getting started", "С чего начать"], docs: [
-      ["generating", "docs/getting-started/generating-a-solution", ["Generating a solution", "Генерация решения"], false],
-      ["upgrading", "docs/getting-started/upgrading", ["Versions of the template", "Версии шаблона"], false],
-      ["overview", "docs/README", ["The documentation at a glance", "Обзор документации"], false],
-      ["roadmap", "docs/roadmap", ["Roadmap", "Дорожная карта"], false],
+      ["generating", "docs/getting-started/generating-a-solution", ["Generating a solution", "Генерация решения"], true],
+      ["upgrading", "docs/getting-started/upgrading", ["Versions of the template", "Версии шаблона"], true],
+      ["overview", "docs/README", ["The documentation at a glance", "Обзор документации"], true],
+      ["roadmap", "docs/roadmap", ["Roadmap", "Дорожная карта"], true],
     ]},
     { group: ["Architecture", "Архитектура"], docs: [
       ["layers", "docs/architecture/projects-and-layers", ["Projects and layers", "Проекты и слои"], false],

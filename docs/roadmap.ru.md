@@ -1,6 +1,6 @@
-# Roadmap
+# Дорожная карта
 
-Releases done, the step in progress and the planned steps, in order. The axis counts steps, not dates; a longer bar is a larger step, and bars side by side can go in parallel.
+Выпущенные релизы, текущий шаг и запланированные шаги по порядку. Ось считает шаги, а не даты: чем длиннее полоса, тем больше шаг. Полосы, стоящие рядом, можно делать параллельно.
 
 ```mermaid
 gantt
@@ -32,15 +32,15 @@ gantt
     .NET 9 and later, in a branch of its own              :s17, after s14 s15 s16, 2500ms
 ```
 
-What each release brought: [version.json](https://github.com/sawking-tech/DotNetSolutionKit/blob/master/version.json).
-Issues: [#4](https://github.com/sawking-tech/DotNetSolutionKit/issues/4) samples, [#5](https://github.com/sawking-tech/DotNetSolutionKit/issues/5) gateway.
+Что принёс каждый релиз: [version.json](https://github.com/sawking-tech/DotNetSolutionKit/blob/master/version.json).
+Задачи: [#4](https://github.com/sawking-tech/DotNetSolutionKit/issues/4) - примеры, [#5](https://github.com/sawking-tech/DotNetSolutionKit/issues/5) - шлюз.
 
-## Reducing lock-in
+## Меньше привязки к технологиям
 
-The defaults are the author's preferences; a team with its own standard should be able to replace them.
+Технологии по умолчанию выбраны по вкусу автора. Команда со своим стандартом должна иметь возможность их заменить.
 
-| Technology | Where the template depends on it now |
+| Технология | Где шаблон от неё зависит сейчас |
 |---|---|
-| PostgreSQL | the schema guard, the migration lock, unique-violation mapping, `ILIKE` search, Hangfire's storage |
-| Infisical | only the options: secrets are read through the `ISecretStore` port, see [secrets](features/secrets.md#why-infisical) |
-| GitHub CI | only the generated workflow; the checks are scripts any CI can call |
+| PostgreSQL | защита схемы, блокировка миграций, разбор нарушения уникальности, поиск через `ILIKE`, хранилище Hangfire |
+| Infisical | только настройки: секреты читаются через порт `ISecretStore`, см. [секреты](features/secrets.md#why-infisical) |
+| GitHub CI | только сгенерированный workflow; проверки - это скрипты, которые вызовет любой CI |
