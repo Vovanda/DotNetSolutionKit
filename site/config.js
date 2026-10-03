@@ -46,11 +46,11 @@ window.SITE = {
       ["gateway", "docs/features/api-gateway", ["API gateway", "API-шлюз"], true],
     ]},
     { group: ["Operations", "Эксплуатация"], docs: [
-      ["docker", "docs/operations/docker", ["Docker", "Docker"], false],
-      ["deployment", "docs/operations/deployment", ["Deployment", "Развёртывание"], false],
-      ["health", "docs/operations/health", ["Health", "Здоровье"], false],
-      ["startup-checks", "docs/operations/startup-checks", ["Startup checks", "Проверки при старте"], false],
-      ["switching-off", "docs/operations/switching-dependencies-off", ["Switching dependencies off", "Отключение зависимостей"], false],
+      ["docker", "docs/operations/docker", ["Docker", "Docker"], true],
+      ["deployment", "docs/operations/deployment", ["Deployment", "Развёртывание"], true],
+      ["health", "docs/operations/health", ["Health", "Здоровье"], true],
+      ["startup-checks", "docs/operations/startup-checks", ["Startup checks", "Проверки при старте"], true],
+      ["switching-off", "docs/operations/switching-dependencies-off", ["Switching dependencies off", "Отключение зависимостей"], true],
     ]},
     { group: ["Decisions", "Решения"], docs: [
       ["adr-001", "docs/adr/001-three-phase-domain-events", ["ADR-001: Domain events in three phases", "ADR-001: доменные события в три фазы"], false],
