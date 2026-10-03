@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
-using NamespaceRoot.ProductName.Common.Contracts.Domain.Context;
+using NamespaceRoot.ProductName.Common.Domain.Context;
 
 namespace NamespaceRoot.ProductName.Common.Infrastructure.Security;
 

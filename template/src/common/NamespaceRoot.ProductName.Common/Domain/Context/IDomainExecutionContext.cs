@@ -1,4 +1,4 @@
-namespace NamespaceRoot.ProductName.Common.Contracts.Domain.Context;
+namespace NamespaceRoot.ProductName.Common.Domain.Context;
 
 /// <summary>
 /// Execution context for any action in domain

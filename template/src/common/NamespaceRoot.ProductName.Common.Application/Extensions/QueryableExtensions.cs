@@ -1,5 +1,5 @@
 using System.Linq.Dynamic.Core; 
-using NamespaceRoot.ProductName.Common.Contracts.Requests;
+using NamespaceRoot.ProductName.Common.Domain.Querying;
 
 namespace NamespaceRoot.ProductName.Common.Application.Extensions;
 

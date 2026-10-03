@@ -1,4 +1,4 @@
-using NamespaceRoot.ProductName.Common.Contracts.Domain.Context;
+using NamespaceRoot.ProductName.Common.Domain.Context;
 using NamespaceRoot.ProductName.Common.Tests.Stabs;
 
 namespace NamespaceRoot.ProductName.Common.Tests;

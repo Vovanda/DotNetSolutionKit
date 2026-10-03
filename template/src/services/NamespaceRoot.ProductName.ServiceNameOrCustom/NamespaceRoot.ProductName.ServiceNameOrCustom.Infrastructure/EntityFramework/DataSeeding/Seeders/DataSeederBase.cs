@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Logging;
-using NamespaceRoot.ProductName.Common.Contracts.Domain.Context;
+using NamespaceRoot.ProductName.Common.Domain.Context;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework.DataSeeding.Seeders;
 

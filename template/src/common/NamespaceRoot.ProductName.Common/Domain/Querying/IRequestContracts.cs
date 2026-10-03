@@ -1,4 +1,4 @@
-namespace NamespaceRoot.ProductName.Common.Contracts.Requests;
+namespace NamespaceRoot.ProductName.Common.Domain.Querying;
 
 /// <summary>
 /// Supports keyword-based searching.

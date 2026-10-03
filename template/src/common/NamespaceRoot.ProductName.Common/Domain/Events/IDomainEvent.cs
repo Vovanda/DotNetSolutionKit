@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using NamespaceRoot.ProductName.Common.Contracts.Domain.Context;
+using NamespaceRoot.ProductName.Common.Domain.Context;
 
 namespace NamespaceRoot.ProductName.Common.Domain.Events;
 

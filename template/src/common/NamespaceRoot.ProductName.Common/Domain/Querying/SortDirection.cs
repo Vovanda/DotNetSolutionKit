@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace NamespaceRoot.ProductName.Common.Contracts.Requests;
+namespace NamespaceRoot.ProductName.Common.Domain.Querying;
 
 /// <summary>
 /// Specifies the order in which items are returned in a result set.

@@ -1,5 +1,5 @@
 using LinqSpecs;
-using NamespaceRoot.ProductName.Common.Contracts.Requests;
+using NamespaceRoot.ProductName.Common.Domain.Querying;
 using NamespaceRoot.ProductName.Common.Domain;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Domain.Repositories;

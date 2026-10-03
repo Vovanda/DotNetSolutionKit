@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NamespaceRoot.ProductName.Common.Application.Configuration;
-using NamespaceRoot.ProductName.Common.Contracts.Domain.Context;
+using NamespaceRoot.ProductName.Common.Domain.Context;
 using NamespaceRoot.ProductName.Common.Infrastructure.Security;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.Security.Handlers;
