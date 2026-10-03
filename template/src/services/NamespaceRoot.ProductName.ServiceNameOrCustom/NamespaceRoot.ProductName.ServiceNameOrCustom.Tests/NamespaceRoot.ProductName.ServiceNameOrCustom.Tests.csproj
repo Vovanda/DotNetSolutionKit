@@ -7,6 +7,11 @@
 
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+        <!--#if (TestFramework == "xunit") -->
+        <!-- Run through VSTest, like the other test projects: xunit.v3 marks itself a Microsoft.Testing.Platform
+             app, which a .NET 10 SDK then refuses to run under dotnet test's VSTest target. -->
+        <IsTestingPlatformApplication>false</IsTestingPlatformApplication>
+        <!--#endif -->
     </PropertyGroup>
 
     <ItemGroup>
