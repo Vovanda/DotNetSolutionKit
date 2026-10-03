@@ -1,193 +1,216 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using NamespaceRoot.ProductName.Common.Domain.Persistence;
+﻿    using NamespaceRoot.ProductName.Common.Domain;
+    using NamespaceRoot.ProductName.Common.Domain.Persistence;
+    using Microsoft.EntityFrameworkCore;
+using NamespaceRoot.ProductName.Common.Exceptions;
+using Npgsql;
+    using Microsoft.EntityFrameworkCore.Storage;
 
-namespace NamespaceRoot.ProductName.Common.Infrastructure.Repositories.EntityFramework;
+    using NamespaceRoot.ProductName.Common.Domain.Events;
 
-public abstract class DbContextBase : DbContext, IUnitOfWork
-{
-    private IDbContextTransaction? _currentTransaction;
-    
-    protected DbContextBase(DbContextOptions options)
-        : base(options)
+namespace NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
+
+    public abstract class DbContextBase : DbContext, IUnitOfWork
     {
-    }
-
-    #region IUnitOfWork Implementation
-
-    // ReSharper disable once RedundantOverriddenMember
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        return base.SaveChangesAsync(cancellationToken);
-    }
-
-    public Dictionary<string, (Type Type, object? OriginalValue, object? CurrentValue)> GetChangesFor(
-        object entity, bool isNewEntity = false)
-    {
-        var trackedEntry = ChangeTracker.Entries().FirstOrDefault(x => x.Entity == entity);
+        private IDbContextTransaction? _currentTransaction;
         
-        if (trackedEntry == null)
+        protected DbContextBase(DbContextOptions options)
+            : base(options)
         {
-            throw new ArgumentException("Entity is not being tracked by this context", nameof(entity));
         }
 
-        var result = new Dictionary<string, (Type, object?, object?)>();
+        #region IUnitOfWork Implementation
 
-        foreach (var property in trackedEntry.Properties.OrderBy(p => p.Metadata.Name))
+        // ReSharper disable once RedundantOverriddenMember
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            if (property.Metadata.IsShadowProperty())
-                continue;
-
-            var original = property.OriginalValue;
-            var current = property.CurrentValue;
-
-            if (isNewEntity)
+            try
             {
-                if (current is null ||
-                    current is false ||
-                    (current is string s && string.IsNullOrEmpty(s)) ||
-                    (current is DateTimeOffset dto && dto == default))
-                {
+                return await base.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException exception) when (IsUniqueViolation(exception))
+            {
+                // A refused insert reaches the caller as the refusal it is, naming the field, instead
+                // of whatever the database driver says at five hundred. The idempotency log leans on
+                // this too: a replayed request collides on its key and is answered from the record.
+                throw new UniqueViolationException(UniqueViolationMessage, exception);
+            }
+        }
+
+        private const string UniqueViolationMessage = "A record with these values already exists.";
+
+        private static bool IsUniqueViolation(DbUpdateException exception) =>
+            exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation };
+
+        public Dictionary<string, (Type Type, object? OriginalValue, object? CurrentValue)> GetChangesFor(
+            object entity, bool isNewEntity = false)
+        {
+            var trackedEntry = ChangeTracker.Entries().FirstOrDefault(x => x.Entity == entity);
+            
+            if (trackedEntry == null)
+            {
+                throw new ArgumentException("Entity is not being tracked by this context", nameof(entity));
+            }
+
+            var result = new Dictionary<string, (Type, object?, object?)>();
+
+            foreach (var property in trackedEntry.Properties.OrderBy(p => p.Metadata.Name))
+            {
+                if (property.Metadata.IsShadowProperty())
                     continue;
-                }
-                result[property.Metadata.Name] = (property.Metadata.ClrType, null, current);
-            }
-            else
-            {
-                if (!Equals(original, current))
+
+                var original = property.OriginalValue;
+                var current = property.CurrentValue;
+
+                if (isNewEntity)
                 {
-                    result[property.Metadata.Name] = (property.Metadata.ClrType, original, current);
+                    if (current is null ||
+                        current is false ||
+                        (current is string s && string.IsNullOrEmpty(s)) ||
+                        (current is DateTimeOffset dto && dto == default))
+                    {
+                        continue;
+                    }
+                    result[property.Metadata.Name] = (property.Metadata.ClrType, null, current);
+                }
+                else
+                {
+                    if (!Equals(original, current))
+                    {
+                        result[property.Metadata.Name] = (property.Metadata.ClrType, original, current);
+                    }
                 }
             }
+
+            return result;
         }
 
-        return result;
-    }
+        #endregion
 
-    #endregion
+        #region Transaction Management
 
-    #region Transaction Management
-
-    /// <summary>
-    /// Starts a new transaction.
-    /// </summary>
-    public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
-    {
-        if (_currentTransaction != null)
+        /// <summary>
+        /// Starts a new transaction.
+        /// </summary>
+        public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
         {
-            throw new InvalidOperationException("A transaction is already in progress");
-        }
-
-        _currentTransaction = await Database.BeginTransactionAsync(cancellationToken);
-    }
-
-    /// <summary>
-    /// Commits the current transaction.
-    /// </summary>
-    public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
-    {
-        if (_currentTransaction == null)
-        {
-            throw new InvalidOperationException("No transaction to commit");
-        }
-
-        try
-        {
-            await SaveChangesAsync(cancellationToken);
-            await _currentTransaction.CommitAsync(cancellationToken);
-        }
-        finally
-        {
-            await DisposeTransactionAsync();
-        }
-    }
-
-    /// <summary>
-    /// Rolls back the current transaction.
-    /// </summary>
-    public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
-    {
-        if (_currentTransaction == null)
-        {
-            throw new InvalidOperationException("No transaction to rollback");
-        }
-
-        try
-        {
-            await _currentTransaction.RollbackAsync(cancellationToken);
-        }
-        finally
-        {
-            await DisposeTransactionAsync();
-        }
-    }
-
-    public bool HasActiveTransaction => _currentTransaction != null;
-
-    /// <summary>
-    /// Gets the current transaction if exists.
-    /// </summary>
-    public IDbContextTransaction? GetCurrentTransaction() => _currentTransaction;
-    #endregion
-
-    #region Helper Methods
-
-    public bool HasPendingChanges() => ChangeTracker.HasChanges();
-
-    public int GetPendingChangesCount() => ChangeTracker.Entries()
-        .Count(e => e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted);
-
-    public void DiscardChanges()
-    {
-        var entries = ChangeTracker.Entries()
-            .Where(e => e.State != EntityState.Unchanged)
-            .ToList();
-
-        foreach (var entry in entries)
-        {
-            switch (entry.State)
+            if (_currentTransaction != null)
             {
-                case EntityState.Added:
-                    entry.State = EntityState.Detached;
-                    break;
-                case EntityState.Modified:
-                case EntityState.Deleted:
-                    entry.State = EntityState.Unchanged;
-                    break;
+                throw new InvalidOperationException("A transaction is already in progress");
+            }
+
+            _currentTransaction = await Database.BeginTransactionAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Commits the current transaction.
+        /// </summary>
+        public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+        {
+            if (_currentTransaction == null)
+            {
+                throw new InvalidOperationException("No transaction to commit");
+            }
+
+            try
+            {
+                await SaveChangesAsync(cancellationToken);
+                await _currentTransaction.CommitAsync(cancellationToken);
+                await DisposeTransactionAsync();
+            }
+            catch
+            {
+                await RollbackTransactionAsync(cancellationToken);
+                throw;
             }
         }
-    }
 
-    #endregion
-
-    #region Dispose Management
-
-    public new void Dispose()
-    {
-        DisposeTransaction();
-        base.Dispose();
-    }
-    
-    public new async ValueTask DisposeAsync()
-    {
-        await DisposeTransactionAsync();
-        await base.DisposeAsync();
-    }
-
-    private void DisposeTransaction()
-    {
-        _currentTransaction?.Dispose();
-        _currentTransaction = null;
-    }
-
-    private async ValueTask DisposeTransactionAsync()
-    {
-        if (_currentTransaction != null)
+        /// <summary>
+        /// Rolls back the current transaction.
+        /// </summary>
+        public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
         {
-            await _currentTransaction.DisposeAsync();
+            if (_currentTransaction == null)
+                return;
+
+            try
+            {
+                await _currentTransaction.RollbackAsync(cancellationToken);
+            }
+            finally
+            {
+                await DisposeTransactionAsync();
+            }
+        }
+
+        public bool HasActiveTransaction => _currentTransaction != null;
+
+        /// <summary>
+        /// Gets the current transaction if exists.
+        /// </summary>
+        public IDbContextTransaction? GetCurrentTransaction() => _currentTransaction;
+        #endregion
+
+        #region Helper Methods
+
+        public bool HasPendingChanges() => ChangeTracker.HasChanges();
+
+        public int GetPendingChangesCount() => ChangeTracker.Entries()
+            .Count(e => e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted);
+
+        public void DiscardChanges()
+        {
+            var entries = ChangeTracker
+                .Entries<Entity>()
+                .ToList();
+
+            foreach (var entry in entries)
+            {
+                // 1. Clear domain events to prevent them from firing in future saves
+                if (entry.Entity is IHasDomainEvents entityWithEvents)
+                {
+                    entityWithEvents.ClearDomainEvents();
+                }
+
+                // 2. Reset entity state
+                entry.State = entry.State switch
+                {
+                    EntityState.Added => EntityState.Detached,
+                    EntityState.Modified or EntityState.Deleted => EntityState.Unchanged,
+                    _ => entry.State
+                };
+            }
+        }
+
+        #endregion
+
+        #region Dispose Management
+
+        public new void Dispose()
+        {
+            DisposeTransaction();
+            base.Dispose();
+        }
+        
+        public new async ValueTask DisposeAsync()
+        {
+            await DisposeTransactionAsync();
+            await base.DisposeAsync();
+        }
+
+        private void DisposeTransaction()
+        {
+            _currentTransaction?.Dispose();
             _currentTransaction = null;
         }
-    }
 
-    #endregion
-}
+        private async ValueTask DisposeTransactionAsync()
+        {
+            if (_currentTransaction != null)
+            {
+                await _currentTransaction.DisposeAsync();
+                _currentTransaction = null;
+            }
+        }
+
+        #endregion
+    }

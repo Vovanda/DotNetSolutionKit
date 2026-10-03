@@ -1,7 +1,6 @@
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
-using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
-using NUnit.Framework;
 using Shouldly;
 
 namespace NamespaceRoot.ProductName.Common.Tests.Tests.Events;

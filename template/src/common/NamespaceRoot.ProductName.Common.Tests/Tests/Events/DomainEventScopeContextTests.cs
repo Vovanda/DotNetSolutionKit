@@ -1,6 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
-using NUnit.Framework;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace NamespaceRoot.ProductName.Common.Tests.Tests.Events;
@@ -62,7 +61,7 @@ public class DomainEventScopeContextTests
     }
 
     [Test]
-    [Description("AsyncLocal ensures each task has its own isolated scope — parallel tasks must not see each other's scope")]
+    [Description("AsyncLocal ensures each task has its own isolated scope - parallel tasks must not see each other's scope")]
     public async Task Current_IsIsolated_AcrossConcurrentTasks()
     {
         var sp1 = BuildServiceProvider();

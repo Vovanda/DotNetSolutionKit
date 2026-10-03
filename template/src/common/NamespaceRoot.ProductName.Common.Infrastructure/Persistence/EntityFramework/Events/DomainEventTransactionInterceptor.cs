@@ -26,9 +26,15 @@ public sealed class DomainEventTransactionInterceptor : DbTransactionInterceptor
             return;
         }
 
-        var events = storage.GetEvents();
-        if (events.Any())
+        // Snapshot + IsDispatching guard (the recursion protection the pipeline Readme promises):
+        // a PostCommit handler that commits its own transaction on another DbContext in the SAME
+        // scope re-enters this interceptor and resolves the SAME scoped storage. Without the guard
+        // the nested commit re-dispatches the outer events and Clear()s the live list the outer
+        // dispatch is still iterating (GetEvents returns a view, not a copy).
+        var events = storage.GetEvents().ToList();
+        if (events.Count > 0 && !storage.IsDispatching)
         {
+            storage.IsDispatching = true;
             try
             {
                 // PHASE 2: Post-Commit (side effects after successful DB commit).
@@ -37,6 +43,7 @@ public sealed class DomainEventTransactionInterceptor : DbTransactionInterceptor
             finally
             {
                 // Ensure storage is cleared even if dispatch fails to prevent event duplication.
+                storage.IsDispatching = false;
                 storage.Clear();
             }
         }
@@ -57,9 +64,12 @@ public sealed class DomainEventTransactionInterceptor : DbTransactionInterceptor
             return;
         }
 
-        var events = storage.GetEvents();
-        if (events.Any())
+        // Same snapshot + reentrancy guard as the commit side - a rollback of a nested
+        // same-scope transaction must not re-dispatch or clear the outer events mid-flight.
+        var events = storage.GetEvents().ToList();
+        if (events.Count > 0 && !storage.IsDispatching)
         {
+            storage.IsDispatching = true;
             try
             {
                 // PHASE 3: Rollback (notifying subscribers about failure with the captured exception).
@@ -67,6 +77,7 @@ public sealed class DomainEventTransactionInterceptor : DbTransactionInterceptor
             }
             finally
             {
+                storage.IsDispatching = false;
                 storage.Clear();
             }
         }

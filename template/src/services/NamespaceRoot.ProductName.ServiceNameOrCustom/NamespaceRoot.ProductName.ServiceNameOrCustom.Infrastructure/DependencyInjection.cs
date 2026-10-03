@@ -13,7 +13,9 @@ using NamespaceRoot.ProductName.Common.Infrastructure.Configuration;
 //#if (Messaging != "none")
 using NamespaceRoot.ProductName.Common.Infrastructure.Messaging;
 //#endif
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
+using NamespaceRoot.ProductName.ServiceNameOrCustom.Application;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework.DataSeeding;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework.Specifications;
@@ -43,11 +45,18 @@ public static class DependencyInjection
         // 1. Guard for Main Database Schema
         PostgresSchemaGuard.EnsureExclusiveSchema(connectionString, ServiceNameOrCustomDbContext.DefaultSchemaName, serviceName);
 
-        services.AddDbContextPool<ServiceNameOrCustomDbContext>(options =>
-                options.UseNpgsql(connectionString,
-                    x => { x.MigrationsHistoryTable("__EFMigrationsHistory", ServiceNameOrCustomDbContext.DefaultSchemaName); }),
-            poolSize: 1024
-        );
+        // Domain events: handlers from the application layer, run in three phases around SaveChanges and
+        // the transaction by the interceptors attached to the context below.
+        services.AddDomainEvents(typeof(ApplicationMarker).Assembly);
+
+        // AddDbContext, not the pool: interceptors resolved per scope (the domain events', the outbox's)
+        // are not re-attached to a context handed back by the pool, and they would quietly do nothing.
+        services.AddDbContext<ServiceNameOrCustomDbContext>((sp, options) =>
+        {
+            options.UseNpgsql(connectionString,
+                x => { x.MigrationsHistoryTable("__EFMigrationsHistory", ServiceNameOrCustomDbContext.DefaultSchemaName); });
+            options.ApplyDomainEventInterceptors(sp);
+        });
 
         services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<ServiceNameOrCustomDbContext>());
 
@@ -112,6 +121,11 @@ public static class DependencyInjection
             var settings = sp.GetRequiredService<IHangfireSettings>();
             options.WorkerCount = settings.WorkerCount;
         });
+
+        // Jobs run in a scope the domain event interceptors can see, so events a job raises are not
+        // dropped; the filter carries the person who enqueued a job into it, for attribution.
+        services.AddDomainEventJobActivator();
+        services.AddHostedService(sp => new HangfireFilterInstaller(sp));
 
         return services;
     }

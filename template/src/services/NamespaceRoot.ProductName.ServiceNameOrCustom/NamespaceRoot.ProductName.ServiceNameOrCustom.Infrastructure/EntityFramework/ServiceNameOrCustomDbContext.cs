@@ -4,7 +4,7 @@ using NamespaceRoot.ProductName.Common.Domain.Persistence;
 //#if (Messaging == "outbox")
 using NamespaceRoot.ProductName.Common.Infrastructure.Messaging;
 //#endif
-using NamespaceRoot.ProductName.Common.Infrastructure.Repositories.EntityFramework;
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
 

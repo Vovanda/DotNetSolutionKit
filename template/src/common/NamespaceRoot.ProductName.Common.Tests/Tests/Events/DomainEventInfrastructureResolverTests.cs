@@ -1,7 +1,6 @@
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
-using NUnit.Framework;
 using Shouldly;
 
 namespace NamespaceRoot.ProductName.Common.Tests.Tests.Events;
@@ -24,7 +23,7 @@ public class DomainEventInfrastructureResolverTests
 
         await ctx.ExecuteAsync<TestDbContext>(db =>
         {
-            // DomainEventScopeContext is not set — simulates seeding
+            // DomainEventScopeContext is not set - simulates seeding
             var result = DomainEventInfrastructureResolver.TryResolve(db, out var storage, out var dispatcher);
 
             result.ShouldBeFalse();
@@ -62,7 +61,7 @@ public class DomainEventInfrastructureResolverTests
     }
 
     [Test]
-    [Description("TryResolve must return false once the ambient scope is disposed — no stale references")]
+    [Description("TryResolve must return false once the ambient scope is disposed - no stale references")]
     public async Task TryResolve_ReturnsFalse_AfterAmbientScopeDisposed()
     {
         using var ctx = CreateTestContext();

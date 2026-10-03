@@ -1,8 +1,10 @@
-using System.Reflection;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
 using NamespaceRoot.ProductName.Common.Application.Events;
 using NamespaceRoot.ProductName.Common.Application.Events.Handlers;
+using Hangfire;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
 
@@ -16,6 +18,9 @@ public static class EntityFrameworkEventExtensions
     /// </summary>
     public static IServiceCollection AddDomainEventCore(this IServiceCollection services)
     {
+        // The dispatcher depends on ILogger to surface PostCommit/Rollback handler failures.
+        // AddLogging is idempotent, so callers that already configured logging see no change.
+        services.AddLogging();
         services.AddScoped<IDomainEventStorage, DomainEventStorage>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         return services;
@@ -51,6 +56,28 @@ public static class EntityFrameworkEventExtensions
     }
 
     /// <summary>
+    /// Makes Hangfire jobs publish their DI scope as the ambient domain-event scope, so events raised
+    /// by a background job reach the dispatcher instead of being dropped.
+    /// </summary>
+    /// <remarks>
+    /// Registration order against <c>AddHangfire</c> does not matter: Hangfire registers its own
+    /// activator with <c>TryAddSingleton</c> (so it yields to an earlier registration), and a later
+    /// one wins resolution outright.
+    /// </remarks>
+    public static IServiceCollection AddDomainEventJobActivator(this IServiceCollection services)
+    {
+        services.AddSingleton<JobActivator>(sp =>
+            new DomainEventJobActivator(sp.GetRequiredService<IServiceScopeFactory>()));
+
+        // Carries the operator who triggered a job on demand into the job itself, so work started
+        // from an internal endpoint is attributed to the person who started it rather than to the
+        // platform. Scheduled runs carry nothing and stay system-attributed.
+        services.AddSingleton<JobActorPropagationFilter>();
+
+        return services;
+    }
+
+    /// <summary>
     /// Comprehensive registration of the domain event system.
     /// </summary>
     public static IServiceCollection AddDomainEvents(
@@ -60,7 +87,8 @@ public static class EntityFrameworkEventExtensions
         return services
             .AddDomainEventCore()
             .AddDomainEventHandlers(assemblies)
-            .AddDomainEventPersistence();
+            .AddDomainEventPersistence()
+            .AddDomainEventJobActivator();
     }
 
     /// <summary>

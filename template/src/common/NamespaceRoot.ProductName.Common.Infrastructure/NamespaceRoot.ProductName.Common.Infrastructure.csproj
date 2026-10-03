@@ -11,6 +11,7 @@
         <!--#if (Infisical) -->
         <PackageReference Include="Infisical.Sdk" />
         <!--#endif -->
+        <PackageReference Include="Hangfire.Core" />
         <PackageReference Include="MassTransit.RabbitMQ" />
         <PackageReference Include="MassTransit.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" />

@@ -5,7 +5,13 @@ namespace NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFram
 /// Uses <see cref="AsyncLocal{T}"/> to propagate the current DI scope across async call chains
 /// (e.g., MassTransit consumers, Hangfire jobs).
 /// </summary>
-internal static class DomainEventScopeContext
+/// <remarks>
+/// MassTransit consumers get this for free via <see cref="DomainEventScopeFilter{T}"/>. Any
+/// OTHER self-managed processing scope (raw RabbitMQ consumers, custom background loops) must
+/// wrap its handler invocation in <see cref="Use"/> - otherwise the domain-event interceptors
+/// silently skip the scope's events (no storage resolvable) and PostCommit handlers never fire.
+/// </remarks>
+public static class DomainEventScopeContext
 {
     private static readonly AsyncLocal<IServiceProvider?> _current = new();
 
