@@ -38,8 +38,8 @@ framework of a service's tests; the tests of `Common` stay on NUnit.
 
 ### Secret store: Infisical
 
-Infisical is the default because it is an accessible option: open source, and it can be hosted by the team
-itself. The design does not depend on it: the configuration provider reads secrets through a port,
+Infisical is the default because it is an accessible option: open source, light enough for a team to host
+itself next to its services. The design does not depend on it: the configuration provider reads secrets through a port,
 `ISecretStore`, and the rules that matter (which folder wins, how a name becomes a configuration key, what
 happens when the store is unreachable) are the provider's, not the store's. Another store, such as
 HashiCorp Vault or a cloud key vault, is an implementation of the port. The one tie left is the options:
