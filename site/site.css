@@ -92,9 +92,9 @@
 /* The scrollbar is always there, so the width of the window is the same for a long page and a short one,
    and for a page whose content is still coming: a scrollbar that appears moves the panel and the sheet.
    Both overflows sit on <html>, which hands them to the window; on <body> overflow-x would make the body
-   a scroll container of its own, and the sticky bar and panel would stop sticking. */
-html { scroll-behavior: smooth; overflow-x: hidden; overflow-y: scroll; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+   a scroll container of its own, and the sticky bar and panel would stop sticking. No smooth scrolling
+   here: a link to a place on the page jumps there (site/jump.js) instead of crawling the page through. */
+html { overflow-x: hidden; overflow-y: scroll; }
 
 body {
   margin: 0;
@@ -389,3 +389,118 @@ footer p { max-width: var(--measure); }
 @media (pointer: coarse) {
   .hero__inner { padding-bottom: 2rem; }
 }
+
+/* ==== WHAT'S NEW ============================================================================
+   Every version as a digest of plain paragraphs - number and headline, its points under it - in a
+   window of fixed height (site/releases.js), so filling it moves nothing and a short note leaves no
+   hole. The newest are set larger, near the size of a heading, and the type settles to body size by
+   the fourth: the eye starts where the news is. The heading shares its line with the field, a pill
+   like .tabs that takes a version part by part between fixed dots and moves the window to it, and
+   with the buttons that step the window one version. On a phone the older-button sits under the
+   window, where reading ends and the thumb lies; on a touch screen only the buttons move the window -
+   it takes no swipe, so a finger on it scrolls the page and the page never gets stuck in the list.
+   Without scripts, or when the file does not come, only the link to the releases stays. */
+.releases {
+  /* the field and the buttons are as tall as the heading's line, so the line reads as one; the hit area is wider than the look */
+  --control: 2.4rem;
+  /* the section is as wide as the text, the site's measure: the wheel moves the list only over its text,
+     and the field and the buttons stand at the text's right edge */
+  max-width: var(--measure);
+  position: relative; display: grid; align-items: center; column-gap: 0.5rem;
+  grid-template-columns: 1fr auto auto auto;
+  grid-template-areas: "title find up down" "list list list list" "all all all all";
+}
+.releases > h2 { grid-area: title; margin: 0; }
+.releases__find { grid-area: find; z-index: 3; } /* above the window, whose mask makes a layer of its own: the hint under the field lies over the text */
+.releases__up { grid-area: up; }
+.releases__down { grid-area: down; }
+.releases__list { grid-area: list; }
+.releases__all { grid-area: all; }
+
+.releases__find {
+  position: relative; display: inline-flex; align-items: center; height: var(--control); padding: 0 0.85rem; box-sizing: border-box;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--panel);
+  font-family: "IBM Plex Mono", monospace; font-size: 0.9rem; color: var(--muted);
+}
+.releases__find:focus-within { border-color: var(--focus); }
+.releases__find input {
+  width: 3ch; padding: 0; text-align: center; font: inherit; color: var(--text);
+  background: none; border: 0; border-bottom: 1px dashed var(--line); outline: none;
+}
+.releases__find input:focus { border-bottom-color: var(--focus); }
+.releases__find input::placeholder { color: var(--muted); opacity: 0.6; }
+.releases__find:has(input:disabled) { visibility: hidden; }
+/* a digit refused: the field shakes and shows under it the versions that can go there, over the window, moving nothing */
+.releases__hint {
+  display: none; position: absolute; top: calc(100% + 0.4rem); right: 0; z-index: 3; margin: 0; padding: 0.35rem 0.75rem;
+  width: max-content; max-width: calc(100vw - 2rem); box-sizing: border-box; font-size: 0.82rem; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+}
+.releases--refused .releases__hint { display: block; }
+.releases--refused { border-color: var(--wait); animation: releases-shake 0.25s; }
+@keyframes releases-shake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+@media (prefers-reduced-motion: reduce) { .releases--refused { animation: none; } }
+
+.releases__up, .releases__down {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  min-width: var(--control); height: var(--control); padding: 0 0.85rem; box-sizing: border-box;
+  cursor: pointer; font: inherit; font-size: 0.86rem; color: var(--muted);
+  background: var(--panel); border: 1px solid var(--line); border-radius: 999px;
+}
+.releases__up:hover:not(:disabled), .releases__down:hover:not(:disabled) { color: var(--text); border-color: var(--focus); }
+.releases__up:disabled, .releases__down:disabled { opacity: 0.4; cursor: default; }
+.releases__up::after, .releases__down::after { content: ""; position: absolute; inset: -0.4rem -0.15rem; }
+
+.releases__list {
+  height: 26rem; margin: 1.4rem 0 0.8rem; padding-bottom: 2rem; box-sizing: border-box; overflow-y: auto; overscroll-behavior: contain;
+  /* where a version found or counted as the top one stands: under the top fade, not in it (site/releases.js reads it) */
+  scroll-padding-top: 1.4rem;
+  /* no scrollbar: the fade and the buttons say there is more, and the list stays a part of the page */
+  scrollbar-width: none;
+  /* the text fades out at an edge with more behind it, so the cut reads as "more", with no frame */
+  --fade-top: 0rem; --fade-bottom: 3rem;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent);
+}
+.releases__list::-webkit-scrollbar { display: none; }
+.releases__list.releases--scrolled { --fade-top: 1.2rem; }
+.releases__list.releases--end { --fade-bottom: 0rem; }
+.releases__item { margin: 0 0 1.9rem; }
+.releases__headline { margin: 0; line-height: 1.35; font-weight: 600; }
+.releases__version { margin-right: 0.45em; color: var(--muted); font-weight: 500; }
+.releases__item ul { margin: 1rem 0 0; color: var(--muted); }
+.releases__item li + li { margin-top: 0.35rem; }
+/* the digest's scale: the newest near a heading, then down to body size */
+.releases__item:nth-child(1) { margin-bottom: 2.4rem; }
+.releases__item:nth-child(1) .releases__headline { font-size: 1.45rem; }
+.releases__item:nth-child(1) ul { font-size: 1.08rem; color: var(--text); }
+.releases__item:nth-child(2) .releases__headline { font-size: 1.25rem; }
+.releases__item:nth-child(2) ul { font-size: 1.02rem; }
+.releases__item:nth-child(3) .releases__headline { font-size: 1.1rem; }
+.releases__item:nth-child(n+4) .releases__headline { font-weight: 500; }
+.releases--found .releases__version { color: var(--focus); }
+.releases--failed .releases__find, .releases--failed .releases__up, .releases--failed .releases__down, .releases--failed .releases__list { display: none; }
+@media (pointer: coarse) {
+  /* the window takes no swipe: the page scrolls under the finger, the buttons move the window; nothing
+     holds the swipe back from the page */
+  .releases__list { overflow-y: hidden; overscroll-behavior: auto; touch-action: pan-y; }
+}
+@media (max-width: 480px) {
+  /* the heading, the field and the newer-button stay on one line; the older-button goes under the window */
+  .releases { grid-template-columns: 1fr auto auto; grid-template-areas: "title find up" "list list list" "down down down" "all all all"; }
+  .releases { --control: 2rem; }
+  .releases__find { padding-inline: 0.65rem; font-size: 0.85rem; }
+  .releases__up { padding: 0; }
+  .releases__up .releases__say { display: none; }
+  .releases__list { height: 30rem; margin-bottom: 0.6rem; }
+  .releases__down { margin-bottom: 0.8rem; }
+  .releases__item:nth-child(1) .releases__headline { font-size: 1.25rem; }
+  .releases__item:nth-child(2) .releases__headline { font-size: 1.12rem; }
+  .releases__item:nth-child(3) .releases__headline { font-size: 1.04rem; }
+}
+
+/* The veil of a jump (site/jump.js): a layer over what is seen of the scroller, under the bar, that blurs
+   what is behind it and turns it toward the page's ground; the script masks it to the band in motion and
+   thickens it toward the cut. */
+.jump-blur { display: none; position: fixed; z-index: 25; pointer-events: none; }
+/* a section a link jumped to takes the focus only so the next Tab goes on from there; it draws no frame */
+[tabindex="-1"]:focus { outline: none; }
