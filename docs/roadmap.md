@@ -20,14 +20,17 @@ gantt
 
     section Now
     v2.7 site, samples, nuget.org, major check, gateway (#5), Vault, settings reloaded, SQL Server :active, s9, after s8, 4000ms
+    shipped workflows run in the template's CI; work in dev, master releases :active, s10, after s8, 1000ms
+    gateway Swagger like a product's, open bugs closed :active, s11, after s10, 2000ms
 
     section Next
     3.0 on .NET 10 in master, with the path from 2.x; 2.x stays on .NET 8 :s15, after s9, 3000ms
 ```
 
 What each release brought: [version.json](https://github.com/sawking-tech/DotNetSolutionKit/blob/master/version.json).
-Everything in Now goes into 2.x, on .NET 8, before 3.0: support for .NET 8 ends on 10 November 2026, and from 3.0 on
-the 2.x branch takes fixes only.
+Work goes into `dev`, and a release reaches `master` about once a week ([CONTRIBUTING](https://github.com/sawking-tech/DotNetSolutionKit/blob/master/CONTRIBUTING.md)).
+Everything in Now goes into 2.x, on .NET 8, before 3.0, which is planned for the week after: support for .NET 8
+ends on 10 November 2026, and from 3.0 on the 2.x branch takes fixes only.
 
 ## Reducing lock-in
 

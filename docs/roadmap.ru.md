@@ -20,14 +20,17 @@ gantt
 
     section Now
     v2.7 site, samples, nuget.org, major check, gateway (#5), Vault, settings reloaded, SQL Server :active, s9, after s8, 4000ms
+    shipped workflows run in the template's CI; work in dev, master releases :active, s10, after s8, 1000ms
+    gateway Swagger like a product's, open bugs closed :active, s11, after s10, 2000ms
 
     section Next
     3.0 on .NET 10 in master, with the path from 2.x; 2.x stays on .NET 8 :s15, after s9, 3000ms
 ```
 
 Что принёс каждый релиз: [version.json](https://github.com/sawking-tech/DotNetSolutionKit/blob/master/version.json).
-Всё из Now входит в 2.x, на .NET 8, до 3.0: поддержка .NET 8 заканчивается 10 ноября 2026 года, и с 3.0 ветка 2.x
-получает только исправления.
+Работа идёт в `dev`, а релиз попадает в `master` примерно раз в неделю ([CONTRIBUTING](https://github.com/sawking-tech/DotNetSolutionKit/blob/master/CONTRIBUTING.md)).
+Всё из Now входит в 2.x, на .NET 8, до 3.0, которая запланирована на следующую неделю: поддержка .NET 8
+заканчивается 10 ноября 2026 года, и с 3.0 ветка 2.x получает только исправления.
 
 ## Меньше привязки к технологиям
 
