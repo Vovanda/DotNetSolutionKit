@@ -166,6 +166,15 @@
       "defaultValue": "false",
       "description": "Read secrets from Infisical: the shared folder and the service's folder overlay configuration"
     },
+    "Database": {
+      "type": "parameter",
+      "datatype": "choice",
+      "defaultValue": "postgres",
+      "choices": [
+        { "choice": "postgres", "description": "PostgreSQL" }
+      ],
+      "description": "The database of the services"
+    },
     "Vault": {
       "type": "parameter",
       "datatype": "bool",
