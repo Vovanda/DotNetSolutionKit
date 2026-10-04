@@ -47,7 +47,6 @@ jobs:
               --FeatureFlags true --HierarchyRules true --Audit true --GitHubCiCd true
             more: -N Acme -P Shop -S Billing --Database mssql --Messaging outbox -I true --DiffApi true --FeatureFlags true --Audit true
             integration: true
-            sqlserver: true
             schemas: true
           - name: xunit tests
             first: -N Acme -P Shop -S Orders -M false --TestFramework xunit --Messaging outbox --Audit true
@@ -122,50 +121,27 @@ jobs:
           echo "$contracts contracts for $services services"
           [ "$contracts" = "$services" ]
 
-      # The integration tests of the combination with every server the template knows. The same
-      # servers and settings as the generated ci.yml.
-      - name: Start the test servers
-        if: matrix.integration
-        run: |
-          docker run -d --name tests-pg -p 5432:5432 -e POSTGRES_PASSWORD=test-do-not-use \
-            --tmpfs /var/lib/postgresql/data:rw,size=2g postgres:16-alpine \
-            -c fsync=off -c synchronous_commit=off -c full_page_writes=off -c max_wal_size=512MB -c autovacuum=off
-          docker run -d --name tests-ch -p 8123:8123 -e CLICKHOUSE_USER=tester -e CLICKHOUSE_PASSWORD=test-do-not-use \
-            -e CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1 clickhouse/clickhouse-server:24.8-alpine
-          docker run -d --name tests-s3 -p 8333:8333 -e AWS_ACCESS_KEY_ID=tester -e AWS_SECRET_ACCESS_KEY=test-do-not-use \
-            chrislusf/seaweedfs server -s3 -dir=/data
-          docker run -d --name tests-vault -p 8200:8200 -e VAULT_DEV_ROOT_TOKEN_ID=test-do-not-use \
-            -e VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200 hashicorp/vault:1.17
-          if [ "${{ matrix.sqlserver }}" = true ]; then
-            docker run -d --name tests-mssql -p 1433:1433 -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD=Test-do-not-use-1 \
-              mcr.microsoft.com/mssql/server:2022-latest
-          fi
-          for attempt in $(seq 1 90); do
-            ready=1
-            if [ "${{ matrix.sqlserver }}" = true ]; then
-              docker exec tests-mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P Test-do-not-use-1 \
-                -Q "SELECT 1" -b >/dev/null 2>&1 || ready=0
-            fi
-            docker exec tests-pg pg_isready -U postgres >/dev/null 2>&1 || ready=0
-            curl -fsS http://localhost:8123/ping >/dev/null 2>&1 || ready=0
-            echo "s3.bucket.create -name tests" | docker exec -i tests-s3 weed shell -master=localhost:9333 2>&1 \
-              | grep -qE 'created|exists' || ready=0
-            curl -fsS http://localhost:8200/v1/sys/health >/dev/null 2>&1 || ready=0
-            [ $ready = 1 ] && exit 0
-            sleep 1
-          done
-          exit 1
-
-      - name: Integration tests
+      # The workflows the solution ships, run as they are by scripts/run-workflow.py: ci.yml with its own
+      # test servers, integration tests and coverage threshold, the secret scan of a pull request, and
+      # the API diff when there is one. Nothing is published: a team's first pull request runs these
+      # same steps. The solution is put in a repository with main and a pull request on top of it, the
+      # way GitHub checks one out.
+      - name: The shipped workflows
         if: matrix.integration
         working-directory: ${{ runner.temp }}/solution
-        env:
-          TEST_POSTGRES: Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=test-do-not-use
-          TEST_CLICKHOUSE: Host=localhost;Port=8123;Username=tester;Password=test-do-not-use
-          TEST_S3: ServiceUrl=http://localhost:8333;Bucket=tests;AccessKey=tester;SecretKey=test-do-not-use
-          TEST_VAULT: Address=http://localhost:8200;Token=test-do-not-use
-          TEST_SQLSERVER: Server=localhost,1433;User Id=sa;Password=Test-do-not-use-1;TrustServerCertificate=true
-        run: dotnet test src/services/*.All.sln --configuration Release --no-build --filter "TestCategory=Integration"
+        run: |
+          commit() { git -c user.name=ci -c user.email=ci@example.com commit -q "$@"; }
+          git init -q -b main && git add -A && commit -m "the generated solution"
+          git clone -q --bare . "$RUNNER_TEMP/origin.git" && git remote add origin "$RUNNER_TEMP/origin.git" && git fetch -q origin
+          base=$(git rev-parse HEAD)
+          git switch -q -c change && echo "a change under review" > change.txt && git add change.txt && commit -m "a change"
+          head=$(git rev-parse HEAD)
+          run() { python3 "$GITHUB_WORKSPACE/scripts/run-workflow.py" . "$@"; }
+          run .github/workflows/ci.yml build-and-test vars.COVERAGE_MIN_BRANCH=1
+          run .github/workflows/secret-scan.yml scan github.event_name=pull_request             github.event.pull_request.base.sha="$base" github.event.pull_request.head.sha="$head"             github.event.before= github.sha="$head" github.event.repository.default_branch=main
+          if [ -f .github/workflows/api-diff.yml ]; then
+            run .github/workflows/api-diff.yml api-diff github.base_ref=main
+          fi
 
   # The template as users install it once published: packed, installed from the package, generated.
   package:
