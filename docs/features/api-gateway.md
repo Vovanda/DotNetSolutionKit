@@ -53,7 +53,12 @@ sequenceDiagram
 3. Before the request goes on, the gateway removes `X-API-Key` and every user context header the client
    sent, so nobody can claim to be someone else by setting `X-User-Id`. For an authenticated caller it
    then sets the internal API key and the context from the token: user id, login, display name, tenant,
-   roles, permissions, the token id and its expiry.
+   roles, permissions, the token id and its expiry. It also removes `Origin`: CORS is decided by the
+   gateway's `Cors` section, which answers the preflight and sets the headers of the answer. A service
+   that saw the `Origin` would add its own CORS headers, they would pass over the gateway's, and a site
+   the gateway refuses could read the answer. For the same reason it drops every `Access-Control-*` header
+   a service puts in its answer, so only the gateway's reach the browser. A service behind the gateway
+   needs no `Cors` of its own.
 4. YARP sends the request to the service its route names, with `X-Forwarded-For`, `-Proto`, `-Host` and
    `-Prefix`. The service takes them (see [behind a proxy](../architecture/web-layer.md#behind-a-proxy)),
    so the links it builds - the `Location` of a 201, a redirect - point at the gateway. Without them a
@@ -153,4 +158,5 @@ On a generated solution under compose, a service and a gateway in front of it:
 | `X-User-Id` set by the client, through the gateway | 401: the header is removed |
 | `X-User-Id` sent straight to the service, without the key or with a wrong one | 401 |
 
-`Common.Tests` covers what the gateway forwards and what it refuses.
+`Common.Tests` covers what the gateway forwards and what it refuses; the gateway's own `Tests` project
+checks what its transforms send to a service and what they let back to the client.
