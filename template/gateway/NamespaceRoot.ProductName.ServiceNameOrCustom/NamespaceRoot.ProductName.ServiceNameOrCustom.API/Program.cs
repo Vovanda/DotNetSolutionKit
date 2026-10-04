@@ -29,7 +29,8 @@ try
     builder.SetupGatewayAuthentication();
     builder.Services.AddAuthorization();
 
-    // The services' Swagger documents, through their /swagger/<cluster>/ routes, on the gateway's page.
+    // The services' Swagger documents on the gateway's page, listed by their /swagger/<cluster>/ routes and
+    // cut to the paths the gateway's routes reach.
     builder.Services.AddGatewaySwagger(builder.Configuration.GetSection("ReverseProxy"));
 
     builder.Services.AddReverseProxy()
@@ -47,6 +48,7 @@ try
     // A token that failed validation stops here; no token goes on, and the service decides whether
     // its endpoint is public.
     app.UsePlatformPipeline(typeof(Program).Assembly, beforeEndpoints: pipeline => pipeline.UseRejectInvalidCredentials());
+    app.MapGatewaySwagger(builder.Configuration.GetSection("ReverseProxy"));
     app.MapReverseProxy();
 
     app.Run();

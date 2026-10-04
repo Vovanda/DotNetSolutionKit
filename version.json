@@ -1,6 +1,14 @@
 {
-  "version": "2.7.0",
+  "version": "2.8.0",
   "releaseNotes": {
+    "2.8.0": {
+      "headline": "The gateway shows each service's Swagger document as a caller of the gateway can use it.",
+      "highlights": [
+        "The gateway serves each service's document at /swagger-services/<cluster>.json with only the paths and methods its routes to that cluster reach, and with the gateway's servers instead of the service's.",
+        "Swagger:PublicServers puts servers into the documents of a service and of the gateway, so a client importing them knows where to send requests; each is an absolute URL, checked at startup.",
+        "Swagger:ScrubPatterns removes what matches them from the descriptions of a document, such as the ids of a tracker an XML comment names."
+      ]
+    },
     "2.7.0": {
       "headline": "A generated solution names the version of the template it came from, and the template's own files carry its author.",
       "highlights": [
