@@ -1,2 +1,5 @@
 # Shell scripts run under bash, which fails on a carriage return at the end of a line.
 *.sh text eol=lf
+# The template's files are LF in every checkout: dotnet new leaves a bare #endif at the end of a C# file
+# whose lines end with CRLF, and a solution generated from a Windows clone would not build.
+template/** text=auto eol=lf
