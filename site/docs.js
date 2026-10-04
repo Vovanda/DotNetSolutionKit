@@ -136,23 +136,6 @@ function scrollToSection(section) {
   doc.querySelector(`[id="${CSS.escape(section)}"]`)?.scrollIntoView();
 }
 
-// Fonts and formulas that arrive after a document is drawn reflow it and carry the heading away, on a
-// phone by screens. Until the reader scrolls or leaves, the sheet follows the heading; past HOLD_MS the
-// document has settled, and holding longer would fight a reader who is only reading.
-const HOLD_MS = 4000;
-const LET_GO = ["wheel", "touchstart", "pointerdown", "keydown", "hashchange"];
-function holdSection(section) {
-  scrollToSection(section);
-  const follow = new ResizeObserver(() => scrollToSection(section));
-  const letGo = () => {
-    follow.disconnect();
-    for (const event of LET_GO) removeEventListener(event, letGo);
-  };
-  follow.observe(doc);
-  for (const event of LET_GO) addEventListener(event, letGo, { passive: true });
-  setTimeout(letGo, HOLD_MS);
-}
-
 function anchorSections(body, docId) {
   for (const heading of body.querySelectorAll("h1, h2, h3, h4, h5, h6")) heading.id = slug(heading.textContent);
   for (const link of body.querySelectorAll('a[href^="#"]')) {
@@ -212,7 +195,7 @@ async function show(address) {
   doc.append(...body.childNodes);
   document.title = `${entry.title[langIndex()]} - ${SITE_CFG.name}`;
   doc.focus?.();
-  if (section) holdSection(decodeURIComponent(section));
+  if (section) scrollToSection(decodeURIComponent(section));
 }
 
 addEventListener("hashchange", () => show(location.hash.slice(1)));
