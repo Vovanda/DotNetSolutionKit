@@ -75,6 +75,23 @@ Routes and clusters are YARP configuration, in the `ReverseProxy` section of the
 Under docker compose the address is the service's name in its compose file; under Kubernetes, its
 Service name.
 
+### The services' Swagger
+
+A route `/swagger/<cluster>/{**rest}` with the path transformed to `/swagger/{**rest}` puts the
+service's document on the gateway's Swagger page, next to the gateway's own:
+
+```json
+"orders-swagger": {
+  "ClusterId": "orders",
+  "Match": { "Path": "/swagger/orders/{**rest}" },
+  "Transforms": [ { "PathPattern": "/swagger/{**rest}" } ]
+}
+```
+
+The page lists one document per such route, named after the cluster; the list is the routes, not a second
+setting. "Try it out" sends a request to the gateway, which routes it like any other. The services serve
+their documents outside Production only, as the gateway shows its page.
+
 ## Settings
 
 | Setting | |
@@ -102,9 +119,3 @@ On a generated solution under compose, a service and a gateway in front of it:
 | `X-User-Id` sent straight to the service, without the key or with a wrong one | 401 |
 
 `Common.Tests` covers what the gateway forwards and what it refuses.
-
-## Not yet
-
-- Swagger of the services through the gateway: each service still shows its own.
-- Permissions asked from a separate service instead of read from the token: issue
-  [#5](https://github.com/sawking-tech/DotNetSolutionKit/issues/5).

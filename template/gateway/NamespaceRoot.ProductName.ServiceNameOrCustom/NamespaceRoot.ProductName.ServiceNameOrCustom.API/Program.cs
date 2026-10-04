@@ -29,6 +29,9 @@ try
     builder.SetupGatewayAuthentication();
     builder.Services.AddAuthorization();
 
+    // The services' Swagger documents, through their /swagger/<cluster>/ routes, on the gateway's page.
+    builder.Services.AddGatewaySwagger(builder.Configuration.GetSection("ReverseProxy"));
+
     builder.Services.AddReverseProxy()
         .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
         .AddTransforms(context => context.AddRequestTransform(transform =>

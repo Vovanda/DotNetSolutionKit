@@ -46,8 +46,35 @@ solution with a single service. A service whose permissions live elsewhere regis
 
 Behind a [gateway](../features/api-gateway.md) the token is validated once, at the gateway, and a service
 receives the user and the permissions in headers that come with the internal API key; the same filter
-and the same `ClaimsPermissionService` check them. Permissions asked from a separate service are planned;
-see issue [#5](https://github.com/sawking-tech/DotNetSolutionKit/issues/5).
+and the same `ClaimsPermissionService` check them.
+
+### Permissions from a separate service
+
+A product that keeps permissions apart from the token sets `Permissions:Source` to `remote`:
+
+```json
+"Permissions": {
+  "Source": "remote",
+  "Remote": {
+    "BaseAddress": "http://permissions:8080/",
+    "Path": "/api/v1/permissions/users/{userId}",
+    "CacheSeconds": 30
+  }
+}
+```
+
+`RemotePermissionService` then asks that service for the user's permissions, a JSON array of strings,
+with the internal key and the caller, as any [call to another service](#calling-another-service). An
+answer is reused for `CacheSeconds` per user, so a permission taken away stops working within that time.
+
+| The permission service | Answer |
+|---|---|
+| lists every permission the action needs | the action runs |
+| leaves one out | 403 |
+| does not answer, or answers an error | 503 `PERMISSIONS_UNAVAILABLE`: the user may hold the permission, and a refusal would read as a decision |
+
+A system call holds every permission without asking. `remote` without `BaseAddress`, or a `Source` other
+than `claims` or `remote`, stops the service at start.
 
 ## Tokens in cookies
 
