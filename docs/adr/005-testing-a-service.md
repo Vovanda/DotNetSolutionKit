@@ -112,7 +112,8 @@ A query that only PostgreSQL can run does not have to leave the service tests. C
 the example: the domain declares `ICaseInsensitiveSearch`, which returns an ordinary specification; the
 service registers `PostgresCaseInsensitiveSearch`, which builds `EF.Functions.ILike` with `%`, `_` and the
 escape character escaped; a service test registers `InMemoryCaseInsensitiveSearch` from `Common.Tests`,
-which gives the same answers with a regular expression. The code that searches is tested on the in-memory
+which gives the same answers with a regular expression: it takes the pattern from
+`PostgresCaseInsensitiveSearch` itself, so the two escape alike and keep the spaces around a term alike. The code that searches is tested on the in-memory
 database, and only the `ILIKE` translation itself needs PostgreSQL.
 
 #### Why repositories do not need an integration test per method

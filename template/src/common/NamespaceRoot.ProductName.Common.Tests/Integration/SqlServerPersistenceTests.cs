@@ -96,6 +96,8 @@ internal class SqlServerPersistenceTests
     [TestCase("f_s")]
     [TestCase("x_y")]
     [TestCase("")]
+    [TestCase("anna ")]
+    [TestCase(" anna")]
     public void The_in_memory_search_answers_as_SQL_Server_does(string pattern)
     {
         using var db = new Db(_connectionString);
