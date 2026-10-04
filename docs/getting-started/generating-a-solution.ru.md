@@ -98,6 +98,10 @@ dotnet new DotNetSolutionKit -N Acme.Corp -P Shop.Online -S Sales.Orders -M fals
 | Идентификаторы C# | без точек | `SalesOrdersDbContext` |
 | Схема базы данных, папка Infisical, имена очередей | в нижнем регистре, точки заменены подчёркиваниями | `sales_orders` |
 
+Сервис называйте по области, а не по его главному агрегату: `-S Basket` с классом `Basket` внутри делает
+`Basket` и пространством имён, и типом, и C# не принимает тип там, где видно пространство имён (CS0118).
+`Baskets`, `Shopping` или `Sales.Baskets` этого не дают.
+
 <a id="add-the-first-migration"></a>
 ## Первая миграция
 

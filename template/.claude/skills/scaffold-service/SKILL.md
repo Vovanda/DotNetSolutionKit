@@ -12,7 +12,9 @@ Scaffold a new microservice with the DotNetSolutionKit template.
 
 ## What to do
 
-1. Ask the user (in their language) for the service name and which optional parts it needs.
+1. Ask the user (in their language) for the service name and which optional parts it needs. Name the
+   service after its area, not after its main aggregate: `-S Basket` with a class `Basket` makes `Basket`
+   both a namespace and a type (CS0118); `Baskets` or `Shopping` avoid it.
 2. Find the flags the solution was generated with (Step 1).
 3. Generate the service from the repository root.
 4. Add the new projects to `All.sln`.
