@@ -197,6 +197,12 @@ so a parallel run has nothing shared to race over and nothing left behind for th
 Two guard tests check that every constant in `FeatureKeys` names a flag that exists,
 and every declared key keeps the agreed shape.
 
+With a secret store (`-I` or `--Vault`), `FeatureFlagsStoreOutageTests` in `Common.Tests` runs the layers
+above end to end on the store's real configuration provider, with only the store faked: a flag set in the
+store decides, a change applies on the next read, a store that goes down leaves the flags as they were, a
+start with the store down takes them from the snapshot, a pinned flag keeps the file's value over both,
+and a start with the store down and no snapshot does not happen.
+
 ## How a frontend should integrate
 
 The frontend does not need to call the backend before drawing anything.
