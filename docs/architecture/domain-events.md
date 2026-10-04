@@ -65,6 +65,13 @@ The phase before the save and the phase after the commit take one `Handle` metho
 both for one event would run it twice; the registration refuses it at startup and names the class. Make it
 two classes. A rollback handler has `HandleRollback` of its own and goes with either.
 
+"After the commit" means after the write is final, which happens in one of three ways: a transaction
+commits; a save with no transaction open around it returns (EF Core sends a single statement without a
+transaction, so no transaction event comes); or, on a provider without relational transactions such as
+the in-memory one of the service tests, `CommitTransactionAsync` returns. A rollback, or a failed save
+with no transaction around it, runs the rollback phase the same way. Each phase runs once for the events
+of a write.
+
 ## Wiring
 
 The service's infrastructure does it when the service is generated:
