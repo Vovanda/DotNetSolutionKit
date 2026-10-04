@@ -1,7 +1,7 @@
 # Фоновые задачи
 
 Включены по умолчанию; `--Hangfire false` генерирует сервис без них. Задачи работают на Hangfire и
-хранятся в PostgreSQL, в отдельной схеме сервиса (`orders_hangfire`) рядом со схемой сервиса и под той же
+хранятся в СУБД решения, PostgreSQL или SQL Server, в отдельной схеме сервиса (`orders_hangfire`) рядом со схемой сервиса и под той же
 защитой.
 
 ## Конфигурация
@@ -55,7 +55,7 @@ BackgroundJob.Enqueue<ExpireUnpaidOrdersJob>(job => job.ExecuteAsync());
 <!-- To confirm with the template's author: the reasons below are the usual ones and need his own. -->
 
 - Разовые, отложенные и повторяющиеся задачи через один API, с повторами и историей каждого запуска в
-  PostgreSQL.
+  СУБД решения.
 - Дашборд из коробки: что выполнилось, что упало и почему, с кнопкой повтора.
 - Задачи - обычные классы из DI, поэтому тестируются как любой другой класс.
 

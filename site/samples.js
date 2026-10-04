@@ -37,7 +37,7 @@ const CARD = {
   margin: 8,           // px the card keeps from the edges of the window
   waitMs: 400,         // a hover card waits this long after the pointer leaves before it fades
 };
-// The samples change once a day, when they are regenerated; a copy younger than this is drawn without
+// The samples change at most once a day, when they are regenerated; a copy younger than this is drawn without
 // asking the network, an older one is drawn and checked behind it.
 const CACHE_FRESH_MS = 60 * 60 * 1000;
 const HIGHLIGHT_MAX_CHARS = 300000;   // a larger file is shown plain: highlighting it holds up a phone

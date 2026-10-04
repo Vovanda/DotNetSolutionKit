@@ -1,8 +1,8 @@
 # Background jobs
 
 On by default; `--Hangfire false` generates a service without them. Jobs run on Hangfire, stored in
-PostgreSQL in a schema of the service's own (`orders_hangfire`), next to the service's schema and guarded
-the same way.
+the solution's database, PostgreSQL or SQL Server, in a schema of the service's own (`orders_hangfire`),
+next to the service's schema and guarded the same way.
 
 ## Configuration
 
@@ -54,7 +54,7 @@ What the template adds to plain Hangfire:
 <!-- To confirm with the template's author: the reasons below are the usual ones and need his own. -->
 
 - Fire-and-forget, delayed and recurring jobs through one API, with retries and the history of each run
-  stored in PostgreSQL.
+  stored in the solution's database.
 - A dashboard out of the box: what ran, what failed and why, with a button to retry.
 - Jobs are plain classes resolved from DI, so they are tested like any other class.
 
