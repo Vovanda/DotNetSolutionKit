@@ -3,7 +3,6 @@ using NamespaceRoot.ProductName.Common.Application.Events.Handlers;
 using NamespaceRoot.ProductName.Common.Domain.Context;
 using NamespaceRoot.ProductName.Common.Domain;
 using NamespaceRoot.ProductName.Common.Domain.Events;
-using NamespaceRoot.ProductName.Common.Domain.Events;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
 using NamespaceRoot.ProductName.Common.Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
