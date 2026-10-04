@@ -112,6 +112,11 @@ TEST_SQLSERVER='Server=localhost,1433;User Id=sa;Password=Test-do-not-use-1;Trus
 Такие fixture'ы есть в `Common.Tests/Integration`: для номеров из последовательности и для объектного
 хранилища.
 
+Тест, который регистрирует доменные события (`AddDomainEvents(...)` в `configure`), получает их и на
+настоящей базе: интеграционные контексты подключают интерсепторы доменных событий, а `ActAsync` публикует
+им свой scope, как in-memory контекст. `PostgresDomainEventPhasesTests` и `SqlServerDomainEventPhasesTests`
+проверяют там фазы после сохранения одной командой, коммита и отката.
+
 ## Покрытие
 
 Тестовые проекты ссылаются на `coverlet.collector`, поэтому покрытие не требует настройки:

@@ -404,6 +404,7 @@
             "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/SqlServerPersistenceTests.cs",
             "src/common/NamespaceRoot.ProductName.Common.Testing/SqlServerDbTestExecutionContext.cs",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/SqlServerIntegrationTestBaseTests.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/SqlServerDomainEventPhasesTests.cs",
             "**/Integration/SqlServerDbTestExecutionContext.cs"
           ]
         },
@@ -417,6 +418,7 @@
             "src/common/NamespaceRoot.ProductName.Common.Testing/Integration/Postgres.cs",
             "src/common/NamespaceRoot.ProductName.Common.Testing/PostgresDbTestExecutionContext.cs",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/PostgresIntegrationTestBaseTests.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/PostgresDomainEventPhasesTests.cs",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/PostgresShortIdGeneratorTests.cs",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Tests/Specifications/CaseInsensitiveSearchTests.cs",
             "**/Integration/PostgresDbTestExecutionContext.cs"

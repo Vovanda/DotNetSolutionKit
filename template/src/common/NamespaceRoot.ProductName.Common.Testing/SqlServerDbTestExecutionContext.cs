@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
 
 namespace NamespaceRoot.ProductName.Common.Tests;
 
@@ -155,7 +156,13 @@ public abstract class SqlServerIntegrationTestBase<TService, TDbContext>
         _testDbName = testDbName;
         _testConnStr = testConnStr;
 
-        Services.AddDbContext<TDbContext>(opts => opts.UseSqlServer(testConnStr));
+        // Domain events run as in the service once the test registers them, as on the in-memory context.
+        Services.AddDbContext<TDbContext>((sp, opts) =>
+        {
+            opts.UseSqlServer(testConnStr);
+            if (sp.GetService<DomainEventPreSaveInterceptor>() != null)
+                opts.ApplyDomainEventInterceptors(sp);
+        });
         configure?.Invoke(Services);
     }
 

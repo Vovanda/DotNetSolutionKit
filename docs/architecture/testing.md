@@ -111,6 +111,11 @@ TEST_SQLSERVER='Server=localhost,1433;User Id=sa;Password=Test-do-not-use-1;Trus
 
 `Common.Tests/Integration` has such fixtures, for numbers from a sequence and for object storage.
 
+A test that registers domain events (`AddDomainEvents(...)` in `configure`) gets them on a real database
+too: the integration contexts apply the domain event interceptors, and `ActAsync` publishes its scope to
+them, as on the in-memory context. `PostgresDomainEventPhasesTests` and `SqlServerDomainEventPhasesTests`
+check the phases after a single-statement save, a commit and a rollback there.
+
 ## Coverage
 
 The test projects reference `coverlet.collector`, so coverage needs no setup:
