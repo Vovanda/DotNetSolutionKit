@@ -3,7 +3,7 @@
    files in the panel, and on the sheet how its CI ran, day by day and release by release, or one file.
 
    Everything is read from raw.githubusercontent.com: the list of samples (SITE.samples.variants on the
-   home branch), each branch's reports/index.json and the reports it lists, and the files. The GitHub API
+   home branch), each branch's reports/<branch>/index.json and the reports it lists, and the files. The GitHub API
    would allow a visitor 60 requests an hour; raw files have no such limit.
 
    The address names what is open: #<branch> is a sample's overview, #<branch>/<path> one of its files,
@@ -165,9 +165,11 @@ const lastRun = (report) => report.runs[report.runs.length - 1];
 async function loadBranch(variant) {
   const out = { variant, reports: [], files: [] };
   try {
-    const index = await getJson(raw(variant.branch, "reports/index.json"));
+    // each branch keeps its reports in a folder of its own name, so merged branches keep both
+    const dir = `reports/${variant.branch}`;
+    const index = await getJson(raw(variant.branch, `${dir}/index.json`));
     out.reports = (await Promise.all(index.map((entry) =>
-      getJson(raw(variant.branch, `reports/${entry.file}`)).catch(() => null)))).filter(Boolean);
+      getJson(raw(variant.branch, `${dir}/${entry.file}`)).catch(() => null)))).filter(Boolean);
     // the newest report lists the files the branch has now
     out.reports.sort((a, b) => lastRun(b).started.localeCompare(lastRun(a).started));
     out.files = out.reports[0]?.files ?? [];
