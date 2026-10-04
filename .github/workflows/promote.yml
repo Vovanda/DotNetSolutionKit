@@ -1,0 +1,173 @@
+name: Promote
+
+# Releases dev: fast-forwards master to it and publishes what master then carries (release.yml). Whatever
+# reaches master is a release, so nothing reaches it any other way. Started by hand, or by the label
+# "release" on a pull request from dev into master, whose page then holds the release's review.
+#
+# Before master moves, the three conditions of a release (CONTRIBUTING.md) are checked on the head of dev:
+# template.yml passed on it, the nightly sample is generated from it and its CI passed, and version.json
+# names a version above the last release. A fast-forward keeps one history: master is dev at that commit.
+#
+# The publication runs in this workflow: a push made with GITHUB_TOKEN starts no other workflow, so
+# release.yml would never see the push that moves master.
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: Branch to release
+        required: true
+        default: dev
+      target:
+        description: Branch to fast-forward - master, 2.x, or a throwaway branch for a rehearsal that publishes nothing
+        required: true
+        default: master
+      reconcile:
+        description: Merge the target into the source first when they have diverged (after a patch on master)
+        type: boolean
+        default: false
+  # A rehearsal of this workflow on temporary branches calls it, before a change to it is merged.
+  workflow_call:
+    inputs:
+      source: { type: string, required: true }
+      target: { type: string, required: true }
+      reconcile: { type: boolean, default: false }
+  pull_request_target:
+    types: [labeled]
+    branches: [master, '2.x']
+
+permissions:
+  contents: write
+  actions: read
+  packages: write
+  pull-requests: write
+
+concurrency:
+  group: promote-${{ inputs.target || github.event.pull_request.base.ref }}
+  cancel-in-progress: false
+
+env:
+  SAMPLES_REPO: sawking-tech/DotNetSolutionKit.Samples
+
+jobs:
+  promote:
+    name: Check and fast-forward
+    runs-on: ubuntu-24.04
+    if: >-
+      github.event_name != 'pull_request_target' ||
+      (github.event.label.name == 'release' && github.event.pull_request.head.repo.full_name == github.repository)
+    env:
+      SOURCE: ${{ inputs.source || github.event.pull_request.head.ref }}
+      TARGET: ${{ inputs.target || github.event.pull_request.base.ref }}
+      RECONCILE: ${{ inputs.reconcile || false }}
+      PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+      GH_TOKEN: ${{ github.token }}
+    outputs:
+      target: ${{ steps.move.outputs.target }}
+      moved: ${{ steps.move.outputs.moved }}
+      publish: ${{ steps.move.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: The conditions of a release, on the head of the source
+        run: |
+          set -euo pipefail
+          git check-ref-format --branch "$SOURCE" >/dev/null
+          git check-ref-format --branch "$TARGET" >/dev/null
+          [ "$SOURCE" != "$TARGET" ] || { echo "::error::the source and the target are the same branch"; exit 1; }
+          git fetch -q --tags origin "+refs/heads/$SOURCE:refs/remotes/origin/$SOURCE"
+          sha=$(git rev-parse "origin/$SOURCE")
+          echo "source $SOURCE at ${sha:0:7}"
+
+          # 1. version.json names a version above the last release of the line.
+          version=$(git show "origin/$SOURCE:version.json" | jq -r .version)
+          case "$TARGET" in 2.x) pattern='v2.*' ;; *) pattern='v*' ;; esac
+          last=$(git tag -l "$pattern" --sort=-v:refname | grep -v -- - | head -1 || true)
+          echo "version $version, last release ${last:-none}"
+          if [ -n "$last" ]; then
+            higher=$(printf '%s\n%s\n' "${last#v}" "$version" | sort -V | tail -1)
+            if [ "$version" = "${last#v}" ] || [ "$higher" != "$version" ]; then
+              echo "::error::version.json on $SOURCE says $version, not above the last release $last: raise it on $SOURCE first, with its notes"
+              exit 1
+            fi
+          fi
+
+          # 2. template.yml passed on the commit, waiting for a run still going.
+          for minute in $(seq 1 40); do
+            runs=$(gh run list -R "$GITHUB_REPOSITORY" --workflow template.yml --commit "$sha" --json status,conclusion)
+            if [ "$(jq '[.[] | select(.status == "completed" and .conclusion == "success")] | length' <<< "$runs")" -gt 0 ]; then
+              echo "template.yml passed on ${sha:0:7}"; break
+            fi
+            if [ "$(jq 'length' <<< "$runs")" -gt 0 ] && [ "$(jq '[.[] | select(.status != "completed")] | length' <<< "$runs")" -eq 0 ]; then
+              echo "::error::template.yml did not pass on ${sha:0:7}: $(jq -c '[.[].conclusion]' <<< "$runs")"; exit 1
+            fi
+            [ "$minute" -lt 40 ] || { echo "::error::no finished template.yml run on ${sha:0:7}"; exit 1; }
+            sleep 60
+          done
+
+          # 3. The nightly sample is generated from this commit, and its CI passed. It is regenerated by the
+          # samples' own schedule, or at once with: gh workflow run regenerate.yml -R $SAMPLES_REPO --ref full
+          if [ "$SOURCE" = dev ]; then
+            from=$(gh api "repos/$SAMPLES_REPO/contents/template-version?ref=nightly" -q .content | base64 -d | tr -d '\r\n')
+            [ "$from" = "$sha" ] || { echo "::error::nightly is generated from ${from:0:7}, not from ${sha:0:7}: regenerate it first"; exit 1; }
+            head=$(gh api "repos/$SAMPLES_REPO/commits/nightly" -q .sha)
+            ci=$(gh run list -R "$SAMPLES_REPO" --workflow ci.yml --commit "$head" --json status,conclusion -q '.[0] | "\(.status) \(.conclusion)"')
+            [ "$ci" = "completed success" ] || { echo "::error::the CI of nightly at ${head:0:7} is '$ci', not a success"; exit 1; }
+            echo "nightly from ${sha:0:7}: its CI passed"
+          else
+            echo "::notice::$SOURCE is not dev: the nightly sample does not show it, and is not checked"
+          fi
+
+      - name: Fast-forward the target
+        id: move
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch -q origin "+refs/heads/$TARGET:refs/remotes/origin/$TARGET"
+          before=$(git rev-parse "origin/$TARGET")
+          echo "target=$TARGET" >> "$GITHUB_OUTPUT"
+          case "$TARGET" in master|2.x) echo "publish=true" >> "$GITHUB_OUTPUT" ;; *) echo "publish=false" >> "$GITHUB_OUTPUT" ;; esac
+
+          src="origin/$SOURCE"
+          if ! git merge-base --is-ancestor "origin/$TARGET" "$src"; then
+            if [ "$RECONCILE" != true ]; then
+              echo "::error::$TARGET is not an ancestor of $SOURCE, so it cannot be fast-forwarded; merge $TARGET into $SOURCE, or run again with reconcile"
+              git log --oneline --left-right --cherry-pick --max-count=30 "origin/$TARGET...origin/$SOURCE"
+              exit 1
+            fi
+            # The merge is a new commit on the source, which the conditions above did not see: its checks
+            # run on the push, and the release waits for them in release.yml.
+            echo "::notice::merging $TARGET into $SOURCE first"
+            git checkout -q -B "$SOURCE" "origin/$SOURCE"
+            git merge --no-edit "origin/$TARGET"
+            git push origin "HEAD:refs/heads/$SOURCE"
+            src=$(git rev-parse HEAD)
+          fi
+
+          git checkout -q -B "$TARGET" "origin/$TARGET"
+          git merge --ff-only "$src"
+          git push origin "HEAD:refs/heads/$TARGET"
+          if [ "$(git rev-parse HEAD)" != "$before" ]; then
+            echo "moved=true" >> "$GITHUB_OUTPUT"
+            echo "$TARGET: ${before:0:7} -> $(git rev-parse --short HEAD)"
+          else
+            echo "moved=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::$TARGET already matched $SOURCE"
+          fi
+
+      - name: Comment on the pull request
+        if: env.PR_NUMBER != ''
+        run: gh pr comment "$PR_NUMBER" --body "Fast-forwarded \`$TARGET\` to \`$SOURCE\`; the release follows in this run."
+
+  # A run again on a target already moved still publishes what a failed run left out.
+  release:
+    name: Publish
+    needs: promote
+    uses: ./.github/workflows/release.yml
+    with:
+      ref: ${{ needs.promote.outputs.target }}
+      publish: ${{ needs.promote.outputs.publish == 'true' }}
+    secrets: inherit
