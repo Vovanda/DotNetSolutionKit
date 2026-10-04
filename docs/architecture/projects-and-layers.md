@@ -23,11 +23,14 @@ flowchart BT
         D["#lt;Service#gt;"] --> C
         A["#lt;Service#gt;.Application"] --> D
         A --> CA
+        A --> C
+        A --> CC
         I["#lt;Service#gt;.Infrastructure"] --> D
         I --> A
         I --> C
         I --> CA
         I --> CI
+        I --> CC
         API["#lt;Service#gt;.API"] --> A
         API --> I
         API --> CW
@@ -46,20 +49,23 @@ flowchart BT
 | `Common.Application` | Application abstractions: the domain event dispatcher, `IPermissionService`, messaging and tracing interfaces | `Common` |
 | `Common.Infrastructure` | EF Core base classes, interceptors, repositories, migrations, the schema guard, messaging on MassTransit, security | `Common`, `Common.Application`, `Common.Contracts` |
 | `Common.Web` | The web layer of a service: pipeline, errors, validation, Swagger, authentication, permissions, health | `Common`, `Common.Contracts`, `Common.Application`, `Common.Infrastructure` |
-| `Common.Tests` | Test infrastructure for services and the tests of `Common` | all of the above |
+| `Common.Testing` | Test infrastructure for the services' tests: the test contexts, the test databases, stubs, rule checks; no test framework | all of the above |
+| `Common.Tests` | The tests of `Common` | all of the above, `Common.Testing` |
 
 ## A service
 
 | Project | Holds | References |
 |---|---|---|
 | `<Service>` | The service's domain: entities, aggregates, domain events, policies | `Common` |
-| `<Service>.Application` | Use cases, domain event handlers, ports the infrastructure implements | `Common.Application`, the domain |
-| `<Service>.Infrastructure` | The `DbContext`, entity configurations, repositories, jobs, consumers | the domain, `Common`, `Common.Application`, `Common.Infrastructure`, the application |
+| `<Service>.Application` | Use cases, domain event handlers, ports the infrastructure implements | `Common`, `Common.Application`, `Common.Contracts`, the domain |
+| `<Service>.Infrastructure` | The `DbContext`, entity configurations, repositories, jobs, consumers | the domain, `Common`, `Common.Application`, `Common.Contracts`, `Common.Infrastructure`, the application |
 | `<Service>.API` | Controllers, `Program`, the host setup | the `Common` projects, the application, the infrastructure |
-| `<Service>.Tests` | The service's tests | `Common.Tests`, `Common` |
+| `<Service>.Tests` | The service's tests | `Common.Testing`, the `Common` projects, the service's projects |
 
 The API project does not reference the domain: it works with the domain through the application layer,
-which registers the domain services too. The infrastructure references the domain directly, because EF Core
+which registers the domain services too. The application layer answers with the request and response
+types of `Common.Contracts` and throws the exceptions of `Common`, so it references both; the
+infrastructure references `Common.Contracts` for the bus messages its consumers receive. The infrastructure references the domain directly, because EF Core
 maps the domain's entities and there are no separate persistence models to translate.
 
 ## Every reference is explicit

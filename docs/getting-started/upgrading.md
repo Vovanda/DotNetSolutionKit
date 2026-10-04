@@ -80,6 +80,21 @@ internal static class TestSkipSetup
 }
 ```
 
+## A service's layers see what their first code needs
+
+In a solution generated before October 2026, a service's application layer references only
+`Common.Application` and the domain, and its infrastructure and tests do not reference `Common.Contracts`.
+Since every reference is explicit, the first use case does not build (it throws `NotFoundException` from
+`Common` and answers with a response from `Common.Contracts`), nor does the first consumer of a bus message.
+In each service, add to `<Service>.Application.csproj`:
+
+```xml
+<ProjectReference Include="..\..\..\common\MyCompany.MyProduct.Common\MyCompany.MyProduct.Common.csproj" />
+<ProjectReference Include="..\..\..\common\MyCompany.MyProduct.Common.Contracts\MyCompany.MyProduct.Common.Contracts.csproj" />
+```
+
+and the second line to `<Service>.Infrastructure.csproj` and `<Service>.Tests.csproj`.
+
 ## One in-memory database per test
 
 In a solution generated before October 2026, `InMemoryTestExecutionContext` takes the name of its database inside the `AddDbContext`

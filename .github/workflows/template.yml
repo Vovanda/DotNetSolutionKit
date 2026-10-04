@@ -32,6 +32,7 @@ jobs:
             gateway: -N Acme -P Shop -S Gateway --ApiGateway true
             integration: true
             schemas: true
+            layers: Orders
           - name: no background jobs
             first: -N Acme -P Shop -S Orders -M false -H false
             more: -N Acme -P Shop -S Billing -H false
@@ -51,6 +52,7 @@ jobs:
           - name: xunit tests
             first: -N Acme -P Shop -S Orders -M false --TestFramework xunit --Messaging outbox --Audit true
             more: -N Acme -P Shop -S Billing --TestFramework xunit
+            layers: Orders
           - name: dotted names
             first: -N Acme.Corp -P Retail.Shop -S Sales.Orders -M false --Messaging outbox --DiffApi true
             more: -N Acme.Corp -P Retail.Shop -S Sales.Billing --Messaging outbox --DiffApi true
@@ -92,6 +94,14 @@ jobs:
       - name: Authorship and version
         working-directory: ${{ runner.temp }}/solution
         run: bash "$GITHUB_WORKSPACE/scripts/check-authorship.sh" . source
+
+      # The first use case, consumer and test a team writes into a service build and pass without touching a
+      # project file: a generated service has no business code, so nothing else would notice a layer that
+      # cannot see what that code needs.
+      - name: A service's first code
+        if: matrix.layers
+        working-directory: ${{ runner.temp }}/solution
+        run: bash "$GITHUB_WORKSPACE/scripts/check-service-layers.sh" . "${{ matrix.layers }}"
 
       # The rules and skills for an AI agent are in the format --Agent chose, and only in it.
       - name: Agent rules and skills

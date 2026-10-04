@@ -102,7 +102,8 @@ public Task<PlaceOrderResponse> PlaceAsync(PlaceOrder request, CancellationToken
 - A duplicate the work itself refuses (a taken name) reaches the caller as that conflict.
 - `ExecuteOnceAsync` is for an answer that must not be stored, such as a secret shown once.
 - The service needs the log once: `modelBuilder.AddIdempotencyLog()` and a migration,
-  `services.AddIdempotency<TDbContext>()` in Infrastructure.
+  `services.AddIdempotency<TDbContext>()` in Infrastructure; both come from
+  `NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Idempotency`.
 
 Details: [persistence](https://dnsk.sawking.tech/docs.html#persistence). Notifications and confirmations
 that are side effects only, and reads, take no key.
