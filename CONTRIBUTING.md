@@ -7,6 +7,10 @@ Every change reaches `master` through a pull request; `master` takes no direct p
 - The pull request runs [template.yml](.github/workflows/template.yml): it generates a solution for each
   combination of flags, builds it, runs its tests and scans it for secrets. It has to be green before the
   merge.
+- What the change generates has to be green too: the `regenerate` workflow of DotNetSolutionKit.Samples,
+  run with `ref` set to the pull request's branch, generates the `preview` branch from it with every flag,
+  and that branch's own CI (build, unit and integration tests, coverage threshold, secret scan) has to
+  pass before the merge. `master` stays ready to release; `nightly` shows it day by day.
 - A change in what a generated solution does comes with a test of that behaviour in the template's tests.
 - Documentation and the site (`docs/`, `index.html`, `docs.html`, `site/`) go through a pull request too.
   They are not part of the template's package and need no new version.

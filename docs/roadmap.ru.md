@@ -19,20 +19,17 @@ gantt
     v2.6 NUnit or xUnit                                   :done, s8, after s7, 1000ms
 
     section Now
-    v2.7 site, samples, nuget.org, template version and major check :active, s9, after s8, 1500ms
+    v2.7 site, samples, nuget.org, major check, gateway Swagger and permissions (#5) :active, s9, after s8, 2000ms
 
     section Next
-    Services' Swagger and permissions via the gateway (#5) :s10, after s9, 1500ms
     Upgrade path between majors                           :s11, after s9, 1000ms
-    HashiCorp Vault as a second secret store              :s12, after s10, 1500ms
+    HashiCorp Vault as a second secret store              :s12, after s9, 1500ms
     Settings and secrets reloaded without a redeploy      :s13, after s12, 1000ms
-    SQL Server as a second database                       :s14, after s10, 3000ms
+    SQL Server as a second database                       :s14, after s9, 3000ms
     3.0 on .NET 10 in master, 2.x stays on .NET 8         :s15, after s11 s13 s14, 2500ms
 ```
 
 Что принёс каждый релиз: [version.json](https://github.com/sawking-tech/DotNetSolutionKit/blob/master/version.json).
-Задача: [#5](https://github.com/sawking-tech/DotNetSolutionKit/issues/5) - шлюз.
-
 Всё из Next входит в 2.x, на .NET 8, до 3.0: поддержка .NET 8 заканчивается 10 ноября 2026 года, и с 3.0 ветка 2.x
 получает только исправления.
 
