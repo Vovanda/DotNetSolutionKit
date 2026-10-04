@@ -5,7 +5,8 @@
       "headline": "A domain event handler that would run one Handle in two phases is refused at startup.",
       "highlights": [
         "A class implementing IDomainPreSaveHandler<T> and IDomainPostCommitHandler<T> for one event ran its Handle both before the save and after the commit; registering it now fails at startup and names the class. A rollback handler still goes with either phase.",
-        "A new solution starts at version 0.1.0 instead of 1.0.0: 1.0.0 is for the release its author calls the first stable one. A solution already generated keeps its version."
+        "A new solution starts at version 0.1.0 instead of 1.0.0: 1.0.0 is for the release its author calls the first stable one. A solution already generated keeps its version.",
+        "Behind the gateway a service's links - the Location of a 201, a redirect - pointed at the service's internal address; a service now takes X-Forwarded-Host and X-Forwarded-Prefix, which YARP sends, and ForwardedHeaders:AllowedHosts limits the host names taken. The edge of deploy/compose/bluegreen.sh sets X-Forwarded-Host and Host with the port and drops a client's X-Forwarded-Prefix; it writes its config only when it creates the edge, so a running deployment gets it after docker rm -f on the edge container."
       ]
     },
     "2.8.0": {

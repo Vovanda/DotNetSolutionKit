@@ -33,9 +33,10 @@ flowchart LR
     R([request]) --> FWD[Forwarded headers] --> COR[Correlation id] --> LOG[Request log] --> ROUTE[Routing] --> CORS --> ERR[Errors as problems] --> AUTH[Authentication and authorization] --> SW[Swagger] --> OWN["beforeEndpoints:<br/>the service's own"] --> EP["Controllers,<br/>/health, /ready"]
 ```
 
-1. Forwarded headers: the scheme and the client address from `X-Forwarded-Proto` and
-   `X-Forwarded-For`, as the proxy in front saw them. First, so the log, the cookies and anything that
-   checks for HTTPS see the client's request, not the proxy's. See [behind a proxy](#behind-a-proxy).
+1. Forwarded headers: the client address, scheme, host and path base from `X-Forwarded-For`, `-Proto`,
+   `-Host` and `-Prefix`, as the proxy in front received the request. First, so the log, the cookies,
+   anything that checks for HTTPS and the links the service builds see the client's request, not the
+   proxy's. See [behind a proxy](#behind-a-proxy).
 2. Correlation: reads or creates `X-Correlation-Id`, puts it on every log line of the request and on the
    response. See [correlation](#correlation).
 3. Request logging: one line per request with method, path, status and duration. It comes after
@@ -78,6 +79,17 @@ address are ignored:
 | `ForwardedHeaders:KnownProxies` | addresses of the proxies, `["10.0.0.2"]` |
 | `ForwardedHeaders:KnownNetworks` | their networks, `["10.1.0.0/16"]` |
 | `ForwardedHeaders:ForwardLimit` | how many proxies the request passes through, 1 by default |
+| `ForwardedHeaders:AllowedHosts` | the public names `X-Forwarded-Host` may carry, `["api.example.com", "*.example.com"]`; empty takes any |
+
+The host and the path base are what a service builds its links from: the `Location` of a 201, a redirect.
+Without them a link points at the service's internal address. A forwarded host outside
+`AllowedHosts` is not taken, and the request keeps its own `Host`; the other headers still apply.
+
+The proxy in front of the gateway, or of a service with no gateway, is where the client's request ends,
+so it sets these headers itself: `X-Forwarded-Host` from the `Host` it received, and it removes an
+`X-Forwarded-Prefix` the client sent. Otherwise a client chooses the host and the path of the service's
+links. The edge of `deploy/compose/bluegreen.sh` does both; an ingress or a TLS proxy of your own must
+too.
 
 ## Swagger documents
 
