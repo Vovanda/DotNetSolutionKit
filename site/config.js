@@ -10,7 +10,7 @@ window.SITE = {
   // where a document's source lives; a document's path is appended to it
   repo: "https://github.com/sawking-tech/DotNetSolutionKit/blob/master/",
   // the repository of generated samples for samples.html: its branches, their files and the reports
-  // its CI leaves in reports/ (read from raw.githubusercontent.com, so no GitHub API limit applies)
+  // its CI leaves in reports/<branch>/ (read from raw.githubusercontent.com, so no GitHub API limit applies)
   samples: { repo: "sawking-tech/DotNetSolutionKit.Samples", home: "full", variants: ".samples/variants.json" },
   // the document shown when the address names none, and old anchors still out in the world
   defaultDoc: "generating",
