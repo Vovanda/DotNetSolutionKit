@@ -53,6 +53,7 @@ jobs:
           - name: xunit tests
             first: -N Acme -P Shop -S Orders -M false --TestFramework xunit --Messaging outbox --Audit true
             more: -N Acme -P Shop -S Billing --TestFramework xunit
+            gateway: -N Acme -P Shop -S Gateway --ApiGateway true --TestFramework xunit
             layers: Orders
           - name: dotted names
             first: -N Acme.Corp -P Retail.Shop -S Sales.Orders -M false --Messaging outbox --DiffApi true
