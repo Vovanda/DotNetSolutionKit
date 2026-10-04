@@ -12,7 +12,8 @@ Every change reaches `master` through a pull request; `master` takes no direct p
   servers, integration tests and coverage threshold, `secret-scan.yml`, `api-diff.yml` - with
   [scripts/run-workflow.py](scripts/run-workflow.py), on the runner and nothing published. The `uses:`
   steps are left to the job around it; that they run on GitHub itself is what the `nightly` branch of
-  DotNetSolutionKit.Samples shows, regenerated from `master` each day. `master` stays ready to release.
+  DotNetSolutionKit.Samples shows: a daily check regenerates it the day after `master` moves, and its CI
+  runs then. `master` stays ready to release.
 - A change in what a generated solution does comes with a test of that behaviour in the template's tests.
 - Documentation and the site (`docs/`, `index.html`, `docs.html`, `site/`) go through a pull request too.
   They are not part of the template's package and need no new version.

@@ -1,8 +1,8 @@
 # Background jobs
 
 On by default; `--Hangfire false` generates a service without them. Jobs run on Hangfire, stored in
-PostgreSQL in a schema of the service's own (`orders_hangfire`), next to the service's schema and guarded
-the same way.
+the solution's database, PostgreSQL or SQL Server, in a schema of the service's own (`orders_hangfire`),
+next to the service's schema and guarded the same way.
 
 ## Configuration
 
@@ -51,14 +51,18 @@ What the template adds to plain Hangfire:
 
 ## Why Hangfire
 
-<!-- To confirm with the template's author: the reasons below are the usual ones and need his own. -->
+Of the job libraries for .NET it is the most convenient for a service's tasks:
 
-- Fire-and-forget, delayed and recurring jobs through one API, with retries and the history of each run
-  stored in PostgreSQL.
-- A dashboard out of the box: what ran, what failed and why, with a button to retry.
-- Jobs are plain classes resolved from DI, so they are tested like any other class.
+- fire-and-forget, delayed and recurring jobs through one compact API, with retries and the history of
+  each run stored in the solution's database;
+- a dashboard out of the box: what ran, what failed and why, with a button to retry;
+- jobs are plain classes resolved from DI, so they are tested like any other class.
 
-Quartz.NET schedules well, but brings no dashboard and needs more code for the same job.
+Quartz.NET is much harder to maintain: the same job takes more code, and a dashboard is not part of it.
+
+The template has no other way to run jobs. Where Hangfire does not fit, generate the service with
+`--Hangfire false` and run background jobs however suits you (an external cron or a Kubernetes
+CronJob, a hosted service, delayed messages on the bus).
 
 ## Tests
 
