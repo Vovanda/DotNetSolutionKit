@@ -6,7 +6,8 @@ name: Promote
 #
 # Before master moves, the three conditions of a release (CONTRIBUTING.md) are checked on the head of dev:
 # template.yml passed on it, the nightly sample is generated from it and its CI passed, and version.json
-# names a version above the last release. A fast-forward keeps one history: master is dev at that commit.
+# names a version above the last release, with no label. A fast-forward keeps one history: master is dev at
+# that commit.
 #
 # The publication runs in this workflow: a push made with GITHUB_TOKEN starts no other workflow, so
 # release.yml would never see the push that moves master.
@@ -81,8 +82,19 @@ jobs:
           sha=$(git rev-parse "origin/$SOURCE")
           echo "source $SOURCE at ${sha:0:7}"
 
-          # 1. version.json names a version above the last release of the line.
+          # 1. version.json names a version above the last release of the line, without the label -rc that the
+          # source carries while work goes on (CONTRIBUTING.md): the label comes off on the source first.
           version=$(git show "origin/$SOURCE:version.json" | jq -r .version)
+          case "$version" in *-*)
+            echo "::error::version.json on $SOURCE says $version, a version with a label: take it off on $SOURCE first (${version%%-*}), with its notes"
+            exit 1 ;;
+          esac
+          # Its notes are there, in both languages: a release without them tags the version and then fails
+          # to publish it, or publishes empty notes nuget.org keeps for good.
+          git show "origin/$SOURCE:version.json" | jq -e --arg v "$version" '
+              .releaseNotes[$v] as $n
+              | $n != null and ($n.headline | length > 0) and ($n.ru.headline | length > 0)
+                and ($n.ru.highlights | length) == ($n.highlights | length)' >/dev/null             || { echo "::error::version.json on $SOURCE has no notes for $version in English and Russian: write them first"; exit 1; }
           case "$TARGET" in 2.x) pattern='v2.*' ;; *) pattern='v*' ;; esac
           last=$(git tag -l "$pattern" --sort=-v:refname | grep -v -- - | head -1 || true)
           echo "version $version, last release ${last:-none}"

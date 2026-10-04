@@ -52,9 +52,10 @@ then:
 - the batch is finished: nothing begun and left undone is in `dev`.
 
 Before the release, one commit on `dev` takes the label off: `2.8.0-rc` becomes `2.8.0`, and so does its
-entry of notes. The minor version grows by exactly one from release to release. The notes have a headline
-about what matters most to a user of the template, and lines checked against the commits since the last
-release. After the release, `dev` takes the next minor with the label.
+entry of notes; [promote.yml](.github/workflows/promote.yml) refuses a version that still has it, and the
+site shows no labelled version. The minor version grows by exactly one from release to release. The notes
+have a headline about what matters most to a user of the template, and lines checked against the commits
+since the last release. After the release, `dev` takes the next minor with the label.
 
 The release is then one pull request from `dev` into `master`.
 

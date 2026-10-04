@@ -13,12 +13,14 @@
    Four parts, each with one job: loading the notes, drawing the digest, the window and its buttons,
    the field. The entry at the bottom wires them. */
 
-/* The release notes, newest first; null when the file does not come. */
+/* The notes of the released versions, newest first; null when the file does not come. A version with a
+   label, as 2.8.0-rc on dev, is not out yet, so the page does not show it (CONTRIBUTING.md). */
 async function loadReleaseNotes() {
   try {
     const response = await fetch("version.json", { cache: "no-cache" });
     if (!response.ok) return null;
-    return (await response.json()).releaseNotes;
+    const notes = (await response.json()).releaseNotes;
+    return Object.fromEntries(Object.entries(notes).filter(([version]) => !version.includes("-")));
   } catch (e) {
     return null;
   }
