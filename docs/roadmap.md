@@ -19,12 +19,11 @@ gantt
     v2.6 NUnit or xUnit                                   :done, s8, after s7, 1000ms
 
     section Now
-    v2.7 site, samples, nuget.org, major check, gateway Swagger and permissions (#5), Vault :active, s9, after s8, 2500ms
+    v2.7 site, samples, nuget.org, major check, gateway (#5), Vault, settings reloaded :active, s9, after s8, 3000ms
 
     section Next
-    Settings and secrets reloaded without a redeploy      :s13, after s9, 1000ms
     SQL Server as a second database                       :s14, after s9, 3000ms
-    3.0 on .NET 10 in master, with the path from 2.x; 2.x stays on .NET 8 :s15, after s13 s14, 3000ms
+    3.0 on .NET 10 in master, with the path from 2.x; 2.x stays on .NET 8 :s15, after s14, 3000ms
 ```
 
 What each release brought: [version.json](https://github.com/sawking-tech/DotNetSolutionKit/blob/master/version.json).

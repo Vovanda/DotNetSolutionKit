@@ -9,7 +9,8 @@ and lays them over the rest of configuration. Code reads a secret like any other
 `ConnectionStrings__DefaultConnection` is `configuration.GetConnectionString("DefaultConnection")`.
 
 Keep both secrets and ordinary settings in the store. A value there changes without a new build or a
-deployment: edit it in Infisical and restart the service.
+deployment: the service reads the store again every `ReloadSeconds` (300 by default), and a setting it
+reads on each use takes the new value without a restart; see [settings](../architecture/settings.md).
 
 ## Order
 

@@ -32,6 +32,7 @@ window.SITE = {
       ["validation", "docs/architecture/validation-and-pagination", ["Validation and pagination", "Валидация и пагинация"], true],
       ["auth", "docs/architecture/authentication-and-permissions", ["Authentication and permissions", "Аутентификация и права"], true],
       ["persistence", "docs/architecture/persistence", ["Persistence", "Хранение"], true],
+      ["settings", "docs/architecture/settings", ["Settings", "Настройки"], true],
       ["domain-events", "docs/architecture/domain-events", ["Domain events", "Доменные события"], true],
       ["testing", "docs/architecture/testing", ["Testing", "Тестирование"], true],
     ]},
