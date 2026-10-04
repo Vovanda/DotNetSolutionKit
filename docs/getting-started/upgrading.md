@@ -80,9 +80,11 @@ internal static class TestSkipSetup
 }
 ```
 
-## Post-commit handlers after a save with no transaction
+## From v2.6 to v2.7
 
-Up to October 2026, the post-commit and rollback phases ran only when a relational transaction committed
+### Post-commit handlers after a save with no transaction
+
+Up to v2.6, the post-commit and rollback phases ran only when a relational transaction committed
 or rolled back. EF Core sends a single statement without a transaction, so a `SaveChangesAsync` of one
 change outside `BeginTransactionAsync` ran no post-commit handler at all, and on the in-memory provider of
 the service tests none ever ran. They run now, once the write is final. A handler that was silently not
@@ -90,9 +92,9 @@ running starts running: read the post-commit handlers of a service before taking
 by taking `Persistence/EntityFramework/Events/DomainEventCompletion.cs`, the two interceptors and
 `DbContextBase.cs` of `Common.Infrastructure` from this version.
 
-## A service's layers see what their first code needs
+### A service's layers see what their first code needs
 
-In a solution generated before October 2026, a service's application layer references only
+In a solution generated before v2.7.0, a service's application layer references only
 `Common.Application` and the domain, and its infrastructure and tests do not reference `Common.Contracts`.
 Since every reference is explicit, the first use case does not build (it throws `NotFoundException` from
 `Common` and answers with a response from `Common.Contracts`), nor does the first consumer of a bus message.
@@ -105,9 +107,9 @@ In each service, add to `<Service>.Application.csproj`:
 
 and the second line to `<Service>.Infrastructure.csproj` and `<Service>.Tests.csproj`.
 
-## One in-memory database per test
+### One in-memory database per test
 
-In a solution generated before October 2026, `InMemoryTestExecutionContext` takes the name of its database inside the `AddDbContext`
+In a solution generated before v2.7.0, `InMemoryTestExecutionContext` takes the name of its database inside the `AddDbContext`
 callback, which runs for every scope, so `ArrangeAsync`, `ActAsync` and `AssertAsync` each get an empty
 database of their own: a service test that seeds data or checks what was saved fails. In such a
 solution, take the name once, in the constructor, in `Common.Testing/TestExecutionContext.cs`:
@@ -124,7 +126,7 @@ public InMemoryTestExecutionContext()
 }
 ```
 
-## Feature flags have no write endpoint
+### Feature flags have no write endpoint
 
 `PUT /api/v1/features/{key}` and `IFeatureStore` are gone: a flag is switched by editing `features.json` on
 disk or its value in the secret store, and services re-read it. The endpoint wrote `features.json`, which
@@ -133,7 +135,7 @@ overrode it. A solution that has them keeps them in its own `src/common`; to dro
 from `FeaturesController`, `IFeatureStore.cs`, `FileFeatureStore.cs` and their registration in
 `AddPlatformFeatureManagement`.
 
-## No snapshot of the secret store
+### No snapshot of the secret store
 
 `SnapshotPath` is gone: secrets live in their source and in a running service's memory, with no copies. A
 service that starts while the store is down does not start outside `Local`. Where `Infisical__SnapshotPath`

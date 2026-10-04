@@ -1,64 +1,26 @@
 {
-  "version": "2.8.1",
+  "version": "2.7.0",
   "releaseNotes": {
-    "2.8.1": {
-      "headline": "Improved the API gateway and the handling of secrets.",
-      "highlights": [
-        "Improved the API gateway.",
-        "Simplified feature flags.",
-        "The template no longer writes secrets to disk.",
-        "A domain event handler that would run twice is caught at startup."
-      ],
-      "ru": {
-        "headline": "Улучшили API-шлюз и работу с секретами.",
-        "highlights": [
-          "Улучшили API-шлюз.",
-          "Упростили фичефлаги.",
-          "Шаблон больше не пишет секреты на диск.",
-          "Обработчик доменного события, который сработал бы дважды, ловится при старте."
-        ]
-      }
-    },
-    "2.8.0": {
-      "headline": "The API gateway's Swagger documents show what a caller can reach through it.",
-      "highlights": [
-        "Swagger documents list the public servers to call.",
-        "Internal identifiers can be scrubbed from Swagger descriptions."
-      ],
-      "ru": {
-        "headline": "Документы Swagger на API-шлюзе показывают то, до чего клиент дойдёт через него.",
-        "highlights": [
-          "В документах Swagger указаны публичные серверы для вызова.",
-          "Внутренние идентификаторы можно вычистить из описаний Swagger."
-        ]
-      }
-    },
     "2.7.0": {
-      "headline": "SQL Server, HashiCorp Vault and settings that reload without a redeploy.",
+      "headline": "SQL Server, HashiCorp Vault and a stronger API gateway.",
       "highlights": [
         "Generate a solution on SQL Server with --Database mssql.",
         "Read secrets from HashiCorp Vault with --Vault.",
+        "Improved the API gateway and its Swagger documents.",
         "Settings read on each use change without a redeploy.",
-        "A solution knows the template version it came from.",
-        "Generated solutions build without warnings."
+        "Simplified feature flags.",
+        "Secrets live only in their store and in memory."
       ],
       "ru": {
-        "headline": "SQL Server, HashiCorp Vault и настройки, которые меняются без передеплоя.",
+        "headline": "SQL Server, HashiCorp Vault и улучшенный API-шлюз.",
         "highlights": [
           "Решение на SQL Server: --Database mssql.",
           "Секреты из HashiCorp Vault: --Vault.",
+          "Улучшили API-шлюз и его документы Swagger.",
           "Настройки, которые читаются при каждом обращении, меняются без передеплоя.",
-          "Решение знает, из какой версии шаблона оно сделано.",
-          "Сгенерированные решения собираются без предупреждений."
+          "Упростили фичефлаги.",
+          "Секреты живут только в хранилище и в памяти."
         ]
-      }
-    },
-    "2.6.3": {
-      "headline": "The nuget.org package carries its release notes and targets .NET 8.",
-      "highlights": [],
-      "ru": {
-        "headline": "Пакет на nuget.org несёт заметки своего выпуска и нацелен на .NET 8.",
-        "highlights": []
       }
     },
     "2.6.2": {
