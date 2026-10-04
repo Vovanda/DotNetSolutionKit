@@ -36,7 +36,7 @@ Each kind of code gets the cheapest test that can fail when the code is wrong.
 
 ### Service, consumer: a real container and a database per test
 
-`TestExecutionContext` from `Common.Tests` runs the class under test with its real collaborators, in the
+`TestExecutionContext` from `Common.Testing` runs the class under test with its real collaborators, in the
 style known as sociable unit tests.
 
 - **A real DI container per test.** The test registers the class under test, the real repositories and
@@ -111,7 +111,7 @@ A scenario gets one test of the cheapest kind that covers it, not a unit test an
 A query that only PostgreSQL can run does not have to leave the service tests. Case-insensitive search is
 the example: the domain declares `ICaseInsensitiveSearch`, which returns an ordinary specification; the
 service registers `PostgresCaseInsensitiveSearch`, which builds `EF.Functions.ILike` with `%`, `_` and the
-escape character escaped; a service test registers `InMemoryCaseInsensitiveSearch` from `Common.Tests`,
+escape character escaped; a service test registers `InMemoryCaseInsensitiveSearch` from `Common.Testing`,
 which gives the same answers with a regular expression: it takes the pattern from
 `PostgresCaseInsensitiveSearch` itself, so the two escape alike and keep the spaces around a term alike. The code that searches is tested on the in-memory
 database, and only the `ILIKE` translation itself needs PostgreSQL.

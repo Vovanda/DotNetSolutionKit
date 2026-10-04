@@ -61,6 +61,10 @@ A handler implements the interface of the phase it needs, and lives in the appli
 | `IDomainPostCommitHandler<TEvent>` | after the commit, in a fresh scope | e-mail, enqueuing a job, a follow-up write in its own transaction |
 | `IDomainRollbackHandler<TEvent>` | after a rollback, in a fresh scope | compensation, logging |
 
+The phase before the save and the phase after the commit take one `Handle` method, so a class implementing
+both for one event would run it twice; the registration refuses it at startup and names the class. Make it
+two classes. A rollback handler has `HandleRollback` of its own and goes with either.
+
 ## Wiring
 
 The service's infrastructure does it when the service is generated:
