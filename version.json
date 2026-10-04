@@ -10,6 +10,7 @@
         "Behind the gateway, a route /swagger/<cluster>/{**rest} puts that service's Swagger document on the gateway's page; Permissions:Source = remote asks a separate service for the user's permissions, with a short cache, and answers 503 when it does not answer.",
         "--Vault reads secrets from HashiCorp Vault (KV version 2, a token or an AppRole) by the rules of Infisical: the shared secret, then the service's, the snapshot for an outage, Optional only on a developer machine. The status keys of the store are Secrets:LoadedFrom and Secrets:SnapshotError for both.",
         "Settings change without a redeploy where they are read on each use: the secret store is read again every ReloadSeconds (300), the JSON files when they change, and AddReloadableOptions with IReloadable<T> takes each new valid value and keeps the last valid one; the settings document lists what still needs a restart.",
+        "Installed from a Windows clone of the repository, the template generates solutions that build: its files are checked out with LF, and dotnet new no longer leaves a bare #endif in a service's tests.",
         "A generated solution builds without warnings; the template's CI builds every combination of flags with -warnaserror, so a new warning fails it.",
         "The generated workflows use the actions on Node 24 (checkout v7, setup-dotnet v6, cache v6, upload-artifact v7) and run on ubuntu-24.04, so ubuntu-latest moving to a new image does not change them unannounced."
       ]
