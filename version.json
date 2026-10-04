@@ -1,6 +1,17 @@
 {
-  "version": "2.7.0",
+  "version": "3.0.0",
   "releaseNotes": {
+    "3.0.0": {
+      "headline": "The template runs on .NET 10; version 2 goes on in the 2.x branch, on .NET 8.",
+      "highlights": [
+        "Every project targets net10.0; Microsoft.*, EF Core, Npgsql and Serilog are on their 10.x line, Scrutor on 7, the Dockerfile on the 10.0 images, and the generated CI on the .NET 10 SDK.",
+        "The forwarded headers are configured through KnownIPNetworks; the setting keeps its name, ForwardedHeaders:KnownNetworks.",
+        "The migration runner creates the migrations history table before it reads it, so the first start on an empty PostgreSQL database logs no error.",
+        "Newtonsoft.Json, which Hangfire brings in, is held on 13.0.4: the .NET 10 SDK audits transitive packages, and 11.0.1 has a known vulnerability.",
+        "The API project of a service no longer references Microsoft.AspNetCore.OpenApi, which nothing used.",
+        "Updating a solution of 2.7: docs/getting-started/upgrading.md, From v2 to v3. Version 2 is installed with SawKing.DotNetSolutionKit::2.7.0."
+      ]
+    },
     "2.7.0": {
       "headline": "A generated solution names the version of the template it came from, and the template's own files carry its author.",
       "highlights": [

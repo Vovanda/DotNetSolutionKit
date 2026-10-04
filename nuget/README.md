@@ -1,6 +1,6 @@
 # DotNetSolutionKit
 
-A `dotnet new` template for microservices on .NET 8 and PostgreSQL or SQL Server. It generates a solution with shared
+A `dotnet new` template for microservices on .NET 10 and PostgreSQL or SQL Server. It generates a solution with shared
 `Common` libraries and services split into domain, application, infrastructure and API projects. The host,
 errors, validation, persistence, domain events, background jobs and tests are wired in every service; the
 message bus, secrets, feature flags, object storage, ClickHouse, an API gateway, deployment files and CI are
@@ -57,10 +57,11 @@ Dotted names, running locally and the rest of the details:
 
 ## Versions
 
-Version 2 targets .NET 8. To install a given version:
+Version 3 targets .NET 10. Version 2 targets .NET 8 and takes fixes until support for .NET 8 ends on
+10 November 2026. To install a given version:
 
 ```bash
-dotnet new install SawKing.DotNetSolutionKit::2.6.2
+dotnet new install SawKing.DotNetSolutionKit::2.7.0
 ```
 
 Do not apply version 2 with `--force` over a solution generated from version 1: namespaces, project references,

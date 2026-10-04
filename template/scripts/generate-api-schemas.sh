@@ -66,8 +66,8 @@ for csproj in src/services/*/*.API/*.API.csproj; do
 
     rm -f "$raw"
 
-    if ! dotnet "$project/bin/Debug/net8.0/$assembly.dll" \
-        --contentRoot "$REPO_ROOT/$project/bin/Debug/net8.0" \
+    if ! dotnet "$project/bin/Debug/net10.0/$assembly.dll" \
+        --contentRoot "$REPO_ROOT/$project/bin/Debug/net10.0" \
         --dump-schema "$raw" --document "$DOCUMENT" >"$log" 2>&1; then
         echo "$key could not write its $DOCUMENT document:" >&2; cat "$log" >&2; exit 1
     fi

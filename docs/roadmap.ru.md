@@ -18,16 +18,15 @@ gantt
     v2.5 audit journal                                    :done, s7, after s6, 1000ms
     v2.6 NUnit or xUnit                                   :done, s8, after s7, 1000ms
 
-    section Now
-    v2.7 site, samples, nuget.org, major check, gateway (#5), Vault, settings reloaded, SQL Server :active, s9, after s8, 4000ms
+    v2.7 site, samples, nuget.org, major check, gateway (#5), Vault, settings reloaded, SQL Server :done, s9, after s8, 4000ms
 
-    section Next
-    3.0 on .NET 10 in master, with the path from 2.x; 2.x stays on .NET 8 :s15, after s9, 3000ms
+    section Now
+    3.0 on .NET 10 in master, with the path from 2.x; 2.x stays on .NET 8 :active, s15, after s9, 3000ms
 ```
 
 Что принёс каждый релиз: [version.json](https://github.com/sawking-tech/DotNetSolutionKit/blob/master/version.json).
-Всё из Now входит в 2.x, на .NET 8, до 3.0: поддержка .NET 8 заканчивается 10 ноября 2026 года, и с 3.0 ветка 2.x
-получает только исправления.
+Версия 2 остаётся на .NET 8 в ветке `2.x` и получает только исправления, пока поддержка .NET 8 не
+закончится 10 ноября 2026 года. Как решение переходит с 2.x на 3.0: [версии шаблона](getting-started/upgrading.ru.md#с-v2-на-v3).
 
 ## Меньше привязки к технологиям
 

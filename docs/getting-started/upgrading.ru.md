@@ -7,6 +7,7 @@
 | `v1.0.0` | Шаблон до несовместимых изменений 2026 года. |
 | `v2.0.0-preview.1` | Несовместимые изменения в процессе. |
 | `v2.0.0` | Несовместимые изменения завершены и проверены. |
+| `v3.0.0` | Шаблон на .NET 10. Версия 2 продолжается в ветке `2.x`, на .NET 8. |
 
 Что приносит каждая версия начиная с `v2.1.0`, написано в [version.json](../../version.json) и на
 [странице релизов](https://github.com/sawking-tech/DotNetSolutionKit/releases); в таблице только версии,
@@ -81,6 +82,40 @@ internal static class TestSkipSetup
     internal static void UseNUnit() => TestSkip.Handler = Assert.Ignore;
 }
 ```
+
+## С v2 на v3
+
+Версия 3 работает на .NET 10. Версия 2 остаётся на .NET 8 в ветке `2.x` и получает исправления, пока
+поддержка .NET 8 не закончится 10 ноября 2026 года; её ставит
+`dotnet new install SawKing.DotNetSolutionKit::2.7.0`.
+
+Решение версии 2.7 переходит на 3.0 такими шагами; решение более ранней 2.x сначала обновляется до 2.7 по
+заметкам её релизов.
+
+1. Установите [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) и `dotnet-ef` 10 для
+   миграций: `dotnet tool update -g dotnet-ef --version "10.*"`.
+2. Сгенерируйте решение из `v3.0.0` в пустую папку с `-M false`, своими `-N` и `-P` и своими флагами.
+3. Замените свои `src/common`, `src/Directory.Packages.props`, `Directory.Build.props`, `Dockerfile`,
+   `scripts/generate-api-schemas.sh` и `.github/workflows` сгенерированными. Там, где вы меняли их сами,
+   слейте изменения.
+4. В каждом сервисе: `<TargetFramework>net10.0</TargetFramework>` в каждом его проекте и
+   `DotNetSolutionKitServiceVersion` в его API-проекте, равный новой версии, `3.0.0`; сервис, оставшийся на
+   2.x, с решением 3.0 не собирается. Уберите из API-проекта ссылку на `Microsoft.AspNetCore.OpenApi`: её
+   никто не использовал.
+5. Соберите решение и прогоните тесты. Миграции остаются как есть: на решении 2.7 с первыми миграциями
+   `dotnet ef migrations has-pending-model-changes` после этих шагов изменений не находит.
+
+Что поменялось в `Common` вместе с фреймворком:
+
+- forwarded headers настраиваются через `KnownIPNetworks`, API, который заменил `KnownNetworks`; настройка
+  называется по-прежнему, `ForwardedHeaders:KnownNetworks`;
+- migration runner создаёт таблицу истории миграций до того, как читает её: провайдер EF 10 для Npgsql
+  читает её первым и при первом старте пишет неудачное чтение в лог как ошибку;
+- `Newtonsoft.Json`, который приносит Hangfire, закреплён на 13.0.4: .NET 10 SDK проверяет и пакеты,
+  пришедшие через другие, а у 11.0.1 из Hangfire есть известная уязвимость.
+
+Собственный код может задеть несовместимые изменения [EF Core 10](https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-10.0/breaking-changes), [Npgsql 10](https://www.npgsql.org/efcore/release-notes/10.0.html) и
+[.NET 10](https://learn.microsoft.com/en-us/dotnet/core/compatibility/10.0).
 
 ## Не генерируйте поверх старого решения
 

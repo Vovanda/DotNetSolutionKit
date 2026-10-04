@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <!-- The template version this service was generated from; Directory.Build.props checks its major -->
         <DotNetSolutionKitServiceVersion>DOTNETSOLUTIONKIT_TEMPLATE_VERSION</DotNetSolutionKitServiceVersion>
         <Nullable>enable</Nullable>
@@ -19,7 +19,6 @@
         <!--#endif -->
         <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
         <PackageReference Include="Swashbuckle.AspNetCore" />
     </ItemGroup>
 

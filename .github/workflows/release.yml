@@ -78,7 +78,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
 
       # The package goes on the release in any case, so a version can be installed from a file.
       - name: Pack and attach the template package
