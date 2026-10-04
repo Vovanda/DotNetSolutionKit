@@ -56,6 +56,10 @@ public static class OutboxStatsQuery
         if (db.Database.IsNpgsql())
             return new PostgresOutboxStatsDialect();
 //#endif
+//#if (Database != "postgres")
+        if (db.Database.IsSqlServer())
+            return new SqlServerOutboxStatsDialect();
+//#endif
         throw new InvalidOperationException($"No outbox statistics for the provider {db.Database.ProviderName}.");
     }
 

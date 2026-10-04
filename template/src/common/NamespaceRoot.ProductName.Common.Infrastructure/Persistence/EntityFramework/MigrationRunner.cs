@@ -3,7 +3,12 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+//#if (Database != "mssql")
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
+//#endif
+//#if (Database != "postgres")
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.SqlServer;
+//#endif
 
 namespace NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
 
@@ -105,6 +110,10 @@ public sealed class MigrationRunner
 //#if (Database != "mssql")
         if (context.Database.IsNpgsql())
             return new PostgresMigrationLock();
+//#endif
+//#if (Database != "postgres")
+        if (context.Database.IsSqlServer())
+            return new SqlServerMigrationLock();
 //#endif
         throw new InvalidOperationException($"No migration lock for the provider {context.Database.ProviderName}.");
     }
