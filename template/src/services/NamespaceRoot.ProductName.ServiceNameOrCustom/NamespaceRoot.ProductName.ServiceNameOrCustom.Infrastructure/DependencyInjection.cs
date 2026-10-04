@@ -1,7 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 //#if (Hangfire)
 using Hangfire;
+//#if (Database == "mssql")
+using Hangfire.SqlServer;
+//#else
 using Hangfire.PostgreSql;
+//#endif
 //#endif
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,7 +24,11 @@ using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramewor
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Audit;
 //#endif
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
+//#if (Database == "mssql")
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.SqlServer;
+//#else
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
+//#endif
 //#if (ClickHouse)
 using NamespaceRoot.ProductName.Common.Infrastructure.ClickHouse;
 //#endif
@@ -63,7 +71,11 @@ public static class DependencyInjection
             var serviceName = typeof(DomainMarker).Namespace!;
 
             // 1. Guard for Main Database Schema
+//#if (Database == "mssql")
+            SqlServerSchemaGuard.EnsureExclusiveSchema(connectionString, ServiceIdentifierDbContext.DefaultSchemaName, serviceName);
+//#else
             PostgresSchemaGuard.EnsureExclusiveSchema(connectionString, ServiceIdentifierDbContext.DefaultSchemaName, serviceName);
+//#endif
         }
         else
         {
@@ -80,8 +92,13 @@ public static class DependencyInjection
         // are not re-attached to a context handed back by the pool, and they would quietly do nothing.
         services.AddDbContext<ServiceIdentifierDbContext>((sp, options) =>
         {
+//#if (Database == "mssql")
+            options.UseSqlServer(connectionString,
+                x => { x.MigrationsHistoryTable("__EFMigrationsHistory", ServiceIdentifierDbContext.DefaultSchemaName); });
+//#else
             options.UseNpgsql(connectionString,
                 x => { x.MigrationsHistoryTable("__EFMigrationsHistory", ServiceIdentifierDbContext.DefaultSchemaName); });
+//#endif
             if (!switches.Database)
                 options.UseSwitchedOffDatabase();
             options.ApplyDomainEventInterceptors(sp);
@@ -115,10 +132,18 @@ public static class DependencyInjection
         // Repositories
         
         // Specifications
+//#if (Database == "mssql")
+        services.AddScoped<ICaseInsensitiveSearch, SqlServerCaseInsensitiveSearch>();
+//#else
         services.AddScoped<ICaseInsensitiveSearch, PostgresCaseInsensitiveSearch>();
+//#endif
 
         // Readable numbers from a sequence, taken before the entity is created
+//#if (Database == "mssql")
+        services.AddScoped<IShortIdGenerator, SqlServerShortIdGenerator<ServiceIdentifierDbContext>>();
+//#else
         services.AddScoped<IShortIdGenerator, PostgresShortIdGenerator<ServiceIdentifierDbContext>>();
+//#endif
         
 //#if (ClickHouse)
         // ClickHouse, the ClickHouse section: connections, the schema check, readiness
@@ -152,6 +177,11 @@ public static class DependencyInjection
     }
 
 //#if (Hangfire)
+//#if (Database == "mssql")
+    // "Hangfire" in ASCII: one key for every service of the database.
+    private const long HangfireInstallLockKey = 0x48616E6766697265;
+
+//#endif
     /// <summary>
     /// Register Hangfire and background job services.
     /// </summary>
@@ -161,18 +191,42 @@ public static class DependencyInjection
         var hangfireSchemaName = $"{ServiceIdentifierDbContext.DefaultSchemaName}_hangfire";
 
         // Guard for Hangfire Schema
+//#if (Database == "mssql")
+        SqlServerSchemaGuard.EnsureExclusiveSchema(connectionString, hangfireSchemaName, serviceName);
+
+        // Hangfire.SqlServer installs its tables in a transaction that deadlocks with another service
+        // installing into the same database at the same moment, and gives up after three attempts, leaving
+        // the service without a job server. The installs take turns under one lock for the whole database.
+        var installLock = new SqlServerMigrationLock();
+        using (var connection = installLock.Connect(connectionString))
+        {
+            installLock.Acquire(connection, HangfireInstallLockKey);
+            SqlServerObjectsInstaller.Install(connection, hangfireSchemaName);
+            installLock.Release(connection, HangfireInstallLockKey);
+        }
+//#else
         PostgresSchemaGuard.EnsureExclusiveSchema(connectionString, hangfireSchemaName, serviceName);
+//#endif
 
         services.AddHangfire(config => config
             .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
             .UseSimpleAssemblyNameTypeSerializer()
             .UseRecommendedSerializerSettings()
-            .UsePostgreSqlStorage(c => 
+//#if (Database == "mssql")
+            .UseSqlServerStorage(connectionString, new SqlServerStorageOptions
+            {
+                SchemaName = hangfireSchemaName,
+                // Installed above, under the lock.
+                PrepareSchemaIfNecessary = false
+            }));
+//#else
+            .UsePostgreSqlStorage(c =>
                 c.UseNpgsqlConnection(connectionString), new PostgreSqlStorageOptions
             {
                 SchemaName = hangfireSchemaName,
                 PrepareSchemaIfNecessary = true
             }));
+//#endif
     
         services.AddHangfireServer((sp, options) =>
         {

@@ -52,6 +52,7 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `-P`, `--ProductName` | `Product` | Product name. May be dotted. |
 | `-S`, `--ServiceNameOrCustom` | `Service` | Service name. May be dotted. |
 | `-M`, `--Minimal` | `true` | `true` generates only the service folder, `false` the full kit: `Common` projects and `All.sln`. |
+| `--Database` | `postgres` | [Database](../architecture/persistence.md#sql-server): `postgres` or `mssql` (SQL Server). One value for the solution: pass it with `-M false` and to every service. |
 | `-H`, `--Hangfire` | `true` | [Background jobs](../features/background-jobs.md) on Hangfire. Per service, also with `-M true`. |
 | `--Messaging` | `none` | [Message bus](../features/messaging.md): `outbox` or `direct`. Per service. |
 | `-I`, `--Infisical` | `false` | [Secrets from Infisical](../features/secrets.md). |

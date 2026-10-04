@@ -40,6 +40,13 @@ jobs:
             first: -N Acme -P Shop -S Orders -M false --Vault true --GitHubCiCd true
             more: -N Acme -P Shop -S Billing --Vault true
             integration: true
+          - name: sql server
+            first: >-
+              -N Acme -P Shop -S Orders -M false --Database mssql --Messaging outbox -I true --DiffApi true
+              --FeatureFlags true --HierarchyRules true --Audit true --GitHubCiCd true
+            more: -N Acme -P Shop -S Billing --Database mssql --Messaging outbox -I true --DiffApi true --FeatureFlags true --Audit true
+            integration: true
+            sqlserver: true
           - name: xunit tests
             first: -N Acme -P Shop -S Orders -M false --TestFramework xunit --Messaging outbox --Audit true
             more: -N Acme -P Shop -S Billing --TestFramework xunit
@@ -115,8 +122,16 @@ jobs:
             chrislusf/seaweedfs server -s3 -dir=/data
           docker run -d --name tests-vault -p 8200:8200 -e VAULT_DEV_ROOT_TOKEN_ID=test-do-not-use \
             -e VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200 hashicorp/vault:1.17
-          for attempt in $(seq 1 60); do
+          if [ "${{ matrix.sqlserver }}" = true ]; then
+            docker run -d --name tests-mssql -p 1433:1433 -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD=Test-do-not-use-1 \
+              mcr.microsoft.com/mssql/server:2022-latest
+          fi
+          for attempt in $(seq 1 90); do
             ready=1
+            if [ "${{ matrix.sqlserver }}" = true ]; then
+              docker exec tests-mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P Test-do-not-use-1 \
+                -Q "SELECT 1" -b >/dev/null 2>&1 || ready=0
+            fi
             docker exec tests-pg pg_isready -U postgres >/dev/null 2>&1 || ready=0
             curl -fsS http://localhost:8123/ping >/dev/null 2>&1 || ready=0
             echo "s3.bucket.create -name tests" | docker exec -i tests-s3 weed shell -master=localhost:9333 2>&1 \
@@ -135,6 +150,7 @@ jobs:
           TEST_CLICKHOUSE: Host=localhost;Port=8123;Username=tester;Password=test-do-not-use
           TEST_S3: ServiceUrl=http://localhost:8333;Bucket=tests;AccessKey=tester;SecretKey=test-do-not-use
           TEST_VAULT: Address=http://localhost:8200;Token=test-do-not-use
+          TEST_SQLSERVER: Server=localhost,1433;User Id=sa;Password=Test-do-not-use-1;TrustServerCertificate=true
         run: dotnet test src/services/*.All.sln --configuration Release --no-build --filter "TestCategory=Integration"
 
   # The template as users install it once published: packed, installed from the package, generated.

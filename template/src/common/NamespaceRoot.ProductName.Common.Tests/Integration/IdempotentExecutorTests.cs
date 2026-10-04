@@ -8,17 +8,21 @@ using NamespaceRoot.ProductName.Common.Exceptions;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Idempotency;
 using NamespaceRoot.ProductName.Common.Tests.Stubs;
+//#if (Database != "mssql")
 using Npgsql;
+//#endif
+//#if (Database != "postgres")
+using Microsoft.Data.SqlClient;
+//#endif
 
 namespace NamespaceRoot.ProductName.Common.Tests.Integration;
 
 /// <summary>
-/// A client that retries must not create a second thing. Checked on a real PostgreSQL, because the
-/// unique index on the log is what decides a race, and nothing in memory behaves like it.
+/// A client that retries must not create a second thing. Checked on a real database, because the unique
+/// index on the log is what decides a race, and nothing in memory behaves like it; each database the
+/// template supports runs the same checks below.
 /// </summary>
-[TestFixture]
-[Category(TestCategories.Integration)]
-internal class IdempotentExecutorTests
+internal abstract class IdempotentExecutorTests
 {
     private const string Operation = "widgets.create";
     private const string Key = "same-request-retried";
@@ -28,7 +32,7 @@ internal class IdempotentExecutorTests
 
     // --- the model: a widget whose name is unique, so its own violations can be told from the key's -----
 
-    private sealed class Widget : Entity<Guid>, IAggregateRoot
+    protected sealed class Widget : Entity<Guid>, IAggregateRoot
     {
         private Widget() { }
 
@@ -42,7 +46,7 @@ internal class IdempotentExecutorTests
         public string Name { get; private set; } = string.Empty;
     }
 
-    private sealed class Db(DbContextOptions<Db> options) : DbContextBase(options)
+    protected sealed class Db(DbContextOptions<Db> options) : DbContextBase(options)
     {
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -64,29 +68,23 @@ internal class IdempotentExecutorTests
     [SetUp]
     public async Task CreateDatabase()
     {
-        var admin = Postgres.ConnectionString();
         _database = $"idempotency_{Guid.NewGuid():N}";
-        await using (var connection = new NpgsqlConnection(admin))
-        {
-            await connection.OpenAsync();
-            await new NpgsqlCommand($"CREATE DATABASE \"{_database}\"", connection).ExecuteNonQueryAsync();
-        }
-
-        _connection = new NpgsqlConnectionStringBuilder(admin) { Database = _database }.ToString();
+        _connection = await CreateDatabaseAsync(_database);
         await using var db = NewDb();
         await db.Database.EnsureCreatedAsync();
     }
 
     [TearDown]
-    public async Task DropDatabase()
-    {
-        NpgsqlConnection.ClearAllPools();
-        await using var connection = new NpgsqlConnection(Postgres.ConnectionString());
-        await connection.OpenAsync();
-        await new NpgsqlCommand($"DROP DATABASE IF EXISTS \"{_database}\" WITH (FORCE)", connection).ExecuteNonQueryAsync();
-    }
+    public Task DropDatabase() => DropDatabaseAsync(_database);
 
-    private Db NewDb() => new(new DbContextOptionsBuilder<Db>().UseNpgsql(_connection).Options);
+    /// <summary>Creates an empty database and returns the connection string to it.</summary>
+    protected abstract Task<string> CreateDatabaseAsync(string name);
+
+    protected abstract Task DropDatabaseAsync(string name);
+
+    protected abstract DbContextOptions<Db> Options(string connection);
+
+    private Db NewDb() => new(Options(_connection));
 
     private static TestDomainExecutionContext Actor(Guid? tenant = null) =>
         new(new UserContextMock("11111111-1111-1111-1111-111111111111") { TenantId = tenant }, TimeProvider.System);
@@ -230,3 +228,65 @@ internal class IdempotentExecutorTests
         (await WidgetsAsync()).ShouldBe(2);
     }
 }
+//#if (Database != "mssql")
+
+[TestFixture]
+[Category(TestCategories.Integration)]
+internal sealed class IdempotentExecutorOnPostgresTests : IdempotentExecutorTests
+{
+    protected override async Task<string> CreateDatabaseAsync(string name)
+    {
+        var admin = Postgres.ConnectionString();
+        await using (var connection = new NpgsqlConnection(admin))
+        {
+            await connection.OpenAsync();
+            await new NpgsqlCommand($"CREATE DATABASE \"{name}\"", connection).ExecuteNonQueryAsync();
+        }
+
+        return new NpgsqlConnectionStringBuilder(admin) { Database = name }.ToString();
+    }
+
+    protected override async Task DropDatabaseAsync(string name)
+    {
+        NpgsqlConnection.ClearAllPools();
+        await using var connection = new NpgsqlConnection(Postgres.ConnectionString());
+        await connection.OpenAsync();
+        await new NpgsqlCommand($"DROP DATABASE IF EXISTS \"{name}\" WITH (FORCE)", connection).ExecuteNonQueryAsync();
+    }
+
+    protected override DbContextOptions<Db> Options(string connection) =>
+        new DbContextOptionsBuilder<Db>().UseNpgsql(connection).Options;
+}
+//#endif
+//#if (Database != "postgres")
+
+[TestFixture]
+[Category(TestCategories.Integration)]
+internal sealed class IdempotentExecutorOnSqlServerTests : IdempotentExecutorTests
+{
+    protected override async Task<string> CreateDatabaseAsync(string name)
+    {
+        var admin = SqlServer.ConnectionString();
+        await using (var connection = new SqlConnection(admin))
+        {
+            await connection.OpenAsync();
+            await new SqlCommand($"CREATE DATABASE [{name}]", connection).ExecuteNonQueryAsync();
+        }
+
+        return new SqlConnectionStringBuilder(admin) { InitialCatalog = name }.ConnectionString;
+    }
+
+    protected override async Task DropDatabaseAsync(string name)
+    {
+        SqlConnection.ClearAllPools();
+        await using var connection = new SqlConnection(SqlServer.ConnectionString());
+        await connection.OpenAsync();
+        await new SqlCommand(
+            $"IF DB_ID(N'{name}') IS NOT NULL BEGIN ALTER DATABASE [{name}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [{name}]; END",
+            connection).ExecuteNonQueryAsync();
+    }
+
+    protected override DbContextOptions<Db> Options(string connection) =>
+        new DbContextOptionsBuilder<Db>().UseSqlServer(connection).Options;
+}
+//#endif

@@ -53,6 +53,7 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `-P`, `--ProductName` | `Product` | Название продукта. Может содержать точки. |
 | `-S`, `--ServiceNameOrCustom` | `Service` | Название сервиса. Может содержать точки. |
 | `-M`, `--Minimal` | `true` | `true` генерирует только папку сервиса, `false` - полный комплект: проекты `Common` и `All.sln`. |
+| `--Database` | `postgres` | [СУБД](../architecture/persistence.ru.md#sql-server): `postgres` или `mssql` (SQL Server). Одно значение на решение: передайте его с `-M false` и каждому сервису. |
 | `-H`, `--Hangfire` | `true` | [Фоновые задачи](../features/background-jobs.md) на Hangfire. Задаётся для каждого сервиса, в том числе с `-M true`. |
 | `--Messaging` | `none` | [Шина сообщений](../features/messaging.md): `outbox` или `direct`. Задаётся для каждого сервиса. |
 | `-I`, `--Infisical` | `false` | [Секреты из Infisical](../features/secrets.md). |

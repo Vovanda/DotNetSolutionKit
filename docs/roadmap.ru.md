@@ -19,15 +19,14 @@ gantt
     v2.6 NUnit or xUnit                                   :done, s8, after s7, 1000ms
 
     section Now
-    v2.7 site, samples, nuget.org, major check, gateway (#5), Vault, settings reloaded :active, s9, after s8, 3000ms
+    v2.7 site, samples, nuget.org, major check, gateway (#5), Vault, settings reloaded, SQL Server :active, s9, after s8, 4000ms
 
     section Next
-    SQL Server as a second database                       :s14, after s9, 3000ms
-    3.0 on .NET 10 in master, with the path from 2.x; 2.x stays on .NET 8 :s15, after s14, 3000ms
+    3.0 on .NET 10 in master, with the path from 2.x; 2.x stays on .NET 8 :s15, after s9, 3000ms
 ```
 
 Что принёс каждый релиз: [version.json](https://github.com/sawking-tech/DotNetSolutionKit/blob/master/version.json).
-Всё из Next входит в 2.x, на .NET 8, до 3.0: поддержка .NET 8 заканчивается 10 ноября 2026 года, и с 3.0 ветка 2.x
+Всё из Now входит в 2.x, на .NET 8, до 3.0: поддержка .NET 8 заканчивается 10 ноября 2026 года, и с 3.0 ветка 2.x
 получает только исправления.
 
 ## Меньше привязки к технологиям
@@ -36,6 +35,6 @@ gantt
 
 | Технология | Где шаблон от неё зависит сейчас |
 |---|---|
-| PostgreSQL | защита схемы, блокировка миграций, разбор нарушения уникальности, поиск через `ILIKE`, хранилище Hangfire |
+| PostgreSQL | нет: `--Database mssql` генерирует решение на SQL Server, каждая из этих частей за тем же швом, см. [хранение](architecture/persistence.ru.md#sql-server) |
 | Infisical | нет: `--Vault` читает так же из HashiCorp Vault, через тот же порт `ISecretStore`, см. [секреты](features/secrets.ru.md#hashicorp-vault) |
 | GitHub CI | только сгенерированный workflow; проверки - это скрипты, которые вызовет любой CI |

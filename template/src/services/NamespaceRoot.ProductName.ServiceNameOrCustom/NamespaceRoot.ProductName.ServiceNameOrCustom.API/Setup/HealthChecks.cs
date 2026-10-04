@@ -23,7 +23,11 @@ internal static class HealthChecks
 
 //#endif
         if (switches.Database)
+//#if (Database == "mssql")
+            checks.AddDbContextCheck<ServiceIdentifierDbContext>(name: "sqlserver", tags: [HealthConstants.ReadyTag]);
+//#else
             checks.AddDbContextCheck<ServiceIdentifierDbContext>(name: "postgres", tags: [HealthConstants.ReadyTag]);
+//#endif
 
         return builder;
     }

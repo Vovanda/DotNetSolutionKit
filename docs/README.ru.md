@@ -34,7 +34,7 @@ mindmap
     Tests
       Sociable service tests
       A database per test
-      Integration only for PostgreSQL
+      Integration only for the real database
 ```
 
 ## Начало работы

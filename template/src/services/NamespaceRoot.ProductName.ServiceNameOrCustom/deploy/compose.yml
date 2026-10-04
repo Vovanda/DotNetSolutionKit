@@ -11,7 +11,11 @@ services:
     image: ${REGISTRY:-local}/productnamelower-servicenameorcustom:${TAG:-latest}
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+#if (Database == "mssql")
+      ConnectionStrings__DefaultConnection: Server=sqlserver;Database=${MSSQL_DB:-app};User Id=sa;Password=${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in deploy/compose/.env};TrustServerCertificate=true
+#else
       ConnectionStrings__DefaultConnection: Host=postgres;Database=${POSTGRES_DB:-app};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in deploy/compose/.env}
+#endif
       InternalApi__ApiKey: ${INTERNAL_API_KEY:-}
 #if (Hangfire)
       HangfireSettings__DashboardPassword: ${HANGFIRE_DASHBOARD_PASSWORD:?Set HANGFIRE_DASHBOARD_PASSWORD in deploy/compose/.env}
@@ -53,8 +57,13 @@ services:
       start_period: 30s
       retries: 12
     depends_on:
+#if (Database == "mssql")
+      sqlserver:
+        condition: service_healthy
+#else
       postgres:
         condition: service_healthy
+#endif
 #if (Messaging != "none")
       rabbitmq:
         condition: service_healthy

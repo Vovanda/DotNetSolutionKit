@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DotNetSolutionKit - a dotnet new template for microservices on .NET 8</title>
-<meta name="description" content="A dotnet new template for microservices on .NET 8 and PostgreSQL: shared Common libraries, layered services, errors, validation, persistence, domain events, background jobs and tests already wired, the rest behind flags.">
+<meta name="description" content="A dotnet new template for microservices on .NET 8 and PostgreSQL or SQL Server: shared Common libraries, layered services, errors, validation, persistence, domain events, background jobs and tests already wired, the rest behind flags.">
 <link rel="canonical" href="https://dnsk.sawking.tech/">
 
 <meta property="og:type" content="website">
@@ -27,7 +27,7 @@
   "runtimePlatform": ".NET 8",
   "license": "https://opensource.org/licenses/MIT",
   "author": {"@type": "Person", "name": "Vladimir Savkin", "url": "https://sawking.tech/cv"},
-  "keywords": "dotnet new template, microservices, .NET 8, PostgreSQL, clean architecture, domain events, outbox"
+  "keywords": "dotnet new template, microservices, .NET 8, PostgreSQL, SQL Server, clean architecture, domain events, outbox"
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -113,8 +113,8 @@
           <g mask="url(#cut)"><circle class="disc-a" cx="400" cy="198" r="155"/><circle cx="400" cy="198" r="155" fill="url(#disc-b)"/><circle cx="400" cy="198" r="155" fill="url(#disc-c)"/></g>
           <text class="name" x="400" y="276.7" text-anchor="middle">DOTNET SOLUTION KIT</text>
         </svg></h1>
-        <p class="hero__line" lang="en">A <code>dotnet new</code> template for .NET 8 and PostgreSQL. It creates the structure of a solution and the projects of its microservices, already wired together. The rest comes with flags.</p>
-        <p class="hero__line" lang="ru">Шаблон <code>dotnet new</code> для .NET 8 и PostgreSQL. Создаёт структуру решения и проекты микросервисов, уже связанные между собой. Остальное включается флагами.</p>
+        <p class="hero__line" lang="en">A <code>dotnet new</code> template for .NET 8 and PostgreSQL or SQL Server. It creates the structure of a solution and the projects of its microservices, already wired together. The rest comes with flags.</p>
+        <p class="hero__line" lang="ru">Шаблон <code>dotnet new</code> для .NET 8 и PostgreSQL или SQL Server. Создаёт структуру решения и проекты микросервисов, уже связанные между собой. Остальное включается флагами.</p>
         <p class="hero__pkg"><a class="pkg" href="https://www.nuget.org/packages/SawKing.DotNetSolutionKit"><span class="pkg__where">NuGet</span><span class="pkg__id">SawKing.DotNetSolutionKit</span></a></p>
         <p class="hero__cmd"><code>dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders -M false</code></p>
       </div>
@@ -174,6 +174,7 @@
             <tr><td><code>-S</code>, <code>--ServiceNameOrCustom</code></td><td><code>Service</code></td><td><span lang="en">Service name. May be dotted.</span><span lang="ru">Название сервиса. Может быть с точками.</span></td></tr>
             <tr><td><code>-M</code>, <code>--Minimal</code></td><td><code>true</code></td><td><span lang="en"><code>true</code> generates only the service folder, <code>false</code> the full kit.</span><span lang="ru"><code>true</code> создаёт только папку сервиса, <code>false</code> весь комплект.</span></td></tr>
             <tr><td><code>-H</code>, <code>--Hangfire</code></td><td><code>true</code></td><td><span lang="en"><a href="docs.html#jobs">Background jobs</a> on Hangfire.</span><span lang="ru"><a href="docs.html#jobs">Фоновые задачи</a> на Hangfire.</span></td></tr>
+            <tr><td><code>--Database</code></td><td><code>postgres</code></td><td><span lang="en"><a href="docs.html#persistence:sql-server">Database</a>: <code>postgres</code> or <code>mssql</code> (SQL Server).</span><span lang="ru"><a href="docs.html#persistence:sql-server">СУБД</a>: <code>postgres</code> или <code>mssql</code> (SQL Server).</span></td></tr>
             <tr><td><code>--Messaging</code></td><td><code>none</code></td><td><span lang="en"><a href="docs.html#messaging">Message bus</a>: <code>outbox</code> or <code>direct</code>.</span><span lang="ru"><a href="docs.html#messaging">Шина сообщений</a>: <code>outbox</code> или <code>direct</code>.</span></td></tr>
             <tr><td><code>-I</code>, <code>--Infisical</code></td><td><code>false</code></td><td><span lang="en"><a href="docs.html#secrets">Secrets and settings from Infisical</a>.</span><span lang="ru"><a href="docs.html#secrets">Секреты и настройки из Infisical</a>.</span></td></tr>
             <tr><td><code>--Vault</code></td><td><code>false</code></td><td><span lang="en"><a href="docs.html#secrets:hashicorp-vault">Secrets and settings from HashiCorp Vault</a>.</span><span lang="ru"><a href="docs.html#secrets:hashicorp-vault">Секреты и настройки из HashiCorp Vault</a>.</span></td></tr>

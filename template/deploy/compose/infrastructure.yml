@@ -1,6 +1,21 @@
-# What the services need from outside: PostgreSQL, and RabbitMQ when a service uses the bus.
+# What the services need from outside: the database, and RabbitMQ when a service uses the bus.
 # Started by deploy/compose/compose.sh together with every service's src/services/*/deploy/compose.yml.
 services:
+#if (Database == "mssql")
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: ${MSSQL_PID:-Developer}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in deploy/compose/.env}
+    volumes:
+      - sqlserver:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -Q 'SELECT 1' -b"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+#else
   postgres:
     image: postgres:16-alpine
     environment:
@@ -14,6 +29,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 20
+#endif
 #if (Messaging != "none")
 
   rabbitmq:
@@ -72,7 +88,11 @@ services:
 #endif
 
 volumes:
+#if (Database == "mssql")
+  sqlserver:
+#else
   postgres:
+#endif
 #if (Messaging != "none")
   rabbitmq:
 #endif

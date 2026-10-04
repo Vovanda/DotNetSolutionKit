@@ -2,19 +2,31 @@ using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+//#if (Database == "mssql")
+using Microsoft.Data.SqlClient;
+//#else
 using Npgsql;
+//#endif
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
 
 [UsedImplicitly]
 public class ServiceIdentifierDbContextFactory : IDesignTimeDbContextFactory<ServiceIdentifierDbContext>
 {
+//#if (Database == "mssql")
+    private const string PlaceholderConnectionString = "Server=localhost;Database=design-time-placeholder;TrustServerCertificate=true";
+//#else
     private const string PlaceholderConnectionString = "Host=localhost;Database=design-time-placeholder";
+//#endif
 
-    private static DbContextOptions<ServiceIdentifierDbContext> GetNpgsqlOptions(string connectionString)
+    private static DbContextOptions<ServiceIdentifierDbContext> GetOptions(string connectionString)
     {
         return new DbContextOptionsBuilder<ServiceIdentifierDbContext>()
+//#if (Database == "mssql")
+            .UseSqlServer(connectionString,
+//#else
             .UseNpgsql(connectionString,
+//#endif
                 x => { x.MigrationsHistoryTable("__EFMigrationsHistory", ServiceIdentifierDbContext.DefaultSchemaName); })
             .Options;
     }
@@ -73,9 +85,14 @@ public class ServiceIdentifierDbContextFactory : IDesignTimeDbContextFactory<Ser
         var connectionString = GetConnectionString();
 
         // Name the target database without the credentials: this output lands in terminals and CI logs.
+//#if (Database == "mssql")
+        var target = new SqlConnectionStringBuilder(connectionString);
+        Console.WriteLine($"Database: {target.DataSource}/{target.InitialCatalog} as {(string.IsNullOrEmpty(target.UserID) ? "(integrated)" : target.UserID)}");
+//#else
         var target = new NpgsqlConnectionStringBuilder(connectionString);
         Console.WriteLine($"Database: {target.Host}:{target.Port}/{target.Database} as {target.Username ?? "(no user)"}");
+//#endif
 
-        return new ServiceIdentifierDbContext(GetNpgsqlOptions(connectionString));
+        return new ServiceIdentifierDbContext(GetOptions(connectionString));
     }
 }

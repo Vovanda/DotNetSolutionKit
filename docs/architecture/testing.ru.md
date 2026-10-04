@@ -3,7 +3,7 @@
 Какой вид теста получает код и почему большинство тестов работает на in-memory базе:
 [ADR-005](../adr/005-testing-a-service.md). Эта страница - о том, как начать.
 
-Тестовый проект сервиса ссылается на `Common.Testing`: тестовые контексты, тестовые базы PostgreSQL,
+Тестовый проект сервиса ссылается на `Common.Testing`: тестовые контексты, тестовые базы СУБД решения,
 заглушки для времени и пользователя, проверки правил. Тестового фреймворка в нём нет; его выбирает
 тестовый проект сервиса и задаёт в `TestSkip.Handler`, как этот фреймворк пропускает тест.
 `Common.Tests` - тестовый проект самого `Common`.
@@ -95,6 +95,18 @@ TEST_POSTGRES='Host=localhost;Port=15433;Database=postgres;Username=postgres;Pas
   dotnet test --filter "TestCategory=Integration"
 
 dotnet test --filter "TestCategory!=Integration"   # everything else
+```
+
+Решение, сгенерированное с `--Database mssql`, читает вместо неё `TEST_SQLSERVER`, а тесты сервиса берут
+`SqlServerDbTestExecutionContext` вместо `PostgresDbTestExecutionContext`. Схема сервиса один раз за прогон
+мигрируется в шаблонную базу, с неё снимается backup, и каждый тест восстанавливает его под своим именем:
+на SQL Server это быстрее, чем мигрировать базу каждого теста:
+
+```bash
+docker run -d --name tests-mssql -p 1433:1433 -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD=Test-do-not-use-1 \
+  mcr.microsoft.com/mssql/server:2022-latest
+TEST_SQLSERVER='Server=localhost,1433;User Id=sa;Password=Test-do-not-use-1;TrustServerCertificate=true' \
+  dotnet test --filter "TestCategory=Integration"
 ```
 
 Такие fixture'ы есть в `Common.Tests/Integration`: для номеров из последовательности и для объектного
