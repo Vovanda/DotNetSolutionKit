@@ -29,6 +29,11 @@ file comes with the solution (`-M false`): a service added later with a newer te
 A solution generated before the property was added has none; the dates on the releases page tell its
 version.
 
+Each service's API project names the version it was generated from too, as `DotNetSolutionKitServiceVersion`.
+A service whose major version differs from the solution's does not build: its code expects the `Common` of
+its own major, and the error says which versions met. Update the solution first, then generate the service.
+A solution generated before the version was recorded counts as 2.x; `source` on either side is not checked.
+
 To update, read the release notes after that version. Your `src/common` compared with the template's
 sources at the tag `v<version>` shows what your team changed; that tag compared with the new one shows what
 the template changed.

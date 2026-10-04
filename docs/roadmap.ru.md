@@ -19,21 +19,22 @@ gantt
     v2.6 NUnit or xUnit                                   :done, s8, after s7, 1000ms
 
     section Now
-    Site and documentation on GitHub Pages                :active, s9, after s8, 1000ms
+    v2.7 site, samples, nuget.org, template version and major check :active, s9, after s8, 1500ms
 
     section Next
-    Samples rebuilt from each release (#4)                :s10, after s9, 500ms
-    Package on nuget.org                                  :s11, after s9, 500ms
-    Template version mark, major checked at build         :s12, after s10 s11, 1000ms
-    Services' Swagger and permissions via the gateway (#5) :s13, after s10 s11, 1500ms
-    Upgrade path between majors                           :s14, after s12, 1500ms
-    A choice of secret store                              :s15, after s13, 1500ms
-    A choice of database                                  :s16, after s13, 3000ms
-    .NET 9 and later, in a branch of its own              :s17, after s14 s15 s16, 2500ms
+    Services' Swagger and permissions via the gateway (#5) :s10, after s9, 1500ms
+    Upgrade path between majors                           :s11, after s9, 1000ms
+    HashiCorp Vault as a second secret store              :s12, after s10, 1500ms
+    Settings and secrets reloaded without a redeploy      :s13, after s12, 1000ms
+    SQL Server as a second database                       :s14, after s10, 3000ms
+    3.0 on .NET 10 in master, 2.x stays on .NET 8         :s15, after s11 s13 s14, 2500ms
 ```
 
 Что принёс каждый релиз: [version.json](https://github.com/sawking-tech/DotNetSolutionKit/blob/master/version.json).
-Задачи: [#4](https://github.com/sawking-tech/DotNetSolutionKit/issues/4) - примеры, [#5](https://github.com/sawking-tech/DotNetSolutionKit/issues/5) - шлюз.
+Задача: [#5](https://github.com/sawking-tech/DotNetSolutionKit/issues/5) - шлюз.
+
+Всё из Next входит в 2.x, на .NET 8, до 3.0: поддержка .NET 8 заканчивается 10 ноября 2026 года, и с 3.0 ветка 2.x
+получает только исправления.
 
 ## Меньше привязки к технологиям
 
