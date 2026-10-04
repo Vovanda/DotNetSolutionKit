@@ -28,11 +28,13 @@ several pull requests going at once and work on one while the checks of another 
 - A change to a workflow of this repository is run on a temporary branch first, for each case it
   handles - the one that succeeds and each one that refuses - before its pull request: a workflow that
   does not work never reaches `dev`, let alone `master`. A rehearsal publishes nothing.
-- A change a user of the template sees raises `version` in [version.json](version.json), in the same commit:
-  minor for a feature, patch for a fix. The release notes name what the version is about, for whoever
-  decides to update, in a sentence each; they are not a log of every change. The details are in the commits
-  and the documentation, the steps to update in [upgrading](docs/getting-started/upgrading.md). On `dev`
-  raising it publishes nothing; what is published is the version `dev` carries when it reaches `master`.
+- `dev` carries the next minor version with the label `-rc` in [version.json](version.json), as `2.8.0-rc`,
+  and one entry of release notes for it. A change a user of the template sees adds a line to that entry, in
+  the same commit, and leaves the number alone; a change that breaks solutions of the current major version
+  and comes without a short way to update them makes it the next major, `3.0.0-rc`, with the update
+  described in [upgrading](docs/getting-started/upgrading.md). The release notes name what the version is
+  about, for whoever decides to update, in a sentence each; they are not a log of every change. The details
+  are in the commits and the documentation, the steps to update in upgrading.
 - Documentation and the site (`docs/`, `index.html`, `docs.html`, `site/`) change in the same pull request
   as what they describe. The site is served from `master`, so it describes the released version.
 
@@ -49,12 +51,10 @@ then:
 - outside it: `nightly` in DotNetSolutionKit.Samples is regenerated from that commit, and its CI is green;
 - the batch is finished: nothing begun and left undone is in `dev`.
 
-Before the merge, `version` on `dev` is checked against the last release. If nothing raised it, one more
-commit on `dev` does, with the release notes. The notes of the versions `dev` went through since the last
-release are gathered into the one released; a change that breaks solutions of the current major version
-and comes without a short way to update them makes it a major, with the update described in
-[upgrading](docs/getting-started/upgrading.md). The notes have a headline about what matters most to a
-user of the template, and lines checked against the commits since the last release.
+Before the release, one commit on `dev` takes the label off: `2.8.0-rc` becomes `2.8.0`, and so does its
+entry of notes. The minor version grows by exactly one from release to release. The notes have a headline
+about what matters most to a user of the template, and lines checked against the commits since the last
+release. After the release, `dev` takes the next minor with the label.
 
 The release is then one pull request from `dev` into `master`.
 
@@ -65,6 +65,10 @@ Merged into `master`, it makes [release.yml](.github/workflows/release.yml) tag 
 `SawKing.DotNetSolutionKit` and in GitHub Packages. A version on nuget.org cannot be deleted, only
 unlisted. DotNetSolutionKit.Samples regenerates its release branches from the new tag within a day.
 
-A patch that cannot wait is a pull request into `master` that raises the patch version; it is merged back
-into `dev`. A fix of the .NET 8 line is a pull request into `2.x`; `2.x` releases `2.*` versions only, and
-their GitHub release is not marked latest.
+A patch version is only for a fix that cannot wait for the next release. If `dev` can be released as it is -
+what is new in it is finished or behind a flag - the fix goes into `dev` and `dev` is released. If it
+cannot, the fix is a pull request into `master` that raises the patch version, as `2.7.1`, with its own
+notes; once released, `master` is merged into `dev`. A gap in patch versions is allowed.
+
+A fix of the .NET 8 line is a pull request into `2.x`; `2.x` releases `2.*` versions only, and their GitHub
+release is not marked latest.

@@ -2,7 +2,7 @@
 #
 # Checks a generated solution for the template's authorship and version:
 #
-#   scripts/check-authorship.sh <solution> <version>   # <version>: 2.6.3, or "source" from the sources
+#   scripts/check-authorship.sh <solution> <version>   # <version>: 2.7.0, or "source" from the sources
 #
 # The files that carry the line "Part of DotNetSolutionKit ... Vladimir Savkin" carry it; a file a flag
 # leaves out (marked "?") is checked when it is there. A glob names the twins of one mechanism, the
