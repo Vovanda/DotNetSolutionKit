@@ -53,11 +53,13 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `-P`, `--ProductName` | `Product` | Название продукта. Может содержать точки. |
 | `-S`, `--ServiceNameOrCustom` | `Service` | Название сервиса. Может содержать точки. |
 | `-M`, `--Minimal` | `true` | `true` генерирует только папку сервиса, `false` - полный комплект: проекты `Common` и `All.sln`. |
-| `--Database` | `postgres` | [СУБД](../architecture/persistence.ru.md#sql-server): `postgres` или `mssql` (SQL Server). Одно значение на решение: передайте его с `-M false` и каждому сервису. |
+| `--Database` | `postgres` | [СУБД](../architecture/persistence.md#sql-server): `postgres` или `mssql` (SQL Server). Одно значение на решение: передайте его с `-M false` и каждому сервису. |
 | `-H`, `--Hangfire` | `true` | [Фоновые задачи](../features/background-jobs.md) на Hangfire. Задаётся для каждого сервиса, в том числе с `-M true`. |
 | `--Messaging` | `none` | [Шина сообщений](../features/messaging.md): `outbox` или `direct`. Задаётся для каждого сервиса. |
 | `-I`, `--Infisical` | `false` | [Секреты из Infisical](../features/secrets.md). |
+| `--Vault` | `false` | [Секреты из HashiCorp Vault](../features/secrets.md#hashicorp-vault). |
 | `--DiffApi` | `false` | [Сравнение контракта API](../features/api-diff.md) в pull request. |
+| `--GitHubCiCd` | `false` | [CI на GitHub Actions](../features/ci.md): сборка, тесты на настоящих серверах, покрытие, поиск секретов. С `-M false`: workflow покрывают все сервисы в `All.sln`. |
 | `--FeatureFlags` | `false` | [Фича-флаги](../features/feature-flags.md). |
 | `--HierarchyRules` | `false` | [Правила доступа по дереву тенантов](../features/hierarchy-rules.md). |
 | `--Storage` | `false` | [Объектное хранилище](../features/object-storage.md), совместимое с S3. |
@@ -68,9 +70,9 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--Deploy` | `compose` | [Файлы развёртывания](../operations/deployment.md): `compose`, `k8s` или `none`. Одно значение на решение: с `-M true` передавайте то же самое. |
 | `--HttpPort` | свободный порт | Порт в `launchSettings.json` и на хосте под compose. Без параметра берётся свободный порт из диапазона 5000-5999 на машине, где идёт генерация, поэтому сервисы, сгенерированные один за другим, не получают один и тот же порт. |
 
-`-I`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage`, `--ClickHouse` и `--Audit` добавляют
+`-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage`, `--ClickHouse` и `--Audit` добавляют
 файлы в `Common`, поэтому их нужно передать с `-M false`, когда генерируется `Common`. Каждому сервису,
-сгенерированному позже, которому они нужны, передайте `-I`, `--DiffApi`, `--FeatureFlags`, `--Storage`,
+сгенерированному позже, которому они нужны, передайте `-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--Storage`,
 `--ClickHouse` и `--Audit` ещё раз: они меняют и код сервиса, и сервис подключает то, что уже есть в
 `Common`. Сервис, сгенерированный без них, обходится без этих частей.
 

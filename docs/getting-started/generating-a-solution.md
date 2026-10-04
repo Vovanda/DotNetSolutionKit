@@ -56,7 +56,9 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `-H`, `--Hangfire` | `true` | [Background jobs](../features/background-jobs.md) on Hangfire. Per service, also with `-M true`. |
 | `--Messaging` | `none` | [Message bus](../features/messaging.md): `outbox` or `direct`. Per service. |
 | `-I`, `--Infisical` | `false` | [Secrets from Infisical](../features/secrets.md). |
+| `--Vault` | `false` | [Secrets from HashiCorp Vault](../features/secrets.md#hashicorp-vault). |
 | `--DiffApi` | `false` | [API contract diff](../features/api-diff.md) on pull requests. |
+| `--GitHubCiCd` | `false` | [CI on GitHub Actions](../features/ci.md): build, tests on real servers, coverage, secret scan. With `-M false`: the workflows cover every service in `All.sln`. |
 | `--FeatureFlags` | `false` | [Feature flags](../features/feature-flags.md). |
 | `--HierarchyRules` | `false` | [Access rules over a tenant tree](../features/hierarchy-rules.md). |
 | `--Storage` | `false` | [Object storage](../features/object-storage.md), S3-compatible. |
@@ -67,8 +69,8 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--Deploy` | `compose` | [Deployment files](../operations/deployment.md): `compose`, `k8s` or `none`. One value for the solution: pass the same with `-M true`. |
 | `--HttpPort` | free port | Port in `launchSettings.json` and on the host under compose; without it, a free port from 5000-5999 on the generating machine, so services generated one after another do not share a port. |
 
-`-I`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage`, `--ClickHouse` and `--Audit` add files to `Common`, so they have to be
-passed with `-M false`, when `Common` is generated. Pass `-I`, `--DiffApi`, `--FeatureFlags`, `--Storage`, `--ClickHouse` and `--Audit` again to
+`-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage`, `--ClickHouse` and `--Audit` add files to `Common`, so they have to be
+passed with `-M false`, when `Common` is generated. Pass `-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--Storage`, `--ClickHouse` and `--Audit` again to
 each service generated later that should use them: they change the service's code too, and the service
 then wires what `Common` already has. A service generated without them leaves them out.
 
