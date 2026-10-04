@@ -148,6 +148,14 @@ jobs:
           bash "$GITHUB_WORKSPACE/scripts/check-authorship.sh" . "$(jq -r .version "$GITHUB_WORKSPACE/version.json")"
           dotnet build src/services/*.All.sln --configuration Release -warnaserror
 
+  # A link to a section of a document names a heading of it, in the language of the linking document.
+  doc-links:
+    name: Links to sections
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - run: python3 scripts/check-doc-anchors.py
+
   # Names that must not appear in the template. The list is a repository secret, LEAK_PATTERN (an extended
   # regular expression), so the check does not publish the names it guards. Without the secret, as in a
   # fork, the check is skipped.

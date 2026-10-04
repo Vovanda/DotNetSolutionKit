@@ -31,7 +31,7 @@ EF Core на PostgreSQL. У каждого сервиса свой `DbContext` �
 дважды: вторая ждёт первую и не находит работы.
 
 Сервис без единой миграции пишет в лог fatal-строку с командой, которая добавляет первую; см.
-[генерацию решения](../getting-started/generating-a-solution.md#add-the-first-migration).
+[генерацию решения](../getting-started/generating-a-solution.ru.md#первая-миграция).
 
 ## Репозитории
 
