@@ -19,7 +19,7 @@ public sealed record ServiceSwaggerDocument(string Name, string Url);
 /// <c>/swagger/&lt;cluster&gt;/{**rest}</c> to the cluster, with the path transformed to
 /// <c>/swagger/{**rest}</c>. Each such route adds the service's <c>all</c> document to the page, so
 /// "Try it out" sends the request to the gateway, which routes it like any other. The list is the
-/// routes, not a second setting to keep in step with them.
+/// routes; there is no second setting to keep in step with them.
 /// </remarks>
 public static partial class GatewaySwagger
 {

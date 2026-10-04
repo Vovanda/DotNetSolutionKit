@@ -88,8 +88,8 @@ service's document on the gateway's Swagger page, next to the gateway's own:
 }
 ```
 
-The page lists one document per such route, named after the cluster; the list is the routes, not a second
-setting. "Try it out" sends a request to the gateway, which routes it like any other. The services serve
+The page lists one document per such route, named after the cluster; the list comes from the routes and
+has no setting of its own. "Try it out" sends a request to the gateway, which routes it like any other. The services serve
 their documents outside Production only, as the gateway shows its page.
 
 ## Settings
