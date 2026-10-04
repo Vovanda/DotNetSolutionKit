@@ -44,26 +44,28 @@
 
   <ItemGroup>
     <Content Include="template\**\*"
-             Exclude="template\**\bin\**;template\**\obj\**;template\**\.vs\**;template\**\.idea\**;template\**\*.user;template\**\TestResults\**;template\**\logs\**;template\Directory.Build.props" />
+             Exclude="template\**\bin\**;template\**\obj\**;template\**\.vs\**;template\**\.idea\**;template\**\*.user;template\**\TestResults\**;template\**\logs\**;template\.template.config\template.json" />
     <None Include="nuget\README.md" Pack="true" PackagePath="\" />
     <None Include="nuget\icon.png" Pack="true" PackagePath="\" />
     <Compile Remove="**\*" />
   </ItemGroup>
 
-  <!-- A solution generated from the package names the template's version in its Directory.Build.props;
-       the sources say "source" there, so a solution generated from them does not claim a release. -->
+  <!-- A solution generated from the package names the template's version (TemplateVersion in template.json,
+       which Directory.Build.props and each service's project take); the sources say "source" there, so a
+       solution generated from them does not claim a release. -->
   <Target Name="WriteTemplateVersion" BeforeTargets="_GetPackageFiles">
     <PropertyGroup>
-      <_TemplateProps>$(IntermediateOutputPath)Directory.Build.props</_TemplateProps>
-      <_TemplatePropsText>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)template\Directory.Build.props'))</_TemplatePropsText>
-      <_SourceVersion>&lt;DotNetSolutionKitVersion&gt;source&lt;/DotNetSolutionKitVersion&gt;</_SourceVersion>
+      <_TemplateJson>$(IntermediateOutputPath)template.json</_TemplateJson>
+      <_TemplateJsonText>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)template\.template.config\template.json'))</_TemplateJsonText>
+      <_SourceVersion>"parameters": { "value": "source" }</_SourceVersion>
+      <_PackedVersion>"parameters": { "value": "$(Version)" }</_PackedVersion>
     </PropertyGroup>
-    <Error Condition="!$(_TemplatePropsText.Contains('$(_SourceVersion)'))"
-           Text="template\Directory.Build.props has no $(_SourceVersion) to write the version into" />
-    <WriteLinesToFile File="$(_TemplateProps)" Overwrite="true" WriteOnlyWhenDifferent="true"
-                      Lines="$([MSBuild]::Escape($(_TemplatePropsText.Replace('$(_SourceVersion)', '&lt;DotNetSolutionKitVersion&gt;$(Version)&lt;/DotNetSolutionKitVersion&gt;'))))" />
+    <Error Condition="$(_TemplateJsonText.IndexOf('$(_SourceVersion)')) == -1 OR $(_TemplateJsonText.IndexOf('$(_SourceVersion)')) != $(_TemplateJsonText.LastIndexOf('$(_SourceVersion)'))"
+           Text="template.json has no single $(_SourceVersion) of TemplateVersion to write the version into" />
+    <WriteLinesToFile File="$(_TemplateJson)" Overwrite="true" WriteOnlyWhenDifferent="true"
+                      Lines="$([MSBuild]::Escape($(_TemplateJsonText.Replace('$(_SourceVersion)', '$(_PackedVersion)'))))" />
     <ItemGroup>
-      <Content Include="$(_TemplateProps)" Pack="true" PackagePath="content\template\Directory.Build.props" />
+      <Content Include="$(_TemplateJson)" Pack="true" PackagePath="content\template\.template.config\template.json" />
     </ItemGroup>
   </Target>
 

@@ -213,6 +213,13 @@
       "defaultValue": "false",
       "description": "Add access rules over a tenant tree stored as materialized paths (IHierarchicalEntity, HierarchyRules)"
     },
+    "TemplateVersion": {
+      "type": "generated",
+      "generator": "constant",
+      "parameters": { "value": "source" },
+      "replaces": "DOTNETSOLUTIONKIT_TEMPLATE_VERSION",
+      "description": "The template's version, written into the packed copy of this file by DotNetSolutionKit.Templates.csproj; source when the template is installed from its sources"
+    },
     "Minimal": {
       "type": "parameter",
       "datatype": "bool",
