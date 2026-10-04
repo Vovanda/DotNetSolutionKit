@@ -32,6 +32,12 @@ namespace NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFram
             {
                 return await base.SaveChangesAsync(cancellationToken);
             }
+            catch (DbUpdateConcurrencyException exception)
+            {
+                // A row changed by someone else since it was read: the caller reloads and tries again,
+                // which a 409 says. Left as it is, the EF exception reaches the client as a 500.
+                throw new ConcurrencyException(ConcurrencyMessage, exception);
+            }
             catch (DbUpdateException exception) when (IsUniqueViolation(exception))
             {
                 // A refused insert reaches the caller as the refusal it is, naming the field, instead
@@ -42,6 +48,8 @@ namespace NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFram
         }
 
         private const string UniqueViolationMessage = "A record with these values already exists.";
+
+        private const string ConcurrencyMessage = "The row was changed by another write since it was read.";
 
         // One provider per generated solution; the template's own sources keep every one.
         private static bool IsUniqueViolation(DbUpdateException exception)

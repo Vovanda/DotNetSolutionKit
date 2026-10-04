@@ -90,8 +90,9 @@ var order = new Order(context, number, ...);
 ## Unit of work
 
 `IUnitOfWork` - граница транзакции use case; `DbContext` сервиса реализует его через `DbContextBase`.
-Нарушение уникального ограничения при сохранении превращается в `UniqueViolationException`, на которое
-API отвечает 409.
+Нарушение уникального ограничения при сохранении превращается в `UniqueViolationException`, а запись,
+проигравшая гонку по токену конкурентности (`xmin` в PostgreSQL, `rowversion` в SQL Server), - в
+`ConcurrencyException`; на оба API отвечает 409.
 
 ## Команды, которые клиент может повторить
 
