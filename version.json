@@ -8,14 +8,30 @@
         "Simplified feature flags.",
         "The template no longer writes secrets to disk.",
         "A domain event handler that would run twice is caught at startup."
-      ]
+      ],
+      "ru": {
+        "headline": "Улучшили API-шлюз и работу с секретами.",
+        "highlights": [
+          "Улучшили API-шлюз.",
+          "Упростили фичефлаги.",
+          "Шаблон больше не пишет секреты на диск.",
+          "Обработчик доменного события, который сработал бы дважды, ловится при старте."
+        ]
+      }
     },
     "2.8.0": {
       "headline": "The API gateway's Swagger documents show what a caller can reach through it.",
       "highlights": [
         "Swagger documents list the public servers to call.",
         "Internal identifiers can be scrubbed from Swagger descriptions."
-      ]
+      ],
+      "ru": {
+        "headline": "Документы Swagger на API-шлюзе показывают то, до чего клиент дойдёт через него.",
+        "highlights": [
+          "В документах Swagger указаны публичные серверы для вызова.",
+          "Внутренние идентификаторы можно вычистить из описаний Swagger."
+        ]
+      }
     },
     "2.7.0": {
       "headline": "SQL Server, HashiCorp Vault and settings that reload without a redeploy.",
@@ -25,62 +41,127 @@
         "Settings read on each use change without a redeploy.",
         "A solution knows the template version it came from.",
         "Generated solutions build without warnings."
-      ]
+      ],
+      "ru": {
+        "headline": "SQL Server, HashiCorp Vault и настройки, которые меняются без передеплоя.",
+        "highlights": [
+          "Решение на SQL Server: --Database mssql.",
+          "Секреты из HashiCorp Vault: --Vault.",
+          "Настройки, которые читаются при каждом обращении, меняются без передеплоя.",
+          "Решение знает, из какой версии шаблона оно сделано.",
+          "Сгенерированные решения собираются без предупреждений."
+        ]
+      }
     },
     "2.6.3": {
       "headline": "The nuget.org package carries its release notes and targets .NET 8.",
-      "highlights": []
+      "highlights": [],
+      "ru": {
+        "headline": "Пакет на nuget.org несёт заметки своего выпуска и нацелен на .NET 8.",
+        "highlights": []
+      }
     },
     "2.6.2": {
       "headline": "Install the template from nuget.org.",
       "highlights": [
         "The package has its own page on nuget.org."
-      ]
+      ],
+      "ru": {
+        "headline": "Шаблон ставится с nuget.org.",
+        "highlights": [
+          "У пакета своя страница на nuget.org."
+        ]
+      }
     },
     "2.6.1": {
       "headline": "The first push of a generated solution passes the secret scan.",
-      "highlights": []
+      "highlights": [],
+      "ru": {
+        "headline": "Первый push сгенерированного решения проходит проверку на секреты.",
+        "highlights": []
+      }
     },
     "2.6.0": {
       "headline": "Write a service's tests in NUnit or xUnit.",
       "highlights": [
         "One shared test infrastructure for both."
-      ]
+      ],
+      "ru": {
+        "headline": "Тесты сервиса на NUnit или xUnit.",
+        "highlights": [
+          "Одна общая тестовая инфраструктура для обоих."
+        ]
+      }
     },
     "2.5.0": {
       "headline": "An audit journal of entity changes.",
       "highlights": [
         "Changes are published through the outbox in the same transaction.",
         "Guards catch writes the journal cannot see."
-      ]
+      ],
+      "ru": {
+        "headline": "Журнал аудита изменений сущностей.",
+        "highlights": [
+          "Изменения публикуются через outbox в той же транзакции.",
+          "Проверки ловят записи, которые журнал не видит."
+        ]
+      }
     },
     "2.4.0": {
       "headline": "Tokens in HttpOnly cookies with CSRF protection.",
       "highlights": [
         "Cookie settings come from the deployment and are checked at startup."
-      ]
+      ],
+      "ru": {
+        "headline": "Токены в HttpOnly-cookie с защитой от CSRF.",
+        "highlights": [
+          "Настройки cookie задаёт деплой, они проверяются при старте."
+        ]
+      }
     },
     "2.3.0": {
       "headline": "Services ride out a secret store outage.",
       "highlights": [
         "A feature flag can be pinned in features.json."
-      ]
+      ],
+      "ru": {
+        "headline": "Сервисы переживают недоступность хранилища секретов.",
+        "highlights": [
+          "Фичефлаг можно закрепить в features.json."
+        ]
+      }
     },
     "2.2.0": {
       "headline": "Commands a client may repeat run once per key.",
-      "highlights": []
+      "highlights": [],
+      "ru": {
+        "headline": "Команды, которые клиент может повторить, выполняются один раз на ключ.",
+        "highlights": []
+      }
     },
     "2.1.3": {
       "headline": "Two solutions on one host keep their own images.",
-      "highlights": []
+      "highlights": [],
+      "ru": {
+        "headline": "Два решения на одном хосте держат свои образы.",
+        "highlights": []
+      }
     },
     "2.1.2": {
       "headline": "Blue-green deployment keeps serving when a deploy fails.",
-      "highlights": []
+      "highlights": [],
+      "ru": {
+        "headline": "Blue-green-деплой продолжает обслуживать, если выкатка не удалась.",
+        "highlights": []
+      }
     },
     "2.1.1": {
       "headline": "Services are added to All.sln in CI too.",
-      "highlights": []
+      "highlights": [],
+      "ru": {
+        "headline": "Сервисы добавляются в All.sln и в CI.",
+        "highlights": []
+      }
     },
     "2.1.0": {
       "headline": "Deployment, an API gateway, CI and one correlation identifier end to end.",
@@ -90,7 +171,17 @@
         "GitHub Actions CI with tests on real servers and a secret scan.",
         "S3-compatible object storage and ClickHouse by flag.",
         "Every dependency can be switched off in configuration."
-      ]
+      ],
+      "ru": {
+        "headline": "Деплой, API-шлюз, CI и сквозной идентификатор корреляции.",
+        "highlights": [
+          "Файлы Docker Compose или Kubernetes, под Compose - blue-green-деплой.",
+          "API-шлюз на YARP, который проверяет токен один раз.",
+          "CI на GitHub Actions с тестами на настоящих серверах и проверкой на секреты.",
+          "S3-совместимое хранилище и ClickHouse по флагу.",
+          "Любую зависимость можно выключить в конфигурации."
+        ]
+      }
     },
     "2.0.0": {
       "headline": "A layered microservice solution with a shared web host.",
@@ -99,11 +190,24 @@
         "Errors as RFC 9457 problems.",
         "Permissions declared on actions and checked from the token.",
         "Infrastructure by flag: Hangfire, MassTransit, Infisical, feature flags and more."
-      ]
+      ],
+      "ru": {
+        "headline": "Слоистое микросервисное решение с общим веб-хостом.",
+        "highlights": [
+          "Доменные события в трёх фазах, привязанных к транзакции.",
+          "Ошибки в формате RFC 9457.",
+          "Права объявляются на действиях и проверяются по токену.",
+          "Инфраструктура по флагу: Hangfire, MassTransit, Infisical, фичефлаги и другое."
+        ]
+      }
     },
     "1.0.0": {
       "headline": "The template before the breaking changes of 2026.",
-      "highlights": []
+      "highlights": [],
+      "ru": {
+        "headline": "Шаблон до несовместимых изменений 2026 года.",
+        "highlights": []
+      }
     }
   }
 }
