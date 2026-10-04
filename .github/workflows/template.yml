@@ -16,7 +16,7 @@ permissions:
 jobs:
   generate:
     name: ${{ matrix.name }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -49,13 +49,13 @@ jobs:
             first: -N Acme -P Shop -S Orders -M false --Deploy none
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('template/**/*.csproj', 'template/**/Directory.Packages.props') }}
@@ -88,9 +88,10 @@ jobs:
             | tar -xz -C /usr/local/bin gitleaks
           gitleaks dir . --config "$GITHUB_WORKSPACE/template/tools/gitleaks/.gitleaks.toml" --redact --verbose
 
+      # A warning fails the build here: a team's first build of a generated solution shows none.
       - name: Build
         working-directory: ${{ runner.temp }}/solution
-        run: dotnet build src/services/*.All.sln --configuration Release
+        run: dotnet build src/services/*.All.sln --configuration Release -warnaserror
 
       - name: Unit tests
         working-directory: ${{ runner.temp }}/solution
@@ -131,10 +132,10 @@ jobs:
   # The template as users install it once published: packed, installed from the package, generated.
   package:
     name: Installed from the package
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
       - name: Pack, install, generate, build
@@ -145,16 +146,16 @@ jobs:
           dotnet new DotNetSolutionKit -N Acme -P Shop -S Orders -M false --GitHubCiCd true
           test -f .github/workflows/ci.yml && test -f tools/gitleaks/.gitleaks.toml
           bash "$GITHUB_WORKSPACE/scripts/check-authorship.sh" . "$(jq -r .version "$GITHUB_WORKSPACE/version.json")"
-          dotnet build src/services/*.All.sln --configuration Release
+          dotnet build src/services/*.All.sln --configuration Release -warnaserror
 
   # Names that must not appear in the template. The list is a repository secret, LEAK_PATTERN (an extended
   # regular expression), so the check does not publish the names it guards. Without the secret, as in a
   # fork, the check is skipped.
   leaks:
     name: Denied names
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Search
         env:
           LEAK_PATTERN: ${{ secrets.LEAK_PATTERN }}
