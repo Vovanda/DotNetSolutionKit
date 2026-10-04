@@ -80,7 +80,9 @@ it** - `File`, `Store`, `EnvironmentVariable`, `Default` or `Pinned`. The source
 cannot be seen from the outside: an operator switches a flag off in the file and nothing happens,
 because an environment variable or the store sits above it.
 
-The external store is read once, at startup. While it cannot be reached, a service can start on a
+The external store is read at startup and again every `ReloadSeconds` (300 by default; 0 reads it at
+startup only). A flag changed there applies within that time, without a restart: the catalogue reads
+configuration on every call. While the store cannot be reached, a service can start on a
 [snapshot](secrets.md#when-the-store-is-unreachable) of what it last read.
 
 ### Pinning a flag
@@ -123,7 +125,7 @@ After it:
 | Use | What |
 |---|---|
 | Evaluate in code | `IFeatureManager` from `Microsoft.FeatureManagement`, backed by the shared file |
-| Guard an endpoint | `[FeatureGate(FeatureKeys.SomeFeature)]` - the route is absent while the flag is off |
+| Guard an endpoint | `[FeatureGate(FeatureKeys.SomeFeature)]` - while the flag is off the route answers 404 and is left out of the Swagger document |
 | Read the platform view | `IFeatureCatalog` - value plus owner, expiry, tags and the deciding layer |
 | Change a value | `IFeatureStore`, or `PUT /api/v1/features/{key}` |
 

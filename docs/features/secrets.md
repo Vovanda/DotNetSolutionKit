@@ -103,7 +103,9 @@ In `Local` the store is optional: a developer runs from `appsettings.Secrets.jso
 else the service refuses to start without its secrets. A service that starts with a missing connection
 string or key fails later, on a request, and further from the cause.
 
-The store is read once, at startup. A secret changed in Infisical applies after the service restarts.
+The store is read at startup and again every `ReloadSeconds`. A secret changed in the store reaches what
+reads it on each use within that time; what was built from it at startup, such as a connection pool,
+keeps the old value until the service restarts.
 
 ### A snapshot for an outage
 
