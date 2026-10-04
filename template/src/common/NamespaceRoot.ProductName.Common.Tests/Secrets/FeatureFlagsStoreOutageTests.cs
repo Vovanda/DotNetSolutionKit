@@ -10,11 +10,11 @@ namespace NamespaceRoot.ProductName.Common.Tests.Secrets;
 
 /// <summary>
 /// The feature flags of a service whose secret store answers, changes and goes down, end to end: the
-/// shared file, the store's real configuration provider with its snapshot, and the catalogue that answers
+/// shared file, the store's real configuration provider, and the catalogue that answers
 /// <c>GET /api/v1/features</c> and <c>IFeatureManager</c>. Only the store itself is a fake.
 /// </summary>
 /// <remarks>
-/// Each step on its own has tests of its own - the snapshot, the reload, the pin. These check that the steps
+/// Each step on its own has tests of its own - the reload, the pin. These check that the steps
 /// meet: that a flag set in the store reaches the catalogue, and that an outage of the store leaves the
 /// flags as the feature flags guide says.
 /// </remarks>
@@ -52,8 +52,6 @@ public class FeatureFlagsStoreOutageTests
     [TearDown]
     public void DeleteFolder() => Directory.Delete(_folder, recursive: true);
 
-    private string Snapshot => Path.Combine(_folder, "secrets.snapshot.json");
-
     /// <summary>A service starting: the shared file, the store above it; ReloadSeconds 0, the test reloads.</summary>
     private Service Start(Store store, bool pinned = false)
     {
@@ -68,14 +66,14 @@ public class FeatureFlagsStoreOutageTests
         {
             ["Infisical:ProjectId"] = "project", ["Infisical:EnvironmentSlug"] = "prod",
             ["Infisical:ClientId"] = "id", ["Infisical:ClientSecret"] = "secret",
-            ["Infisical:ReloadSeconds"] = "0", ["Infisical:SnapshotPath"] = Snapshot,
+            ["Infisical:ReloadSeconds"] = "0",
         });
         builder.AddPlatformSecrets("/orders", storeFactory: _ => store);
 //#else
         builder.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Vault:Address"] = "http://vault:8200", ["Vault:Token"] = "test-do-not-use",
-            ["Vault:ReloadSeconds"] = "0", ["Vault:SnapshotPath"] = Snapshot,
+            ["Vault:ReloadSeconds"] = "0",
         });
         builder.AddPlatformVaultSecrets("orders", storeFactory: _ => store);
 //#endif
@@ -120,31 +118,17 @@ public class FeatureFlagsStoreOutageTests
         service.Catalog.Find(Key)!.Enabled.ShouldBeTrue("the last values stay, not the file's");
     }
 
-    [Test(Description = "A service that starts while the store is down takes the flags from the snapshot")]
-    public void A_start_with_the_store_down_takes_the_flags_from_the_snapshot()
+    [Test(Description = "A pinned flag takes the file's value over the store")]
+    public void A_pinned_flag_takes_the_file_value_over_the_store()
     {
-        Start(new Store());
+        var service = Start(new Store(), pinned: true);
 
-        var service = Start(new Store { Down = true });
-
-        service.Catalog.Find(Key)!.Enabled.ShouldBeTrue("the snapshot holds what the store last said, not the file's value");
+        service.Catalog.Find(Key)!.Enabled.ShouldBeFalse();
+        service.Catalog.Find(Key)!.Source.ShouldBe(FeatureValueSource.Pinned);
     }
 
-    [Test(Description = "A pinned flag takes the file's value over the store and over the snapshot")]
-    public void A_pinned_flag_takes_the_file_value_over_the_store_and_the_snapshot()
-    {
-        Start(new Store());
-
-        var live = Start(new Store(), pinned: true);
-        var onSnapshot = Start(new Store { Down = true }, pinned: true);
-
-        live.Catalog.Find(Key)!.Enabled.ShouldBeFalse();
-        live.Catalog.Find(Key)!.Source.ShouldBe(FeatureValueSource.Pinned);
-        onSnapshot.Catalog.Find(Key)!.Enabled.ShouldBeFalse();
-    }
-
-    [Test(Description = "A service that starts while the store is down, with no snapshot, does not start")]
-    public void A_start_with_the_store_down_and_no_snapshot_stops()
+    [Test(Description = "A service that starts while the store is down does not start: it has no secrets")]
+    public void A_start_with_the_store_down_stops()
     {
         Should.Throw<ConfigurationException>(() => Start(new Store { Down = true }));
     }

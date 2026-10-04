@@ -1,8 +1,5 @@
 using System.Reflection;
 using NamespaceRoot.ProductName.Common.Application.Configuration;
-//#if (SecretStore)
-using NamespaceRoot.ProductName.Common.Infrastructure.Configuration.Secrets;
-//#endif
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
 //#if (Messaging == "outbox")
 using NamespaceRoot.ProductName.Common.Web.Diagnostics;
@@ -35,15 +32,6 @@ try
     var switches = DependencySwitches.Read(app.Configuration);
     if (switches.SwitchedOff.Count > 0)
         app.Logger.LogWarning("Running without: {SwitchedOff}", string.Join(", ", switches.SwitchedOff.Select(key => $"{key}=false")));
-//#if (SecretStore)
-
-    // The secret store could not be read and its snapshot answered instead, or the snapshot could not be
-    // written: either is fine for now and wrong to leave unnoticed.
-    if (app.Configuration[SecretsConfigurationProvider.LoadedFromKey] is { } loadedFrom && loadedFrom.StartsWith("snapshot", StringComparison.Ordinal))
-        app.Logger.LogWarning("The secret store could not be read; running on its {Snapshot}", loadedFrom);
-    if (app.Configuration[SecretsConfigurationProvider.SnapshotErrorKey] is { } snapshotError)
-        app.Logger.LogWarning("The snapshot of the secret store could not be written: {SnapshotError}", snapshotError);
-//#endif
 
     // --- Database Initialization ---
     if (switches.Database)

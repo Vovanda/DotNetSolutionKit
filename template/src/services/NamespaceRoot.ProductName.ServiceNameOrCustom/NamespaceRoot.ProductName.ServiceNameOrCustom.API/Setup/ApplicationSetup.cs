@@ -22,7 +22,7 @@ internal static class ApplicationSetup
         // Flags come from the shared features.json, so nothing is declared here: a service gains a
         // new flag without a line of code, and adds a constant to FeatureKeys only for the ones its
         // own code reads.
-        services.AddPlatformFeatureManagement(configuration);
+        services.AddPlatformFeatureManagement();
 
 //#endif
         // services.AddJwtConfiguration(configuration);

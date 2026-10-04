@@ -40,7 +40,6 @@ files=(
     "?$common.Infrastructure/Persistence/EntityFramework/Audit/SetBasedAuditCapture.cs"
     "?$common.Testing/Audit/AuditMarkerVerifier.cs"
     "?$common.Infrastructure/Configuration/Secrets/InfisicalSecretStore.cs"
-    "?$common.Application/FeatureManagement/FileFeatureStore.cs"
     "?.github/workflows/ci.yml"
     "?.github/workflows/api-diff.yml"
     "?scripts/generate-api-schemas.sh"

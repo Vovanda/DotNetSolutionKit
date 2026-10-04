@@ -8,18 +8,17 @@ namespace NamespaceRoot.ProductName.Common.Tests.Secrets;
 
 /// <summary>
 /// Vault reaches configuration by the same rules as any secret store: its own section, the shared path
-/// read before the service's, a refusal to start without it, and the snapshot during an outage.
+/// read before the service's, and a refusal to start without it.
 /// </summary>
 [TestFixture]
 public class VaultConfigurationTests
 {
     private const string Service = "auth";
 
-    private static Dictionary<string, string?> Configured(string? snapshotPath = null) => new()
+    private static Dictionary<string, string?> Configured() => new()
     {
         ["Vault:Address"] = "http://vault:8200",
         ["Vault:Token"] = "test-do-not-use",
-        ["Vault:SnapshotPath"] = snapshotPath,
     };
 
     [Test]
@@ -48,19 +47,13 @@ public class VaultConfigurationTests
     }
 
     [Test]
-    public void An_unreachable_vault_answers_from_the_snapshot()
+    public void An_unreachable_vault_stops_the_service()
     {
-        var snapshot = Path.Combine(Directory.CreateTempSubdirectory("vault-snapshot-").FullName, "secrets.json");
-        new ConfigurationBuilder().AddInMemoryCollection(Configured(snapshot))
-            .AddPlatformVaultSecrets(Service, storeFactory: _ => new FakeStore(("shared", new Dictionary<string, string> { ["Region"] = "eu" })))
-            .Build();
-
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Configured(snapshot))
+        var start = () => new ConfigurationBuilder().AddInMemoryCollection(Configured())
             .AddPlatformVaultSecrets(Service, storeFactory: _ => new UnreachableStore())
             .Build();
 
-        configuration["Region"].ShouldBe("eu");
-        configuration[SecretsConfigurationProvider.LoadedFromKey]!.ShouldStartWith("snapshot");
+        Should.Throw<ConfigurationException>(start);
     }
 
     [Test]

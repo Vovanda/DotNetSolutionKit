@@ -39,7 +39,7 @@ public static class SecretsConfigurationExtensions
 
     /// <summary>
     /// Reads the shared path and this service's path from HashiCorp Vault, on top of whatever was
-    /// configured before: the same order, snapshot and rules as <see cref="AddPlatformSecrets"/>, with the
+    /// configured before: the same order and rules as <see cref="AddPlatformSecrets"/>, with the
     /// <c>Vault</c> section.
     /// </summary>
     /// <param name="builder">The configuration being built.</param>

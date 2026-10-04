@@ -50,7 +50,6 @@ kept for the life of the process.
 The reload reads the same folders as the start, in the same order. New values replace the old ones and
 raise the configuration's change token; the same values raise nothing. When the store does not answer,
 the service keeps the values it has, and `Secrets:ReloadError` holds when and why the last reload failed.
-A snapshot, when one is kept, is written again after each successful read.
 
 ## Tests
 
