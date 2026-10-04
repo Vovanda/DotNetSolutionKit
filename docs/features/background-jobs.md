@@ -58,7 +58,7 @@ Of the job libraries for .NET it is the most convenient for a service's tasks:
 - a dashboard out of the box: what ran, what failed and why, with a button to retry;
 - jobs are plain classes resolved from DI, so they are tested like any other class.
 
-Quartz.NET schedules well, but brings no dashboard and needs more code for the same job.
+Quartz.NET is much harder to maintain: the same job takes more code, and a dashboard is not part of it.
 
 ## Tests
 
