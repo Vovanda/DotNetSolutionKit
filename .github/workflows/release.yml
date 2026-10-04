@@ -53,6 +53,8 @@ jobs:
             expected="v$(jq -r .version version.json)"
             [ "$tag" = "$expected" ] || { echo "::error::tag $tag, version.json says $expected"; exit 1; }
           fi
+          # A labelled version, as 2.8.0-rc, is work still going on dev: it is never released, whatever tag names it.
+          case "$tag" in *-*) echo "::error::$tag is a version with a label: it is not released"; exit 1 ;; esac
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
           echo "publish=$PUBLISH" >> "$GITHUB_OUTPUT"
