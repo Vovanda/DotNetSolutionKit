@@ -170,8 +170,6 @@ public static class DependencyInjection
 //#endif
         // Data Seeding
         services.AddScoped<DataSeeder>();
-        
-        // Polly Policies
 
         return services;
     }

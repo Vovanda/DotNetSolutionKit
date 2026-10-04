@@ -44,8 +44,8 @@ a small, fixed set of variation points. Otherwise compose.
 | **Transactional Outbox** | A message must go out exactly when the change commits | `--Messaging outbox`, a pre-save handler: `/add-domain-event` |
 | **Idempotent Receiver** | Redelivery from the bus, a job retry or a webhook must not repeat the effect | `IIdempotentExecutor`, a correlation log, a state marker |
 | **Rate Limiter** | Protect a downstream with a documented capacity | `System.Threading.RateLimiting`; a `DelegatingHandler` on the HTTP client |
-| **Circuit Breaker** | Fail fast while a downstream is degraded | a Polly policy on the HTTP client; the service references Polly, no policy is wired by default |
-| **Retry with backoff** | Transient failures that clear on their own | a Polly policy on the HTTP client; the bus retries itself (`RabbitMq:RetryLimit`) |
+| **Circuit Breaker** | Fail fast while a downstream is degraded | a resilience handler on the HTTP client (`Microsoft.Extensions.Http.Resilience`); the template wires none |
+| **Retry with backoff** | Transient failures that clear on their own | a resilience handler on the HTTP client; the bus retries itself (`RabbitMq:RetryLimit`) |
 | **Watchdog / Reaper** | Recover entities stuck in an in-flight state | a recurring Hangfire job (`-H`) |
 | **Batched producer** | Many small actions become one bulk call | a job that collects intents and sends them per interval |
 | **Diff / Delta transfer** | The downstream already knows the previous state | a hash of what was sent, compared before the call |

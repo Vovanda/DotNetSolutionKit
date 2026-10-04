@@ -43,8 +43,6 @@
         <!--#else -->
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
         <!--#endif -->
-        <PackageReference Include="Polly" />
-        <PackageReference Include="Polly.Extensions.Http" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
     </ItemGroup>
 
