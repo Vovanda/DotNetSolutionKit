@@ -1,6 +1,6 @@
 # DotNetSolutionKit
 
-Made by [SawKing Tech](https://sawking.tech/). Author: Vladimir Savkin.
+Made by Vladimir Savkin at [sawking.tech](https://sawking.tech/).
 
 Site: [dnsk.sawking.tech](https://dnsk.sawking.tech/). Documentation, in English and Russian:
 [dnsk.sawking.tech/docs.html](https://dnsk.sawking.tech/docs.html).

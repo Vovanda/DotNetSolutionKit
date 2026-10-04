@@ -69,4 +69,4 @@ package management and the shape of error responses changed. What changed and ho
 ## Source and license
 
 [github.com/sawking-tech/DotNetSolutionKit](https://github.com/sawking-tech/DotNetSolutionKit), MIT.
-Author: Vladimir Savkin, [SawKing Tech](https://sawking.tech/).
+Made by Vladimir Savkin at [sawking.tech](https://sawking.tech/).
