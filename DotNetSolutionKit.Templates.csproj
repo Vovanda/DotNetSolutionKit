@@ -14,14 +14,18 @@
     <PackageId>SawKing.DotNetSolutionKit</PackageId>
     <Title>DotNet Solution Kit</Title>
     <Authors>Vladimir Savkin</Authors>
-    <Company>SawKing Tech</Company>
     <Description>A .NET 8 microservice solution template for high-load systems, proven in production. Layered services on PostgreSQL; RabbitMQ with a transactional outbox, Hangfire jobs, ClickHouse, object storage, a YARP gateway, deployment files and CI are one flag away, wired and tested.</Description>
-    <PackageTags>dotnet-new;templates;microservices;solution;postgresql;masstransit;hangfire;clickhouse;yarp</PackageTags>
+    <PackageTags>dotnet-new;templates;template;microservices;solution;clean-architecture;ddd;net8;aspnetcore;postgresql;efcore;rabbitmq;masstransit;outbox;hangfire;clickhouse;yarp</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/sawking-tech/DotNetSolutionKit</PackageProjectUrl>
+    <PackageProjectUrl>https://dnsk.sawking.tech/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sawking-tech/DotNetSolutionKit</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <!-- the package's own README and icon (nuget/): nuget.org does not resolve the repository README's
+         relative links to docs/, so the package's README links the site -->
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReleaseNotes>What this version brings: https://github.com/sawking-tech/DotNetSolutionKit/releases/tag/v$(Version)</PackageReleaseNotes>
+    <Copyright>Copyright (c) 2025 Vladimir Savkin</Copyright>
 
     <TargetFramework>netstandard2.0</TargetFramework>
     <IncludeContentInPack>true</IncludeContentInPack>
@@ -38,7 +42,8 @@
   <ItemGroup>
     <Content Include="template\**\*"
              Exclude="template\**\bin\**;template\**\obj\**;template\**\.vs\**;template\**\.idea\**;template\**\*.user;template\**\TestResults\**;template\**\logs\**" />
-    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="nuget\README.md" Pack="true" PackagePath="\" />
+    <None Include="nuget\icon.png" Pack="true" PackagePath="\" />
     <Compile Remove="**\*" />
   </ItemGroup>
 

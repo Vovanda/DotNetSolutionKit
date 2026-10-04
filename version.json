@@ -1,6 +1,13 @@
 {
-  "version": "2.6.1",
+  "version": "2.6.2",
   "releaseNotes": {
+    "2.6.2": {
+      "headline": "The template installs from nuget.org: dotnet new install SawKing.DotNetSolutionKit.",
+      "highlights": [
+        "The package has a page of its own on nuget.org: an icon, the install and generate commands, the parameters with links to the documentation on dnsk.sawking.tech, and a link to the notes of its release.",
+        "The README and the site install the template from nuget.org; a release still carries the package as a file."
+      ]
+    },
     "2.6.1": {
       "headline": "The first push of a generated solution passes the secret scan.",
       "highlights": [

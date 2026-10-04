@@ -18,7 +18,7 @@ flags.
 ## Install and generate
 
 ```bash
-dotnet new install /path/to/DotNetSolutionKit/template
+dotnet new install SawKing.DotNetSolutionKit
 
 # the shared Common projects, the solution file and the first service
 dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders -M false
@@ -27,13 +27,15 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders -M false
 dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 ```
 
-A release can also be installed from its package: download `SawKing.DotNetSolutionKit.<version>.nupkg` from
-the [releases](https://github.com/sawking-tech/DotNetSolutionKit/releases) and run `dotnet new install <file>`.
+The package is [SawKing.DotNetSolutionKit on nuget.org](https://www.nuget.org/packages/SawKing.DotNetSolutionKit);
+every [release](https://github.com/sawking-tech/DotNetSolutionKit/releases) also carries it as a `.nupkg` file.
+To try the template from a clone: `dotnet new install /path/to/DotNetSolutionKit/template`.
 
 What the generated solutions look like:
-[DotNetSolutionKit.Samples](https://github.com/sawking-tech/DotNetSolutionKit.Samples), a branch each for the full kit,
-a single service and a gateway with services. Regenerating them from each release is
-[#4](https://github.com/sawking-tech/DotNetSolutionKit/issues/4).
+[DotNetSolutionKit.Samples](https://github.com/sawking-tech/DotNetSolutionKit.Samples), a branch each for a
+single service, a gateway with services and the full kit, regenerated from every release with their CI
+running, and `nightly`, generated from `master`. The [samples page](https://dnsk.sawking.tech/samples.html)
+shows their files and how their CI ran.
 
 | Parameter | Default | What it does |
 |---|---|---|
