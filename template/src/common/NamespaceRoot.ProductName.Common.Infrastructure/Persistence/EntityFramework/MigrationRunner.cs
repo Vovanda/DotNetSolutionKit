@@ -2,6 +2,8 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Logging;
 //#if (Database != "mssql")
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
@@ -56,6 +58,11 @@ public sealed class MigrationRunner
                     "-o EntityFramework/Migrations",
                     context.GetType().Name);
             }
+
+            // Npgsql's EF 10 provider reads the history table before it creates it, and on a first start
+            // logs the failed read as an error, twice, though nothing is wrong. Created first, the table
+            // is there to read. SQL Server's provider looks before it reads; the call costs it nothing.
+            context.GetService<IHistoryRepository>().CreateIfNotExists();
 
             var pendingMigrations = context.Database.GetPendingMigrations().ToList();
 

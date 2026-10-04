@@ -12,7 +12,7 @@
 # per service. GIT_SHA should be the last commit that touched the service's inputs, not the current
 # one; otherwise every commit changes every image (see the deploy scripts).
 
-ARG DOTNET_VERSION=8.0
+ARG DOTNET_VERSION=10.0
 
 # --- Common: restored and compiled once, reused by every service ---
 FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_VERSION} AS common

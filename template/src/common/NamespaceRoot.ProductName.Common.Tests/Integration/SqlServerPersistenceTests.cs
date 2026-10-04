@@ -172,7 +172,10 @@ internal class SqlServerPersistenceTests
     {
         var sequence = $"dbo.seq_{Guid.NewGuid():N}";
         await using var db = new Db(_connectionString);
+        // the name is made above from a Guid; a sequence name cannot be a SQL parameter
+#pragma warning disable EF1003
         await db.Database.ExecuteSqlRawAsync("CREATE SEQUENCE " + sequence + " AS bigint START WITH 100");
+#pragma warning restore EF1003
         var generator = new SqlServerShortIdGenerator<Db>(db);
 
         (await generator.GetNextAsync(sequence)).ShouldBe(100);

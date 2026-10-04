@@ -74,5 +74,5 @@ Packages still flow transitively; only project references are cut.
 ## Packages and versions
 
 Package versions are declared once, in `src/Directory.Packages.props`; a `.csproj` names a package without
-a version. Every package stays on the .NET 8 line: none pulls in a .NET 9 library, directly or
-transitively, so some packages are held below their newest version.
+a version. Every package is on the .NET 10 line; a package held below its newest version says why next
+to it in the file.

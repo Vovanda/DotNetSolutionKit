@@ -12,7 +12,7 @@ Site: [dnsk.sawking.tech](https://dnsk.sawking.tech/). Documentation, in English
 > changed, and the overwritten solution will not build. Use v2 for new solutions; port changes into
 > existing ones by hand, using [what changed in v2](docs/getting-started/upgrading.md).
 
-A `dotnet new` template for microservices on .NET 8 and PostgreSQL or SQL Server. It generates shared `Common` libraries
+A `dotnet new` template for microservices on .NET 10 and PostgreSQL or SQL Server. It generates shared `Common` libraries
 and services split into domain, application, infrastructure and API projects, with the host, errors,
 validation, persistence, domain events, background jobs and tests already wired, and optional parts behind
 flags.
@@ -32,6 +32,10 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 The package is [SawKing.DotNetSolutionKit on nuget.org](https://www.nuget.org/packages/SawKing.DotNetSolutionKit);
 every [release](https://github.com/sawking-tech/DotNetSolutionKit/releases) also carries it as a `.nupkg` file.
 To try the template from a clone: `dotnet new install /path/to/DotNetSolutionKit/template`.
+
+Version 3 targets .NET 10. Version 2 targets .NET 8 and lives in the `2.x` branch, taking fixes until
+support for .NET 8 ends on 10 November 2026: `dotnet new install SawKing.DotNetSolutionKit::2.7.0`. How a
+solution moves from 2 to 3: [upgrading](docs/getting-started/upgrading.md#from-v2-to-v3).
 
 What the generated solutions look like:
 [DotNetSolutionKit.Samples](https://github.com/sawking-tech/DotNetSolutionKit.Samples), a branch each for a

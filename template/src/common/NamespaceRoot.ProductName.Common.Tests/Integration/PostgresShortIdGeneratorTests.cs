@@ -22,14 +22,18 @@ internal class PostgresShortIdGeneratorTests
         _sequence = $"public.test_seq_{Guid.NewGuid():N}";
         await using var db = new Db(Postgres.ConnectionString());
         // the name is made above from a Guid; a sequence name cannot be a SQL parameter
+#pragma warning disable EF1003
         await db.Database.ExecuteSqlRawAsync("CREATE SEQUENCE " + _sequence);
+#pragma warning restore EF1003
     }
 
     [TearDown]
     public async Task DropSequence()
     {
         await using var db = new Db(Postgres.ConnectionString());
+#pragma warning disable EF1003 // the name made from a Guid, as above
         await db.Database.ExecuteSqlRawAsync("DROP SEQUENCE IF EXISTS " + _sequence);
+#pragma warning restore EF1003
     }
 
     [Test(Description = "Each call takes the next number")]

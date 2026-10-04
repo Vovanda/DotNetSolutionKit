@@ -18,16 +18,15 @@ gantt
     v2.5 audit journal                                    :done, s7, after s6, 1000ms
     v2.6 NUnit or xUnit                                   :done, s8, after s7, 1000ms
 
-    section Now
-    v2.7 site, samples, nuget.org, major check, gateway (#5), Vault, settings reloaded, SQL Server :active, s9, after s8, 4000ms
+    v2.7 site, samples, nuget.org, major check, gateway (#5), Vault, settings reloaded, SQL Server :done, s9, after s8, 4000ms
 
-    section Next
-    3.0 on .NET 10 in master, with the path from 2.x; 2.x stays on .NET 8 :s15, after s9, 3000ms
+    section Now
+    3.0 on .NET 10 in master, with the path from 2.x; 2.x stays on .NET 8 :active, s15, after s9, 3000ms
 ```
 
 What each release brought: [version.json](https://github.com/sawking-tech/DotNetSolutionKit/blob/master/version.json).
-Everything in Now goes into 2.x, on .NET 8, before 3.0: support for .NET 8 ends on 10 November 2026, and from 3.0 on
-the 2.x branch takes fixes only.
+Version 2 stays on .NET 8 in the `2.x` branch and takes fixes only, until support for .NET 8 ends on
+10 November 2026. How a solution moves from 2.x to 3.0: [upgrading](getting-started/upgrading.md#from-v2-to-v3).
 
 ## Reducing lock-in
 
