@@ -1,6 +1,13 @@
 {
-  "version": "2.6.2",
+  "version": "2.6.3",
   "releaseNotes": {
+    "2.6.3": {
+      "headline": "The package on nuget.org carries the notes of its release and targets .NET 8.",
+      "highlights": [
+        "The release notes of the package are the text of the version from version.json, the same as on the GitHub release, instead of a link to it.",
+        "nuget.org lists the package for .NET 8, the platform of the solutions it generates, instead of .NET Standard 2.0."
+      ]
+    },
     "2.6.2": {
       "headline": "The template installs from nuget.org: dotnet new install SawKing.DotNetSolutionKit.",
       "highlights": [
