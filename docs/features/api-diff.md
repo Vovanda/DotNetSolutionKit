@@ -16,7 +16,8 @@ bash scripts/generate-api-schemas.sh
 
 writes `src/services/*/*.API/api-schema/<service>.json` for every service. Each service is run with
 `--dump-schema` in schema-only mode, so no database, broker or secrets are needed. How and why:
-[ADR-003](../adr/003-api-schema-generation.md).
+[ADR-003](../adr/003-api-schema-generation.md). An [API gateway](api-gateway.md) is passed by: it serves the
+services' documents and has no contract of its own.
 
 ## Declare a breaking change
 
