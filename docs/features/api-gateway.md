@@ -89,8 +89,19 @@ service's document on the gateway's Swagger page, next to the gateway's own:
 ```
 
 The page lists one document per such route, named after the cluster; the list comes from the routes and
-has no setting of its own. "Try it out" sends a request to the gateway, which routes it like any other. The services serve
-their documents outside Production only, as the gateway shows its page.
+has no setting of its own. The gateway serves each one at `/swagger-services/<cluster>.json`, taken from
+the cluster's first destination and cut to what a caller of the gateway can reach:
+
+- a path stays when another route of the cluster matches it, and an operation when that route takes its
+  method (`Match:Methods`); an endpoint no route reaches answers 404 through the gateway, so it is left
+  out, as a `Common` endpoint such as `api/v1/features` is until a route leads to it;
+- a route that transforms the path (`PathPattern`, `PathPrefix`, `PathRemovePrefix`, `PathSet`) is not
+  followed: the path the service sees is not the one the caller sends;
+- the servers are the gateway's (`Swagger:PublicServers`), never the service's, which point past the
+  gateway; with none, the base URL is the gateway the document came from.
+
+"Try it out" sends a request to the gateway, which routes it like any other. The services serve their
+documents outside Production only, and the gateway serves its page and these copies the same way.
 
 ## Settings
 
@@ -99,6 +110,7 @@ their documents outside Production only, as the gateway shows its page.
 | `Jwt:Issuer`, `Jwt:Audience` | what the tokens carry |
 | `Jwt:PublicKeyPath` | the PEM public key the tokens are signed for; the private key stays with whoever issues the tokens |
 | `InternalApi:ApiKey` | the key the services accept; it must be the same on the gateway and on every service |
+| `Swagger:PublicServers`, `Swagger:ScrubPatterns` | the servers and the clean-up of the documents, as on a service; see [Swagger documents](../architecture/web-layer.md#swagger-documents) |
 
 The deployment files mount the public key: from `deploy/compose/keys/jwt-public.pem` under compose, from
 the Secret `<gateway>-jwt` under Kubernetes. The generated `.gitignore` keeps `*private*.pem` out of the

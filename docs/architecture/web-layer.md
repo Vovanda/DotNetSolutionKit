@@ -96,6 +96,24 @@ public string Status { get; init; }
 The member is a static list of strings, or a dictionary whose keys are the values. The property stays a
 string on the wire; the document gains its `enum` from the same list the code checks against.
 
+Two settings shape what a reader of the document gets, on a service and on the gateway alike, and both
+are checked at startup:
+
+```json
+"Swagger": {
+  "PublicServers": [ { "Url": "https://api.example.com", "Description": "Production" } ],
+  "ScrubPatterns": [ "\\(?\\bPROJ-\\d+\\b\\)?" ]
+}
+```
+
+- `PublicServers` become the document's `servers`, so a client that imports it, such as Postman, knows
+  where to send requests. Each is an absolute URL, scheme included; a host with a server variable instead
+  was refused by Postman when it imported the document as OpenAPI 3.0. None means no `servers`, and the
+  base URL is wherever the document came from: right for a local run.
+- `ScrubPatterns` are regular expressions removed from every description of the document. An XML comment
+  may name the task a decision came from, and Swashbuckle copies it word for word; the reader of the
+  contract gets the prose without references to a tracker they cannot open, and the code keeps them.
+
 ## What a service keeps
 
 ```csharp
