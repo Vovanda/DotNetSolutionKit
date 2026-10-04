@@ -27,7 +27,12 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
         <PackageReference Include="Microsoft.IdentityModel.Tokens" />
+        <!--#if (Database != "mssql") -->
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+        <!--#endif -->
+        <!--#if (Database == "mssql") -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+        <!--#endif -->
         <PackageReference Include="Scrutor" />
     </ItemGroup>
 

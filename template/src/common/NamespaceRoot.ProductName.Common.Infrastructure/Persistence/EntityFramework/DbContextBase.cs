@@ -2,7 +2,12 @@
     using NamespaceRoot.ProductName.Common.Domain.Persistence;
     using Microsoft.EntityFrameworkCore;
 using NamespaceRoot.ProductName.Common.Exceptions;
+//#if (Database != "mssql")
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
+//#endif
+//#if (Database != "postgres")
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.SqlServer;
+//#endif
     using Microsoft.EntityFrameworkCore.Storage;
 
     using NamespaceRoot.ProductName.Common.Domain.Events;
@@ -43,6 +48,10 @@ namespace NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFram
         {
 //#if (Database != "mssql")
             if (PostgresErrors.IsUniqueViolation(exception))
+                return true;
+//#endif
+//#if (Database != "postgres")
+            if (SqlServerErrors.IsUniqueViolation(exception))
                 return true;
 //#endif
             return false;

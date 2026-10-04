@@ -343,6 +343,17 @@
           ]
         },
         {
+          "condition": "(Database != \"mssql\")",
+          "exclude": [
+            "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Persistence/SqlServer/**",
+            "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Persistence/EntityFramework/Specifications/SqlServerCaseInsensitiveSearch.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Diagnostics/SqlServerOutboxStatsDialect.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Testing/Stubs/InMemorySqlServerCaseInsensitiveSearch.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Testing/Integration/SqlServer.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/SqlServerPersistenceTests.cs"
+          ]
+        },
+        {
           "condition": "(!SecretStore)",
           "exclude": [
             "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Configuration/Secrets/**",
