@@ -12,6 +12,7 @@ on:
 permissions:
   contents: write
   actions: read
+  packages: write
 
 jobs:
   release:
@@ -89,3 +90,11 @@ jobs:
             exit 0
           fi
           dotnet nuget push package/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      # The same package in the organization's GitHub Packages, which the repository page lists beside its
+      # releases. Installing is meant from nuget.org; GitHub's registry asks for a sign-in even when public.
+      - name: Publish to GitHub Packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          dotnet nuget push package/*.nupkg --api-key "$GH_TOKEN"             --source "https://nuget.pkg.github.com/${GITHUB_REPOSITORY_OWNER}/index.json" --skip-duplicate
