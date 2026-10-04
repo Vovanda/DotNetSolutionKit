@@ -12,7 +12,7 @@ Site: [dnsk.sawking.tech](https://dnsk.sawking.tech/). Documentation, in English
 > changed, and the overwritten solution will not build. Use v2 for new solutions; port changes into
 > existing ones by hand, using [what changed in v2](docs/getting-started/upgrading.md).
 
-A `dotnet new` template for microservices on .NET 8 and PostgreSQL. It generates shared `Common` libraries
+A `dotnet new` template for microservices on .NET 8 and PostgreSQL or SQL Server. It generates shared `Common` libraries
 and services split into domain, application, infrastructure and API projects, with the host, errors,
 validation, persistence, domain events, background jobs and tests already wired, and optional parts behind
 flags.
@@ -45,6 +45,7 @@ shows their files and how their CI ran.
 | `-P`, `--ProductName` | `Product` | Product name. May be dotted. |
 | `-S`, `--ServiceNameOrCustom` | `Service` | Service name. May be dotted. |
 | `-M`, `--Minimal` | `true` | `true` generates only the service folder, `false` the full kit. |
+| `--Database` | `postgres` | [Database](docs/architecture/persistence.md#sql-server): `postgres` or `mssql` (SQL Server). |
 | `-H`, `--Hangfire` | `true` | [Background jobs](docs/features/background-jobs.md) on Hangfire. |
 | `--Messaging` | `none` | [Message bus](docs/features/messaging.md): `outbox` or `direct`. |
 | `-I`, `--Infisical` | `false` | [Secrets and settings from Infisical](docs/features/secrets.md). |

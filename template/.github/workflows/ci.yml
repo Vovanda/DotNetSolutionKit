@@ -49,6 +49,15 @@ jobs:
           done
           exit $missing
 
+#if (Database == "mssql")
+      # The integration tests restore a database of their own per test from one migrated once. SQL
+      # Server on Linux does not run its files on a ramdisk, so they stay on the runner's disk.
+      - name: Start SQL Server for the tests
+        run: |
+          docker run -d --name tests-mssql -p 1433:1433 \
+            -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD=Test-do-not-use-1 \
+            mcr.microsoft.com/mssql/server:2022-latest
+#else
       # The integration tests create and drop a database of their own per test. On a ramdisk with
       # durability off that is several times faster - safe only because the data dies with the job.
       # The ramdisk is larger than max_wal_size: a full one stops the server mid-run.
@@ -60,6 +69,7 @@ jobs:
             postgres:16-alpine \
             -c fsync=off -c synchronous_commit=off -c full_page_writes=off \
             -c max_wal_size=512MB -c autovacuum=off
+#endif
 #if (ClickHouse)
 
       - name: Start ClickHouse for the tests
@@ -104,7 +114,12 @@ jobs:
         run: |
           for attempt in $(seq 1 60); do
             ready=1
+#if (Database == "mssql")
+            docker exec tests-mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P Test-do-not-use-1 \
+              -Q "SELECT 1" -b >/dev/null 2>&1 || ready=0
+#else
             docker exec tests-pg pg_isready -U postgres >/dev/null 2>&1 || ready=0
+#endif
 #if (ClickHouse)
             curl -fsS http://localhost:8123/ping >/dev/null 2>&1 || ready=0
 #endif
@@ -118,12 +133,20 @@ jobs:
             [ $ready = 1 ] && exit 0
             sleep 1
           done
+#if (Database == "mssql")
+          docker logs tests-mssql
+#else
           docker logs tests-pg
+#endif
           exit 1
 
       - name: Integration tests
         env:
+#if (Database == "mssql")
+          TEST_SQLSERVER: Server=localhost,1433;User Id=sa;Password=Test-do-not-use-1;TrustServerCertificate=true
+#else
           TEST_POSTGRES: Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=test-do-not-use
+#endif
 #if (ClickHouse)
           TEST_CLICKHOUSE: Host=localhost;Port=8123;Username=tester;Password=test-do-not-use
 #endif

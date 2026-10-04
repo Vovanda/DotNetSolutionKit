@@ -1,7 +1,11 @@
 # Хранение
 
-EF Core на PostgreSQL. У каждого сервиса свой `DbContext` и своя схема базы, названная по сервису
-(`orders` или `sales_orders` для `Sales.Orders`); рядом Hangfire получает вторую схему (`orders_hangfire`).
+EF Core на PostgreSQL или, с `--Database mssql`, на SQL Server. У каждого сервиса свой `DbContext` и своя
+схема базы, названная по сервису (`orders` или `sales_orders` для `Sales.Orders`); рядом Hangfire получает
+вторую схему (`orders_hangfire`).
+
+Разделы ниже описывают PostgreSQL; чем отличается SQL Server, сказано в разделе [SQL Server](#sql-server).
+Код, который сервис пишет поверх `Common`, для обеих СУБД один.
 
 ## Сервис владеет своей схемой
 
@@ -130,10 +134,41 @@ modelBuilder.AddIdempotencyLog();
 services.AddIdempotency<OrdersDbContext>();
 ```
 
+## SQL Server
+
+`--Database mssql` генерирует решение на SQL Server. У каждой части выше есть реализация для SQL Server за
+тем же швом, и в сгенерированное решение попадает только одна из двух:
+
+| Часть | PostgreSQL | SQL Server |
+|---|---|---|
+| провайдер EF | Npgsql | `Microsoft.EntityFrameworkCore.SqlServer` |
+| guard схемы | `PostgresSchemaGuard`, блокировка строки | `SqlServerSchemaGuard`, `sp_getapplock` на время транзакции |
+| блокировка миграций | advisory lock | `sp_getapplock` на время сессии |
+| нарушение уникальности | SQLSTATE 23505 | ошибки 2627 и 2601 |
+| поиск без учёта регистра | `ILIKE` | `LIKE` в collation `Latin1_General_100_CI_AS` |
+| читаемые номера | `nextval` | `sp_sequence_get_range` |
+| хранилище Hangfire | `Hangfire.PostgreSql` | `Hangfire.SqlServer` |
+| outbox | MassTransit на PostgreSQL | MassTransit на SQL Server |
+
+Что заметит команда:
+
+- Guard создаёт базу из строки подключения, если её нет: контейнер SQL Server стартует с одной `master`.
+  Существующая база берётся как есть: право создавать базы нужно, только пока базы ещё нет.
+- Guard ждёт до 30 попыток с интервалом 2 секунды, пока сервер стартует (ошибки 4060, 53, 40 и таймауты).
+- Поиск сравнивает в регистронезависимом collation, каким бы ни был collation колонки, и экранирует `%`,
+  `_` и `[` через `/`. Тесты на in-memory базе регистрируют `InMemorySqlServerCaseInsensitiveSearch`,
+  который сравнивает так же.
+- Таблицы Hangfire ставятся при старте под одной блокировкой на всю базу: два сервиса, которые ставят их в
+  одну базу одновременно, ловят в SQL Server deadlock, и Hangfire сдаётся после трёх попыток.
+- Последовательность для читаемых номеров создаётся `CREATE SEQUENCE` в миграции; генератор получает её
+  имя параметром, как на PostgreSQL.
+- Миграции сервиса, сгенерированного под PostgreSQL, к SQL Server не применяются: сервис генерируется под
+  одну СУБД с самого начала, и миграции добавляются уже под неё.
+
 ## Тесты
 
 `Common.Tests` покрывает базовый репозиторий, спецификации, сортировку, `DbContextBase` и ключ блокировки
 migration runner. Guard, миграциям и трансляции в `ILIKE` нужен PostgreSQL, они относятся к
-интеграционным тестам. Idempotent executor тестируется на PostgreSQL: повтор, гонка на одном ключе,
+интеграционным тестам. Idempotent executor тестируется на СУБД решения: повтор, гонка на одном ключе,
 повторно использованный и невалидный ключ, неудачная попытка, собственный дубликат работы, два тенанта с
-одним ключом.
+одним ключом. На SQL Server тем же интеграционным тестам нужен `TEST_SQLSERVER`; см. [тестирование](testing.ru.md).

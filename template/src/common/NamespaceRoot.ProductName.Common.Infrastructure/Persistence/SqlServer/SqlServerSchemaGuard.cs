@@ -1,3 +1,5 @@
+// Part of DotNetSolutionKit (https://dnsk.sawking.tech/). MIT License, Copyright (c) 2025 Vladimir Savkin.
+
 using System.Data;
 using Microsoft.Data.SqlClient;
 
@@ -21,6 +23,7 @@ public static class SqlServerSchemaGuard
     /// <exception cref="InvalidOperationException">The schema is owned by another service.</exception>
     public static void EnsureExclusiveSchema(string connectionString, string schemaName, string serviceName)
     {
+        EnsureDatabase(connectionString);
         using var connection = OpenWithRetry(connectionString);
         using var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
         try
@@ -76,6 +79,27 @@ public static class SqlServerSchemaGuard
             transaction.Rollback();
             throw;
         }
+    }
+
+    /// <summary>
+    /// Creates the database of <paramref name="connectionString"/> when there is none. PostgreSQL's container
+    /// creates its database from POSTGRES_DB; SQL Server's has only master, and the guard connects before the
+    /// migrations would create it. An existing database is left as it is, so a database a DBA made first
+    /// needs no right to create one.
+    /// </summary>
+    private static void EnsureDatabase(string connectionString)
+    {
+        var target = new SqlConnectionStringBuilder(connectionString);
+        if (string.IsNullOrEmpty(target.InitialCatalog))
+            return;
+
+        var master = new SqlConnectionStringBuilder(connectionString) { InitialCatalog = "master" }.ConnectionString;
+        using var connection = OpenWithRetry(master);
+        using var command = new SqlCommand(
+            "IF DB_ID(@name) IS NULL EXEC('CREATE DATABASE ' + @quoted)", connection);
+        command.Parameters.Add(new SqlParameter("@name", target.InitialCatalog));
+        command.Parameters.Add(new SqlParameter("@quoted", Quote(target.InitialCatalog)));
+        command.ExecuteNonQuery();
     }
 
     // A schema name goes into the text of DDL, so it is quoted the way SQL Server quotes an identifier.

@@ -171,9 +171,10 @@
       "datatype": "choice",
       "defaultValue": "postgres",
       "choices": [
-        { "choice": "postgres", "description": "PostgreSQL" }
+        { "choice": "postgres", "description": "PostgreSQL" },
+        { "choice": "mssql", "description": "SQL Server" }
       ],
-      "description": "The database of the services"
+      "description": "The database of the services: postgres or mssql"
     },
     "Vault": {
       "type": "parameter",
@@ -350,7 +351,25 @@
             "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Diagnostics/SqlServerOutboxStatsDialect.cs",
             "src/common/NamespaceRoot.ProductName.Common.Testing/Stubs/InMemorySqlServerCaseInsensitiveSearch.cs",
             "src/common/NamespaceRoot.ProductName.Common.Testing/Integration/SqlServer.cs",
-            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/SqlServerPersistenceTests.cs"
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/SqlServerPersistenceTests.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Testing/SqlServerDbTestExecutionContext.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/SqlServerIntegrationTestBaseTests.cs",
+            "**/Integration/SqlServerDbTestExecutionContext.cs"
+          ]
+        },
+        {
+          "condition": "(Database == \"mssql\")",
+          "exclude": [
+            "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Persistence/Postgres/**",
+            "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Persistence/EntityFramework/Specifications/PostgresCaseInsensitiveSearch.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Diagnostics/PostgresOutboxStatsDialect.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Testing/Stubs/InMemoryCaseInsensitiveSearch.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Testing/Integration/Postgres.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Testing/PostgresDbTestExecutionContext.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/PostgresIntegrationTestBaseTests.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/PostgresShortIdGeneratorTests.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Tests/Specifications/CaseInsensitiveSearchTests.cs",
+            "**/Integration/PostgresDbTestExecutionContext.cs"
           ]
         },
         {
@@ -430,6 +449,14 @@
       "source": "src/services",
       "target": "src/services",
       "modifiers": [
+        {
+          "condition": "(Database == \"mssql\")",
+          "exclude": [ "**/Integration/PostgresDbTestExecutionContext.cs" ]
+        },
+        {
+          "condition": "(Database != \"mssql\")",
+          "exclude": [ "**/Integration/SqlServerDbTestExecutionContext.cs" ]
+        },
         {
           "condition": "(ApiGateway)",
           "exclude": [

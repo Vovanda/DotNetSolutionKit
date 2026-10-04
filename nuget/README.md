@@ -1,6 +1,6 @@
 # DotNetSolutionKit
 
-A `dotnet new` template for microservices on .NET 8 and PostgreSQL. It generates a solution with shared
+A `dotnet new` template for microservices on .NET 8 and PostgreSQL or SQL Server. It generates a solution with shared
 `Common` libraries and services split into domain, application, infrastructure and API projects. The host,
 errors, validation, persistence, domain events, background jobs and tests are wired in every service; the
 message bus, secrets, feature flags, object storage, ClickHouse, an API gateway, deployment files and CI are
@@ -35,6 +35,7 @@ Generated solutions, regenerated from every release with their CI running:
 | `-P`, `--ProductName` | `Product` | Product name. May be dotted. |
 | `-S`, `--ServiceNameOrCustom` | `Service` | Service name. May be dotted. |
 | `-M`, `--Minimal` | `true` | `true` generates only the service folder, `false` the full kit. |
+| `--Database` | `postgres` | [Database](https://dnsk.sawking.tech/docs.html#persistence:sql-server): `postgres` or `mssql` (SQL Server). |
 | `-H`, `--Hangfire` | `true` | [Background jobs](https://dnsk.sawking.tech/docs.html#jobs) on Hangfire. |
 | `--Messaging` | `none` | [Message bus](https://dnsk.sawking.tech/docs.html#messaging): `outbox` or `direct`. |
 | `-I`, `--Infisical` | `false` | [Secrets and settings from Infisical](https://dnsk.sawking.tech/docs.html#secrets). |

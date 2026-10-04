@@ -3,7 +3,7 @@
 Which kind of test a piece of code gets, and why most of them run on an in-memory database:
 [ADR-005](../adr/005-testing-a-service.md). This page is how to start.
 
-The service's test project references `Common.Testing`: the test contexts, the PostgreSQL test databases,
+The service's test project references `Common.Testing`: the test contexts, the test databases of the solution's database,
 stubs for time and the user, and the rule checks. It carries no test framework; the service's test
 project picks one, and sets `TestSkip.Handler` to how that framework skips a test. `Common.Tests` is the
 test project of `Common` itself.
@@ -95,6 +95,18 @@ TEST_POSTGRES='Host=localhost;Port=15433;Database=postgres;Username=postgres;Pas
   dotnet test --filter "TestCategory=Integration"
 
 dotnet test --filter "TestCategory!=Integration"   # everything else
+```
+
+A solution generated with `--Database mssql` reads `TEST_SQLSERVER` instead, and its service tests use
+`SqlServerDbTestExecutionContext` in place of `PostgresDbTestExecutionContext`. The service's schema is
+migrated into one template database once per run, backed up, and each test restores the backup under a
+name of its own, which is faster on SQL Server than migrating each test's database:
+
+```bash
+docker run -d --name tests-mssql -p 1433:1433 -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD=Test-do-not-use-1 \
+  mcr.microsoft.com/mssql/server:2022-latest
+TEST_SQLSERVER='Server=localhost,1433;User Id=sa;Password=Test-do-not-use-1;TrustServerCertificate=true' \
+  dotnet test --filter "TestCategory=Integration"
 ```
 
 `Common.Tests/Integration` has such fixtures, for numbers from a sequence and for object storage.

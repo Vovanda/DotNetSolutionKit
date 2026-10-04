@@ -1,8 +1,11 @@
 # Persistence
 
-EF Core on PostgreSQL. Each service has its own `DbContext` and its own database schema, named after the
-service (`orders`, or `sales_orders` for `Sales.Orders`); Hangfire gets a second schema next to it
-(`orders_hangfire`).
+EF Core on PostgreSQL, or on SQL Server with `--Database mssql`. Each service has its own `DbContext` and
+its own database schema, named after the service (`orders`, or `sales_orders` for `Sales.Orders`);
+Hangfire gets a second schema next to it (`orders_hangfire`).
+
+The sections below describe PostgreSQL; [SQL Server](#sql-server) lists what differs there. The code a
+service writes against `Common` is the same for both.
 
 ## A service owns its schema
 
@@ -129,9 +132,44 @@ modelBuilder.AddIdempotencyLog();
 services.AddIdempotency<OrdersDbContext>();
 ```
 
+## SQL Server
+
+`--Database mssql` generates the solution on SQL Server. Each piece above has a SQL Server implementation
+behind the same seam, and only one of the two goes into a generated solution:
+
+| Piece | PostgreSQL | SQL Server |
+|---|---|---|
+| EF provider | Npgsql | `Microsoft.EntityFrameworkCore.SqlServer` |
+| schema guard | `PostgresSchemaGuard`, row lock | `SqlServerSchemaGuard`, `sp_getapplock` held by the transaction |
+| migration lock | advisory lock | `sp_getapplock` held by the session |
+| unique violation | SQLSTATE 23505 | errors 2627 and 2601 |
+| case-insensitive search | `ILIKE` | `LIKE` under the `Latin1_General_100_CI_AS` collation |
+| readable numbers | `nextval` | `sp_sequence_get_range` |
+| Hangfire storage | `Hangfire.PostgreSql` | `Hangfire.SqlServer` |
+| outbox | MassTransit on PostgreSQL | MassTransit on SQL Server |
+
+What a team notices:
+
+- The guard creates the database of the connection string when there is none: the SQL Server container
+  starts with `master` only. An existing database is used as it is: the right to create a database is
+  needed only when there is none yet.
+- The guard waits up to 30 attempts, 2 seconds apart, while the server is starting (errors 4060, 53, 40
+  and timeouts).
+- The search compares under a case-insensitive collation whatever the column's own collation, and escapes
+  `%`, `_` and `[` with `/`. Tests on the in-memory database register `InMemorySqlServerCaseInsensitiveSearch`,
+  which matches the same way.
+- Hangfire's tables are installed at startup under one lock for the whole database: two services
+  installing into one database at the same moment deadlock in SQL Server, and Hangfire gives up after
+  three attempts.
+- A sequence for readable numbers is `CREATE SEQUENCE` in a migration; the generator takes its name as a
+  parameter, as on PostgreSQL.
+- The migrations of a service generated for PostgreSQL do not apply to SQL Server: a service is generated
+  for one database from the start, and its migrations are added against it.
+
 ## Tests
 
 `Common.Tests` covers the base repository, specifications, sorting, `DbContextBase` and the lock key of
 the migration runner. The guard, the migrations and the `ILIKE` translation need PostgreSQL and belong to
-integration tests. The idempotent executor is tested on PostgreSQL: a retry, a race on one key, a reused
-and an invalid key, a failed attempt, the work's own duplicate, two tenants with one key.
+integration tests. The idempotent executor is tested on the solution's database: a retry, a race on one
+key, a reused and an invalid key, a failed attempt, the work's own duplicate, two tenants with one key.
+On SQL Server the same integration tests need `TEST_SQLSERVER`; see [testing](testing.md).

@@ -24,7 +24,11 @@
         <!--#if (Hangfire) -->
         <PackageReference Include="Hangfire.AspNetCore" />
         <PackageReference Include="Hangfire.Console" />
+        <!--#if (Database == "mssql") -->
+        <PackageReference Include="Hangfire.SqlServer" />
+        <!--#else -->
         <PackageReference Include="Hangfire.PostgreSql" />
+        <!--#endif -->
         <!--#endif -->
         <PackageReference Include="Microsoft.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
@@ -33,7 +37,11 @@
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
         <PackageReference Include="Microsoft.IdentityModel.Tokens" />
+        <!--#if (Database == "mssql") -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+        <!--#else -->
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+        <!--#endif -->
         <PackageReference Include="Polly" />
         <PackageReference Include="Polly.Extensions.Http" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
