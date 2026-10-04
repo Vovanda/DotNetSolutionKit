@@ -168,3 +168,5 @@ applyLang(document.documentElement.getAttribute("data-lang"));
 applySide();
 // the panel opens where it was left, on either page
 if (localStorage.getItem(OPEN_KEY) === "1") setNav(true);
+// laid out: the page shows as soon as the fonts are in too (boot.js caps the wait)
+document.fonts.ready.then(() => document.documentElement.classList.remove("unlaid"));
