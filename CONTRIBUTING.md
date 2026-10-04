@@ -28,9 +28,11 @@ several pull requests going at once and work on one while the checks of another 
 - A change to a workflow of this repository is run on a temporary branch first, for each case it
   handles - the one that succeeds and each one that refuses - before its pull request: a workflow that
   does not work never reaches `dev`, let alone `master`. A rehearsal publishes nothing.
-- A change a user of the template sees raises `version` in [version.json](version.json) and adds its line
-  to that version's notes, in the same commit: minor for a feature, patch for a fix. On `dev` raising it
-  publishes nothing; what is published is the version `dev` carries when it reaches `master`.
+- A change a user of the template sees raises `version` in [version.json](version.json), in the same commit:
+  minor for a feature, patch for a fix. The release notes name what the version is about, for whoever
+  decides to update, in a sentence each; they are not a log of every change. The details are in the commits
+  and the documentation, the steps to update in [upgrading](docs/getting-started/upgrading.md). On `dev`
+  raising it publishes nothing; what is published is the version `dev` carries when it reaches `master`.
 - Documentation and the site (`docs/`, `index.html`, `docs.html`, `site/`) change in the same pull request
   as what they describe. The site is served from `master`, so it describes the released version.
 
