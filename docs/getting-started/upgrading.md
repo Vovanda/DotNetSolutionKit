@@ -80,6 +80,25 @@ internal static class TestSkipSetup
 }
 ```
 
+## One in-memory database per test
+
+In a solution generated before October 2026, `InMemoryTestExecutionContext` takes the name of its database inside the `AddDbContext`
+callback, which runs for every scope, so `ArrangeAsync`, `ActAsync` and `AssertAsync` each get an empty
+database of their own: a service test that seeds data or checks what was saved fails. In such a
+solution, take the name once, in the constructor, in `Common.Testing/TestExecutionContext.cs`:
+
+```csharp
+public InMemoryTestExecutionContext()
+{
+    var database = $"TestDb_{Guid.NewGuid():N}";
+    Services.AddDbContext<TDbContext>((sp, options) =>
+    {
+        options.UseInMemoryDatabase(database);
+        // the rest as before
+    });
+}
+```
+
 ## Do not regenerate over an older solution
 
 `dotnet new ... --force` over a solution generated from `v1` overwrites files that `v2` changed and leaves

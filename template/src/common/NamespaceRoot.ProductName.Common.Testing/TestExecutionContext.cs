@@ -246,14 +246,20 @@ public class InMemoryTestExecutionContext<TService, TDbContext> : ServiceDbTestE
     where TService : class
     where TDbContext : DbContext
 {
-    public InMemoryTestExecutionContext() =>
+    public InMemoryTestExecutionContext()
+    {
+        // The name is taken once, for the test: the options are built per scope, and a name taken inside
+        // the callback would give every scope a database of its own - an arrange the act cannot see, an
+        // act the assert cannot see.
+        var database = $"TestDb_{Guid.NewGuid():N}";
         Services.AddDbContext<TDbContext>((sp, options) =>
         {
-            options.UseInMemoryDatabase($"TestDb_{Guid.NewGuid():N}");
+            options.UseInMemoryDatabase(database);
             options.ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning));
             if (sp.GetService<DomainEventPreSaveInterceptor>() != null)
                 options.ApplyDomainEventInterceptors(sp);
         });
+    }
 
     public override Task EnsureDatabaseCreatedAsync() => Task.CompletedTask;
     public override Task EnsureDatabaseDeletedAsync() => Task.CompletedTask;

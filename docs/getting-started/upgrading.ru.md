@@ -82,6 +82,25 @@ internal static class TestSkipSetup
 }
 ```
 
+## Одна in-memory база на тест
+
+В решении, сгенерированном до октября 2026 года, `InMemoryTestExecutionContext` берёт имя своей базы внутри колбэка `AddDbContext`, который
+вызывается на каждый scope, поэтому `ArrangeAsync`, `ActAsync` и `AssertAsync` получают каждый свою пустую
+базу: сервисный тест, который готовит данные или проверяет сохранённое, падает. В таком решении имя
+берётся один раз, в конструкторе, в `Common.Testing/TestExecutionContext.cs`:
+
+```csharp
+public InMemoryTestExecutionContext()
+{
+    var database = $"TestDb_{Guid.NewGuid():N}";
+    Services.AddDbContext<TDbContext>((sp, options) =>
+    {
+        options.UseInMemoryDatabase(database);
+        // остальное как было
+    });
+}
+```
+
 ## Не генерируйте поверх старого решения
 
 `dotnet new ... --force` поверх решения, сгенерированного из `v1`, перезаписывает файлы, которые изменила
