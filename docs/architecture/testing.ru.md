@@ -70,13 +70,17 @@ internal class OrderServicePlaceTests : OrderServiceTestBase
 | `ServiceDbTestExecutionContext<TService, TDbContext>` | класс и база на провайдере, который настраиваете вы |
 | `InMemoryTestExecutionContext<TService, TDbContext>` | класс и in-memory база с подключёнными доменными событиями |
 
-## NUnit и Shouldly
+## NUnit, xUnit и Shouldly
 
-Тесты используют NUnit и Shouldly. Shouldly под лицензией MIT; FluentAssertions с версии 8 перешёл на
-коммерческую лицензию, которая не подходит шаблону под MIT. NUnit - предпочтение, но тестовые контексты
-на него опираются: in-memory база называется по `TestContext.CurrentContext.Test.ID`, а параллельность
-на уровне теста даёт `[Parallelizable(ParallelScope.All)]`. Переход на xUnit означал бы другое
-именование базы и его модель, где тесты одного класса идут друг за другом.
+Тесты сервиса по умолчанию на NUnit, с `--TestFramework xunit` - на xUnit v3; `Common.Tests` остаётся на
+NUnit. `Common.Testing`, на который ссылаются оба, от тестового фреймворка не зависит: каждый in-memory
+контекст называет свою базу новым Guid, а каждый тестовый проект через `TestSkip.Handler` говорит ему,
+как его фреймворк пропускает тест. Параллельность у каждого фреймворка своя: NUnit запускает fixture с
+`[Parallelizable]` рядом с другими, xUnit запускает классы тестов параллельно, а тесты одного класса -
+друг за другом.
+
+Для проверок - Shouldly под лицензией MIT; FluentAssertions с версии 8 перешёл на коммерческую лицензию,
+которая не подходит шаблону под MIT.
 
 ## Интеграционные тесты
 

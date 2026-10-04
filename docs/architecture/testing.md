@@ -70,13 +70,17 @@ scopes, so the assertion reads what was saved.
 | `ServiceDbTestExecutionContext<TService, TDbContext>` | a class and a database on a provider you configure |
 | `InMemoryTestExecutionContext<TService, TDbContext>` | a class and the in-memory database, with domain events wired |
 
-## NUnit and Shouldly
+## NUnit, xUnit and Shouldly
 
-Tests use NUnit and Shouldly. Shouldly is MIT-licensed; FluentAssertions moved to a commercial licence
-with version 8, which does not fit a template under MIT. NUnit is a preference, but the test contexts
-rely on it: the in-memory database is named after `TestContext.CurrentContext.Test.ID`, and per-test
-parallelism comes from `[Parallelizable(ParallelScope.All)]`. Moving to xUnit would mean naming the
-database another way and accepting its model, where tests in one class run one after another.
+A service's tests are on NUnit by default and on xUnit v3 with `--TestFramework xunit`; `Common.Tests` stays
+on NUnit. `Common.Testing`, which both reference, has no test framework: each in-memory test context names
+its database with a new Guid, and each test project tells it how its framework skips a test through
+`TestSkip.Handler`. Parallelism is the framework's own: NUnit runs a fixture marked
+`[Parallelizable]` alongside others, xUnit runs test classes in parallel and the tests of one class one
+after another.
+
+Assertions use Shouldly, which is MIT-licensed; FluentAssertions moved to a commercial licence with
+version 8, which does not fit a template under MIT.
 
 ## Integration tests
 

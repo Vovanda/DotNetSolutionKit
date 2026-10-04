@@ -7,10 +7,10 @@ The template is versioned with git tags, by semantic versioning.
 | `v1.0.0` | The template before the breaking changes of 2026. |
 | `v2.0.0-preview.1` | The breaking changes in progress. |
 | `v2.0.0` | The breaking changes completed and checked. |
-| `v2.1.0` | Deployment files, an API gateway, object storage, ClickHouse, CI, end-to-end correlation. Compatible with `v2.0.0`. |
 
-What each version brings is in [version.json](../../version.json) and on the
-[releases page](https://github.com/sawking-tech/DotNetSolutionKit/releases).
+What each version brings, from `v2.1.0` on, is in [version.json](../../version.json) and on the
+[releases page](https://github.com/sawking-tech/DotNetSolutionKit/releases); the table lists only the
+versions those do not explain.
 
 From `v2.0.0` on, a change keeps generated solutions working, or comes with a short way to update them.
 A change that cannot do either is a new major version.
