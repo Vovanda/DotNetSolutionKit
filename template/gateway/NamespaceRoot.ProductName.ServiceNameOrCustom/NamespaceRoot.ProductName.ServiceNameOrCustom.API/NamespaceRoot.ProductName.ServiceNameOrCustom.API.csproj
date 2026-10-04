@@ -9,6 +9,8 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);1591</NoWarn>
+        <!-- No API contract of its own: scripts/generate-api-schemas.sh passes it by. -->
+        <IsApiGateway>true</IsApiGateway>
     </PropertyGroup>
 
     <ItemGroup>

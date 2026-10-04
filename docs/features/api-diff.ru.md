@@ -16,7 +16,8 @@ bash scripts/generate-api-schemas.sh
 
 пишет `src/services/*/*.API/api-schema/<service>.json` для каждого сервиса. Каждый сервис запускается с
 `--dump-schema` в режиме только схемы, поэтому база, брокер и секреты не нужны. Как и почему:
-[ADR-003](../adr/003-api-schema-generation.md).
+[ADR-003](../adr/003-api-schema-generation.md). [API-шлюз](api-gateway.ru.md) скрипт пропускает: шлюз отдаёт
+документы сервисов, своего контракта у него нет.
 
 ## Объявить ломающее изменение
 

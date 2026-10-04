@@ -31,6 +31,7 @@ jobs:
             more: -N Acme -P Shop -S Billing --Messaging outbox -I true --DiffApi true --FeatureFlags true --Storage true --ClickHouse true --Audit true
             gateway: -N Acme -P Shop -S Gateway --ApiGateway true
             integration: true
+            schemas: true
           - name: no background jobs
             first: -N Acme -P Shop -S Orders -M false -H false
             more: -N Acme -P Shop -S Billing -H false
@@ -47,6 +48,7 @@ jobs:
             more: -N Acme -P Shop -S Billing --Database mssql --Messaging outbox -I true --DiffApi true --FeatureFlags true --Audit true
             integration: true
             sqlserver: true
+            schemas: true
           - name: xunit tests
             first: -N Acme -P Shop -S Orders -M false --TestFramework xunit --Messaging outbox --Audit true
             more: -N Acme -P Shop -S Billing --TestFramework xunit
@@ -107,6 +109,18 @@ jobs:
       - name: Unit tests
         working-directory: ${{ runner.temp }}/solution
         run: dotnet test src/services/*.All.sln --configuration Release --no-build --filter "TestCategory!=Integration"
+
+      # What api-diff.yml runs on a pull request of the generated solution: a contract per service, and
+      # none for the gateway.
+      - name: API contracts
+        if: matrix.schemas
+        working-directory: ${{ runner.temp }}/solution
+        run: |
+          bash scripts/generate-api-schemas.sh
+          services=$(ls -d src/services/*/*.API | grep -vc Gateway)
+          contracts=$(ls src/services/*/*.API/api-schema/*.json | wc -l)
+          echo "$contracts contracts for $services services"
+          [ "$contracts" = "$services" ]
 
       # The integration tests of the combination with every server the template knows. The same
       # servers and settings as the generated ci.yml.
