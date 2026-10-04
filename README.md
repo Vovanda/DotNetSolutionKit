@@ -1,5 +1,7 @@
 # DotNetSolutionKit
 
+[![NuGet](https://img.shields.io/nuget/v/SawKing.DotNetSolutionKit?label=nuget&color=1f9d4c)](https://www.nuget.org/packages/SawKing.DotNetSolutionKit)
+
 Made by Vladimir Savkin at [sawking.tech](https://sawking.tech/).
 
 Site: [dnsk.sawking.tech](https://dnsk.sawking.tech/). Documentation, in English and Russian:

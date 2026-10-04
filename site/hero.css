@@ -54,6 +54,14 @@ body .hero.hero--kit {
 
 .hero--kit .hero__line { max-width: 52ch; text-shadow: none; }
 .hero--kit .hero__line b { color: var(--focus-text); }
+/* the package as a pill: where it is published, then its id; written in the page, so it takes its place
+   with the first paint and nothing below it moves */
+.hero__pkg { margin: 0; }
+.pkg { display: inline-flex; max-width: 100%; border-radius: 6px; overflow: hidden; text-decoration: none;
+  font: 500 0.85rem/1 "IBM Plex Mono", monospace; border: 1px solid var(--line); }
+.pkg__where { padding: 0.4rem 0.6rem; background: var(--net); color: #fff; }
+.pkg__id { padding: 0.4rem 0.6rem; background: var(--panel); color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pkg:hover .pkg__id { background: var(--panel-2); }
 .hero__cmd { margin: 0; max-width: 100%; overflow-x: auto; }
 .hero__cmd code { display: inline-block; font: 0.95rem "IBM Plex Mono", monospace; color: var(--text);
                   background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 0.55rem 0.9rem; white-space: nowrap; }
