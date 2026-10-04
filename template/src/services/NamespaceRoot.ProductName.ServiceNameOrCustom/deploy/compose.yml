@@ -35,6 +35,13 @@ services:
       Infisical__ClientId: ${INFISICAL_CLIENT_ID:-}
       Infisical__ClientSecret: ${INFISICAL_CLIENT_SECRET:-}
 #endif
+#if (Vault)
+      Vault__Enabled: ${VAULT_ENABLED:-true}
+      Vault__Address: ${VAULT_ADDR:-}
+      Vault__Token: ${VAULT_TOKEN:-}
+      Vault__RoleId: ${VAULT_ROLE_ID:-}
+      Vault__SecretId: ${VAULT_SECRET_ID:-}
+#endif
     # Only on the host's loopback: a reverse proxy or a gateway in front publishes it.
     ports:
       - "127.0.0.1:5054:8080"

@@ -166,6 +166,16 @@
       "defaultValue": "false",
       "description": "Read secrets from Infisical: the shared folder and the service's folder overlay configuration"
     },
+    "Vault": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Read secrets from HashiCorp Vault (KV version 2): the shared secret and the service's secret overlay configuration"
+    },
+    "SecretStore": {
+      "type": "computed",
+      "value": "(Infisical || Vault)"
+    },
     "HttpPort": {
       "type": "parameter",
       "datatype": "integer",
@@ -324,10 +334,25 @@
           ]
         },
         {
-          "condition": "(!Infisical)",
+          "condition": "(!SecretStore)",
           "exclude": [
             "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Configuration/Secrets/**",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Secrets/**"
+          ]
+        },
+        {
+          "condition": "(!Infisical)",
+          "exclude": [
+            "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Configuration/Secrets/Infisical*.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Secrets/SecretsConfigurationTests.cs"
+          ]
+        },
+        {
+          "condition": "(!Vault)",
+          "exclude": [
+            "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Configuration/Secrets/Vault*.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Secrets/VaultConfigurationTests.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/VaultSecretStoreTests.cs"
           ]
         },
         {

@@ -1,6 +1,6 @@
 using System.Reflection;
 using NamespaceRoot.ProductName.Common.Application.Configuration;
-//#if (Infisical)
+//#if (SecretStore)
 using NamespaceRoot.ProductName.Common.Infrastructure.Configuration.Secrets;
 //#endif
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
@@ -35,7 +35,7 @@ try
     var switches = DependencySwitches.Read(app.Configuration);
     if (switches.SwitchedOff.Count > 0)
         app.Logger.LogWarning("Running without: {SwitchedOff}", string.Join(", ", switches.SwitchedOff.Select(key => $"{key}=false")));
-//#if (Infisical)
+//#if (SecretStore)
 
     // The secret store could not be read and its snapshot answered instead, or the snapshot could not be
     // written: either is fine for now and wrong to leave unnoticed.

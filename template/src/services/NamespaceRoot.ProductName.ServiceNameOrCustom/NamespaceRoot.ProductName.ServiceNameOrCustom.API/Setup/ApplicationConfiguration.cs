@@ -2,7 +2,7 @@ using NamespaceRoot.ProductName.Common.Application.Configuration;
 //#if (FeatureFlags)
 using NamespaceRoot.ProductName.Common.Application.FeatureManagement;
 //#endif
-//#if (Infisical)
+//#if (SecretStore)
 using NamespaceRoot.ProductName.Common.Infrastructure.Configuration.Secrets;
 //#endif
 //#if (DiffApi)
@@ -54,6 +54,19 @@ internal static class ApplicationConfiguration
         }
 //#else
         builder.AddPlatformSecrets("/servicenameorcustom", optional: env.IsEnvironment("Local"));
+//#endif
+
+//#endif
+//#if (Vault)
+        // The same for Vault: the shared secret, then this service's, from the Vault section of
+        // configuration; the token or the AppRole comes from environment variables, added above.
+//#if (DiffApi)
+        if (!SchemaOnlyMode.IsEnabled(args))
+        {
+            builder.AddPlatformVaultSecrets("servicenameorcustom", optional: env.IsEnvironment("Local"));
+        }
+//#else
+        builder.AddPlatformVaultSecrets("servicenameorcustom", optional: env.IsEnvironment("Local"));
 //#endif
 
 //#endif

@@ -19,15 +19,15 @@ public sealed class SecretsConfigurationProvider : ConfigurationProvider
     /// Where this run's values came from: <c>store</c>, or <c>snapshot</c> with the time the snapshot was
     /// written. Read at startup to warn that a service runs on a copy.
     /// </summary>
-    public const string LoadedFromKey = "Infisical:LoadedFrom";
+    public const string LoadedFromKey = "Secrets:LoadedFrom";
 
     /// <summary>Why the snapshot could not be written, when it could not; read at startup to warn.</summary>
-    public const string SnapshotErrorKey = "Infisical:SnapshotError";
+    public const string SnapshotErrorKey = "Secrets:SnapshotError";
 
-    private readonly InfisicalOptions _options;
+    private readonly SecretStoreOptions _options;
     private readonly ISecretStore _store;
 
-    public SecretsConfigurationProvider(InfisicalOptions options, ISecretStore store)
+    public SecretsConfigurationProvider(SecretStoreOptions options, ISecretStore store)
     {
         _options = options;
         _store = store;
@@ -158,15 +158,15 @@ public sealed class SecretsConfigurationProvider : ConfigurationProvider
 /// </summary>
 public sealed class SecretsConfigurationSource : IConfigurationSource
 {
-    private readonly InfisicalOptions _options;
-    private readonly Func<InfisicalOptions, ISecretStore> _storeFactory;
+    private readonly SecretStoreOptions _options;
+    private readonly Func<ISecretStore> _storeFactory;
 
-    public SecretsConfigurationSource(InfisicalOptions options, Func<InfisicalOptions, ISecretStore>? storeFactory = null)
+    public SecretsConfigurationSource(SecretStoreOptions options, Func<ISecretStore> storeFactory)
     {
         _options = options;
-        _storeFactory = storeFactory ?? (o => new InfisicalSecretStore(o));
+        _storeFactory = storeFactory;
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder) =>
-        new SecretsConfigurationProvider(_options, _storeFactory(_options));
+        new SecretsConfigurationProvider(_options, _storeFactory());
 }
