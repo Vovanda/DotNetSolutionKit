@@ -80,6 +80,16 @@ internal static class TestSkipSetup
 }
 ```
 
+## Post-commit handlers after a save with no transaction
+
+Up to October 2026, the post-commit and rollback phases ran only when a relational transaction committed
+or rolled back. EF Core sends a single statement without a transaction, so a `SaveChangesAsync` of one
+change outside `BeginTransactionAsync` ran no post-commit handler at all, and on the in-memory provider of
+the service tests none ever ran. They run now, once the write is final. A handler that was silently not
+running starts running: read the post-commit handlers of a service before taking the change, and port it
+by taking `Persistence/EntityFramework/Events/DomainEventCompletion.cs`, the two interceptors and
+`DbContextBase.cs` of `Common.Infrastructure` from this version.
+
 ## A service's layers see what their first code needs
 
 In a solution generated before October 2026, a service's application layer references only

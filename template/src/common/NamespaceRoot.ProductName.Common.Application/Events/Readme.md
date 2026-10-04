@@ -35,8 +35,11 @@ runs in is part of the contract** - it defines what the handler is allowed to do
   inside the caller's transaction. Throwing rolls the whole write back (that is the point).
 
 2. **Phase 2: Post-Commit (Success Side-Effects)**
-   Executed after the DB commit succeeded, but synchronously **inside** the ambient
-   `CommitAsync` call (EF transaction interceptor), **in a FRESH DI scope per event**.
+   Executed once the write is final, synchronously and **in a FRESH DI scope per event**: inside the
+   ambient `CommitAsync` call when a transaction commits (EF transaction interceptor); when a save with
+   no transaction open around it returns, since EF Core sends a single statement without a transaction
+   and no transaction event comes (`SavedChanges`); and on a provider without relational transactions,
+   such as the in-memory one of the service tests, when `CommitTransactionAsync` returns.
 - **Usage:** Follow-up DB writes, bus publishing, **Hangfire** enqueuing, analytics, notifications.
 - **Why the fresh scope:** the ambient UnitOfWork still holds the completing transaction at this
   moment (`BeginTransactionAsync` on it would throw «A transaction is already in progress») and

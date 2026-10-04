@@ -2,6 +2,7 @@
     using NamespaceRoot.ProductName.Common.Domain.Persistence;
     using Microsoft.EntityFrameworkCore;
 using NamespaceRoot.ProductName.Common.Exceptions;
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Events;
 //#if (Database != "mssql")
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
 //#endif
@@ -146,6 +147,12 @@ namespace NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFram
                 await RollbackTransactionAsync(cancellationToken);
                 throw;
             }
+
+            // A relational commit has run the post-commit phase through the transaction interceptor. A
+            // provider without relational transactions, as the in-memory one of the service tests, fires
+            // no transaction event, so the phase runs here.
+            if (!Database.IsRelational())
+                await DomainEventCompletion.CommittedAsync(this, cancellationToken);
         }
 
         /// <summary>
@@ -164,6 +171,9 @@ namespace NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFram
             {
                 await DisposeTransactionAsync();
             }
+
+            if (!Database.IsRelational())
+                await DomainEventCompletion.RolledBackAsync(this, cancellationToken);
         }
 
         public bool HasActiveTransaction => _currentTransaction != null;
