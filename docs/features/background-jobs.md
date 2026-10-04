@@ -51,12 +51,12 @@ What the template adds to plain Hangfire:
 
 ## Why Hangfire
 
-<!-- To confirm with the template's author: the reasons below are the usual ones and need his own. -->
+Of the job libraries for .NET it is the most convenient for a service's tasks:
 
-- Fire-and-forget, delayed and recurring jobs through one API, with retries and the history of each run
-  stored in the solution's database.
-- A dashboard out of the box: what ran, what failed and why, with a button to retry.
-- Jobs are plain classes resolved from DI, so they are tested like any other class.
+- fire-and-forget, delayed and recurring jobs through one compact API, with retries and the history of
+  each run stored in the solution's database;
+- a dashboard out of the box: what ran, what failed and why, with a button to retry;
+- jobs are plain classes resolved from DI, so they are tested like any other class.
 
 Quartz.NET schedules well, but brings no dashboard and needs more code for the same job.
 
