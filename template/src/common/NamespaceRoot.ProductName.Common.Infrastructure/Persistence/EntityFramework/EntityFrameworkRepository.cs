@@ -1,3 +1,5 @@
+// Part of DotNetSolutionKit (https://dnsk.sawking.tech/). MIT License, Copyright (c) 2025 Vladimir Savkin.
+
 using Microsoft.EntityFrameworkCore;
 using NamespaceRoot.ProductName.Common.Application.Extensions;
 using NamespaceRoot.ProductName.Common.Domain;
