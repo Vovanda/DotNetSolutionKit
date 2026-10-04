@@ -1,7 +1,9 @@
 name: Release
 
-# A tag v<version> publishes a GitHub release of the template. The tag has to name the version in
-# version.json, and the release text is that version's release notes, so the two cannot drift apart.
+# A tag v<version> publishes a GitHub release of the template and its package on nuget.org. The tag has
+# to name the version in version.json, and the release text is that version's release notes, so the two
+# cannot drift apart. It has to sit on master, where the template's checks passed: a tag on any other
+# commit, or on one whose checks failed, publishes nothing.
 
 on:
   push:
@@ -9,12 +11,41 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # A merge into master starts template.yml on the merged commit; a tag set right after the merge
+      # waits for it here, up to CHECKS_WAIT_MIN.
+      - name: The tag is on master and the template's checks passed on it
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CHECKS_WAIT_MIN: 40
+        run: |
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/master; then
+            echo "::error::$GITHUB_REF_NAME is not on master; a release is made from a commit that passed review and checks"
+            exit 1
+          fi
+          for minute in $(seq 1 "$CHECKS_WAIT_MIN"); do
+            runs=$(gh run list -R "$GITHUB_REPOSITORY" --workflow template.yml --commit "$GITHUB_SHA" --json status,conclusion)
+            if [ "$(jq '[.[] | select(.status == "completed" and .conclusion == "success")] | length' <<< "$runs")" -gt 0 ]; then
+              echo "template.yml passed on $GITHUB_SHA"
+              exit 0
+            fi
+            if [ "$(jq 'length' <<< "$runs")" -gt 0 ] && [ "$(jq '[.[] | select(.status != "completed")] | length' <<< "$runs")" -eq 0 ]; then
+              echo "::error::template.yml did not pass on $GITHUB_SHA: $(jq -c '[.[].conclusion]' <<< "$runs")"
+              exit 1
+            fi
+            sleep 60
+          done
+          echo "::error::no finished template.yml run on $GITHUB_SHA after $CHECKS_WAIT_MIN minutes"
+          exit 1
 
       - name: The tag names the version in version.json
         run: |
