@@ -222,11 +222,40 @@ public class ServiceDbTestExecutionContext<TService, TDbContext> : DbTestExecuti
 {
     public ServiceDbTestExecutionContext() => Services.AddScoped<TService>();
 
-    public Task ActAsync(Func<TService, Task> act, Action<IServiceProvider>? configure = null) =>
-        ExecuteAsync(act, configure);
+    // The act publishes its scope as the ambient one, so the singleton EF interceptors find the scoped event
+    // storage and dispatcher of this act (DomainEventInfrastructureResolver); without it they skip the
+    // events, as there is no HTTP context in a test. The same for every provider.
+    public Task ActAsync(Func<TService, Task> act, Action<IServiceProvider>? configure = null)
+    {
+        IServiceProvider? scopeSp = null;
+        return ExecuteAsync<TService>(
+            async svc =>
+            {
+                using (DomainEventScopeContext.Use(scopeSp!))
+                    await act(svc);
+            },
+            configure: sp =>
+            {
+                scopeSp = sp;
+                configure?.Invoke(sp);
+            });
+    }
 
-    public Task<TResult> ActAsync<TResult>(Func<TService, Task<TResult>> act, Action<IServiceProvider>? configure = null) =>
-        ExecuteAsync(act, configure);
+    public Task<TResult> ActAsync<TResult>(Func<TService, Task<TResult>> act, Action<IServiceProvider>? configure = null)
+    {
+        IServiceProvider? scopeSp = null;
+        return ExecuteAsync<TService, TResult>(
+            async svc =>
+            {
+                using (DomainEventScopeContext.Use(scopeSp!))
+                    return await act(svc);
+            },
+            configure: sp =>
+            {
+                scopeSp = sp;
+                configure?.Invoke(sp);
+            });
+    }
 
     public TResult Act<TResult>(Func<TService, TResult> act, Action<IServiceProvider>? configure = null) =>
         Execute(act, configure);
@@ -236,11 +265,8 @@ public class ServiceDbTestExecutionContext<TService, TDbContext> : DbTestExecuti
 }
 
 /// <summary>
-/// InMemory variant for unit tests.
-/// Automatically sets <see cref="DomainEventScopeContext"/> per ActAsync call when domain event
-/// interceptors are registered — this allows <see cref="DomainEventInfrastructureResolver"/>
-/// to resolve scoped storage/dispatcher from within singleton EF interceptors.
-/// Without this, interceptors silently skip domain events (no HTTP context, no ambient scope).
+/// InMemory variant for unit tests: one database per test, and the domain event interceptors applied when
+/// the test registers domain events; ActAsync publishes its scope to them, as on every provider.
 /// </summary>
 public class InMemoryTestExecutionContext<TService, TDbContext> : ServiceDbTestExecutionContext<TService, TDbContext>
     where TService : class
@@ -263,36 +289,4 @@ public class InMemoryTestExecutionContext<TService, TDbContext> : ServiceDbTestE
 
     public override Task EnsureDatabaseCreatedAsync() => Task.CompletedTask;
     public override Task EnsureDatabaseDeletedAsync() => Task.CompletedTask;
-
-    public new Task ActAsync(Func<TService, Task> act, Action<IServiceProvider>? configure = null)
-    {
-        IServiceProvider? scopeSp = null;
-        return ExecuteAsync<TService>(
-            async svc =>
-            {
-                using (DomainEventScopeContext.Use(scopeSp!))
-                    await act(svc);
-            },
-            configure: sp =>
-            {
-                scopeSp = sp;
-                configure?.Invoke(sp);
-            });
-    }
-
-    public new Task<TResult> ActAsync<TResult>(Func<TService, Task<TResult>> act, Action<IServiceProvider>? configure = null)
-    {
-        IServiceProvider? scopeSp = null;
-        return ExecuteAsync<TService, TResult>(
-            async svc =>
-            {
-                using (DomainEventScopeContext.Use(scopeSp!))
-                    return await act(svc);
-            },
-            configure: sp =>
-            {
-                scopeSp = sp;
-                configure?.Invoke(sp);
-            });
-    }
 }
