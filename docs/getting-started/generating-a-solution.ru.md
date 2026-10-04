@@ -53,11 +53,11 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `-P`, `--ProductName` | `Product` | Название продукта. Может содержать точки. |
 | `-S`, `--ServiceNameOrCustom` | `Service` | Название сервиса. Может содержать точки. |
 | `-M`, `--Minimal` | `true` | `true` генерирует только папку сервиса, `false` - полный комплект: проекты `Common` и `All.sln`. |
-| `--Database` | `postgres` | [СУБД](../architecture/persistence.md#sql-server): `postgres` или `mssql` (SQL Server). Одно значение на решение: передайте его с `-M false` и каждому сервису. |
+| `--Database` | `postgres` | [СУБД](../architecture/persistence.ru.md#sql-server): `postgres` или `mssql` (SQL Server). Одно значение на решение: передайте его с `-M false` и каждому сервису. |
 | `-H`, `--Hangfire` | `true` | [Фоновые задачи](../features/background-jobs.md) на Hangfire. Задаётся для каждого сервиса, в том числе с `-M true`. |
 | `--Messaging` | `none` | [Шина сообщений](../features/messaging.md): `outbox` или `direct`. Задаётся для каждого сервиса. |
 | `-I`, `--Infisical` | `false` | [Секреты из Infisical](../features/secrets.md). |
-| `--Vault` | `false` | [Секреты из HashiCorp Vault](../features/secrets.md#hashicorp-vault). |
+| `--Vault` | `false` | [Секреты из HashiCorp Vault](../features/secrets.ru.md#hashicorp-vault). |
 | `--DiffApi` | `false` | [Сравнение контракта API](../features/api-diff.md) в pull request. |
 | `--GitHubCiCd` | `false` | [CI на GitHub Actions](../features/ci.md): сборка, тесты на настоящих серверах, покрытие, поиск секретов. С `-M false`: workflow покрывают все сервисы в `All.sln`. |
 | `--FeatureFlags` | `false` | [Фича-флаги](../features/feature-flags.md). |
