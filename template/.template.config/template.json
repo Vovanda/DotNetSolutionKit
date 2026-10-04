@@ -149,6 +149,45 @@
       "type": "computed",
       "value": "(Audit && Messaging == \"outbox\")"
     },
+    "Agent": {
+      "type": "parameter",
+      "datatype": "choice",
+      "defaultValue": "claude",
+      "choices": [
+        { "choice": "claude", "description": "Claude Code: CLAUDE.md and .claude/skills" },
+        { "choice": "opencode", "description": "OpenCode: AGENTS.md and .opencode/skills" },
+        { "choice": "none", "description": "No rules or skills for an AI agent" }
+      ],
+      "description": "The format of the rules and skills for an AI agent; with -M false"
+    },
+    "AgentFolder": {
+      "type": "generated",
+      "generator": "switch",
+      "replaces": ".claude/",
+      "parameters": {
+        "evaluator": "C++",
+        "datatype": "string",
+        "cases": [
+          { "condition": "(Agent == \"opencode\")", "value": ".opencode/" },
+          { "condition": "", "value": ".claude/" }
+        ]
+      },
+      "description": "The agent's folder in the texts of the rules and skills"
+    },
+    "AgentRules": {
+      "type": "generated",
+      "generator": "switch",
+      "replaces": "CLAUDE.md",
+      "parameters": {
+        "evaluator": "C++",
+        "datatype": "string",
+        "cases": [
+          { "condition": "(Agent == \"opencode\")", "value": "AGENTS.md" },
+          { "condition": "", "value": "CLAUDE.md" }
+        ]
+      },
+      "description": "The agent's rules file in the texts of the rules and skills"
+    },
     "Deploy": {
       "type": "parameter",
       "datatype": "choice",
@@ -278,6 +317,17 @@
         {
           "rename": {
             ".gitignore.template": ".gitignore"
+          }
+        },
+        {
+          "condition": "(Agent == \"none\")",
+          "exclude": [".claude/**", "CLAUDE.md"]
+        },
+        {
+          "condition": "(Agent == \"opencode\")",
+          "rename": {
+            "CLAUDE.md": "AGENTS.md",
+            ".claude/": ".opencode/"
           }
         },
         {

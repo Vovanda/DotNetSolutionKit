@@ -50,6 +50,7 @@ Generated solutions, regenerated from every release with their CI running:
 | `--Audit` | `false` | [Audit journal](https://dnsk.sawking.tech/docs.html#audit) of entity changes, through the outbox; with `--Messaging outbox`. |
 | `--ApiGateway` | `false` | An [API gateway](https://dnsk.sawking.tech/docs.html#gateway) on YARP in place of a service, with `-M true`. |
 | `--Deploy` | `compose` | [Deployment files](https://dnsk.sawking.tech/docs.html#deployment): `compose`, `k8s` or `none`. |
+| `--Agent` | `claude` | [Rules and skills for an AI agent](https://dnsk.sawking.tech/docs.html#agents): `claude`, `opencode` or `none`. |
 | `--HttpPort` | free port | Port in `launchSettings.json` and on the host under compose. |
 
 Dotted names, running locally and the rest of the details:

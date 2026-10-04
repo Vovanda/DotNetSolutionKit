@@ -67,6 +67,7 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--Audit` | `false` | [Audit journal](../features/audit.md) of entity changes; takes effect only with `--Messaging outbox`. |
 | `--ApiGateway` | `false` | An [API gateway](../features/api-gateway.md) on YARP in place of a service. With `-M true` only. |
 | `--Deploy` | `compose` | [Deployment files](../operations/deployment.md): `compose`, `k8s` or `none`. One value for the solution: pass the same with `-M true`. |
+| `--Agent` | `claude` | [Rules and skills for an AI agent](working-with-ai-agents.md): `claude`, `opencode` or `none`. With `-M false`. |
 | `--HttpPort` | free port | Port in `launchSettings.json` and on the host under compose; without it, a free port from 5000-5999 on the generating machine, so services generated one after another do not share a port. |
 
 `-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage`, `--ClickHouse` and `--Audit` add files to `Common`, so they have to be

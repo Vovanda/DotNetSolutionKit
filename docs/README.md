@@ -42,6 +42,7 @@ mindmap
 - [Generating a solution](getting-started/generating-a-solution.md): install, parameters, dotted names,
   running locally
 - [Versions of the template](getting-started/upgrading.md): v1 and v2, what changed, how to update
+- [Working with AI agents](getting-started/working-with-ai-agents.md): the rules and skills a solution gets
 
 ## Architecture
 

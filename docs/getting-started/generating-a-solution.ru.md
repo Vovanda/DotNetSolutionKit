@@ -68,6 +68,7 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--Audit` | `false` | [Журнал аудита](../features/audit.md) изменений сущностей; действует только с `--Messaging outbox`. |
 | `--ApiGateway` | `false` | [API-шлюз](../features/api-gateway.md) на YARP вместо сервиса. Только с `-M true`. |
 | `--Deploy` | `compose` | [Файлы развёртывания](../operations/deployment.md): `compose`, `k8s` или `none`. Одно значение на решение: с `-M true` передавайте то же самое. |
+| `--Agent` | `claude` | [Правила и скиллы для ИИ-агента](working-with-ai-agents.md): `claude`, `opencode` или `none`. С `-M false`. |
 | `--HttpPort` | свободный порт | Порт в `launchSettings.json` и на хосте под compose. Без параметра берётся свободный порт из диапазона 5000-5999 на машине, где идёт генерация, поэтому сервисы, сгенерированные один за другим, не получают один и тот же порт. |
 
 `-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage`, `--ClickHouse` и `--Audit` добавляют

@@ -42,6 +42,7 @@ mindmap
 - [Генерация решения](getting-started/generating-a-solution.md): установка, параметры, имена с точками,
   локальный запуск
 - [Версии шаблона](getting-started/upgrading.md): v1 и v2, что изменилось, как обновиться
+- [Работа с ИИ-агентами](getting-started/working-with-ai-agents.md): правила и скиллы, которые получает решение
 
 ## Архитектура
 

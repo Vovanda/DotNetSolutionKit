@@ -60,6 +60,7 @@ shows their files and how their CI ran.
 | `--Audit` | `false` | [Audit journal](docs/features/audit.md) of entity changes, through the outbox; with `--Messaging outbox`. |
 | `--ApiGateway` | `false` | An [API gateway](docs/features/api-gateway.md) on YARP in place of a service, with `-M true`. |
 | `--Deploy` | `compose` | [Deployment files](docs/operations/deployment.md): `compose`, `k8s` or `none`. |
+| `--Agent` | `claude` | [Rules and skills for an AI agent](docs/getting-started/working-with-ai-agents.md): `claude`, `opencode` or `none`. |
 | `--HttpPort` | free port | Port in `launchSettings.json` and on the host under compose. |
 
 Details, dotted names and running locally:
