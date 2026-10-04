@@ -33,8 +33,7 @@ know which services exist.
 ```
 
 `ProjectId` and `EnvironmentSlug` (`dev`, `staging`, `prod`) are required outside `Local`. `HostUri`,
-`SharedPath`, `ServicePath` and `Optional` have defaults. `SnapshotPath` is empty: no snapshot is kept
-until it is set; see below.
+`SharedPath`, `ServicePath` and `Optional` have defaults.
 
 The machine identity, `Infisical__ClientId` and `Infisical__ClientSecret`, comes from environment
 variables only. A file in the repository holding the key to the store would bring back the problem the
@@ -52,8 +51,8 @@ secret is one setting, named as above.
 }
 ```
 
-`Address` is required outside `Local`. `Mount` (`secret`), `SharedPath`, `ServicePath`, `SnapshotPath` and
-`Optional` have defaults. The service signs in with a token, `Vault__Token`, or with an AppRole,
+`Address` is required outside `Local`. `Mount` (`secret`), `SharedPath`, `ServicePath` and `Optional` have
+defaults. The service signs in with a token, `Vault__Token`, or with an AppRole,
 `Vault__RoleId` and `Vault__SecretId`, from environment variables only. A path without a secret reads as
 empty, as an empty folder does, so a service with no secrets of its own needs none created; a refusal or
 an unreachable Vault is handled as below.
@@ -107,30 +106,14 @@ The store is read at startup and again every `ReloadSeconds`. A secret changed i
 reads it on each use within that time; what was built from it at startup, such as a connection pool,
 keeps the old value until the service restarts.
 
-### A snapshot for an outage
-
-With `Infisical__SnapshotPath` set, every successful read is copied to that file, and a start that cannot
-reach the store reads the copy instead of refusing:
-
-| The store | A snapshot | The service |
-|---|---|---|
-| answers | - | starts on the store's values, and replaces the snapshot |
-| does not answer | exists | starts on the snapshot, and logs a warning with the time it was written |
-| does not answer | none | refuses to start, as without a snapshot; outside `Local` |
-
-The snapshot holds the secrets themselves, which is why it is off until someone responsible for the
-service turns it on. It is written readable by its owner alone, and belongs on a volume only the service
-mounts. On a container's own filesystem it disappears with the container and protects nothing. A
-snapshot that cannot be written does not stop the service; the start logs why, so a missing snapshot is
-found before the outage that needs it.
-
-To change one feature flag while the service runs on its snapshot, [pin it](feature-flags.md#pinning-a-flag)
-in `features.json` instead of editing the snapshot.
+The secrets live in their source - `appsettings.Secrets.json` in `Local`, the store elsewhere - and in the
+memory of a running service; nothing copies them anywhere else. A store that goes down while the service
+runs leaves it the values it has. A service that starts while the store is down has no secrets, and
+outside `Local` it does not start.
 
 ## Tests
 
-`Common.Tests` covers the order of the folders, the optional and required store, and the snapshot: kept
-after a read, read when the store does not answer, owner-only on Linux, and a write that fails reported,
-with the store replaced by a stub. With `--Vault`, the same rules are checked through the `Vault`
+`Common.Tests` covers the order of the folders and the optional and required store, with the store
+replaced by a stub. With `--Vault`, the same rules are checked through the `Vault`
 section, and the Vault store itself against a real Vault in development mode (`TEST_VAULT`) in the
 integration tests of the template's CI and of a generated solution's.

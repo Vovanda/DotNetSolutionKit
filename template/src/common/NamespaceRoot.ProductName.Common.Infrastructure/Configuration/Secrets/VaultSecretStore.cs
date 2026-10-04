@@ -16,8 +16,7 @@ namespace NamespaceRoot.ProductName.Common.Infrastructure.Configuration.Secrets;
 /// A path is one secret, and its keys are the configuration values, as a folder of secrets is in
 /// Infisical. A path that does not exist reads as empty, as an empty folder does: a service without
 /// secrets of its own needs no secret created for it. A refusal or an unreachable Vault is a
-/// <see cref="ConfigurationException"/>, which the configuration provider answers with the snapshot or
-/// a refusal to start.
+/// <see cref="ConfigurationException"/>, which the configuration provider answers with a refusal to start.
 /// </remarks>
 public sealed class VaultSecretStore : ISecretStore
 {

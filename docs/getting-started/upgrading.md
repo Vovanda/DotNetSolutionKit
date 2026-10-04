@@ -124,6 +124,22 @@ public InMemoryTestExecutionContext()
 }
 ```
 
+## Feature flags have no write endpoint
+
+`PUT /api/v1/features/{key}` and `IFeatureStore` are gone: a flag is switched by editing `features.json` on
+disk or its value in the secret store, and services re-read it. The endpoint wrote `features.json`, which
+lives in the image: a write lasted in one container until the next deployment, and a value the store holds
+overrode it. A solution that has them keeps them in its own `src/common`; to drop them, remove the action
+from `FeaturesController`, `IFeatureStore.cs`, `FileFeatureStore.cs` and their registration in
+`AddPlatformFeatureManagement`.
+
+## No snapshot of the secret store
+
+`SnapshotPath` is gone: secrets live in their source and in a running service's memory, with no copies. A
+service that starts while the store is down does not start outside `Local`. Where `Infisical__SnapshotPath`
+or `Vault__SnapshotPath` was set, remove the key and delete the snapshot file: it holds the secrets and
+nothing updates it any more.
+
 ## Do not regenerate over an older solution
 
 `dotnet new ... --force` over a solution generated from `v1` overwrites files that `v2` changed and leaves

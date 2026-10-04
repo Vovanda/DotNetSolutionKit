@@ -19,8 +19,9 @@ reference, lands in every service's output, and is read by all of them. Each fla
 changed in one place. Adding a flag that only the UI reacts to needs no code at all - a new entry in the
 file is the whole change.
 
-The file is also the fallback. When an external store is wired up and unreachable, the platform keeps
-running on what the file says instead of failing to start or silently answering `false` to everything.
+The file is the bottom layer: a flag the store does not set takes the file's value. A store that goes down
+leaves a running service the values it last read; outside `Local` a service does not start while the store
+is down.
 
 ## The schema
 
@@ -82,21 +83,20 @@ because an environment variable or the store sits above it.
 
 The external store is read at startup and again every `ReloadSeconds` (300 by default; 0 reads it at
 startup only). A flag changed there applies within that time, without a restart: the catalogue reads
-configuration on every call. While the store cannot be reached, a service can start on a
-[snapshot](secrets.md#when-the-store-is-unreachable) of what it last read.
+configuration on every call. A store that goes down leaves a running service the values it last read;
+see [when the store is unreachable](secrets.md#when-the-store-is-unreachable).
 
 ### Pinning a flag
 
-A flag with `"pinned": true` in `features.json` takes its value from the file alone, over the store, its
-snapshot and environment variables. It is for one flag that has to change now: the store is down and the
-service runs on its snapshot, or the store holds a value that must not apply here for a while. The file
+A flag with `"pinned": true` in `features.json` takes its value from the file alone, over the store and
+environment variables. It is for a flag whose value in the store must not apply here for a while. The file
 is edited, the flag pinned, and nothing else is touched; the store keeps its value until the pin is taken
 off.
 
 - Only the file can pin: `pinned` set in the store or an environment variable is ignored, so the store
   cannot lock itself in.
 - A pinned flag reports `Pinned` as its source, and every start logs a warning naming the pinned flags,
-  so a pin left after the outage does not quietly keep overriding the store.
+  so a forgotten pin does not quietly keep overriding the store.
 
 The file is registered with `reloadOnChange`, and the catalogue reads configuration on every call and
 caches nothing, so an edit applies to a running service.
@@ -112,7 +112,7 @@ builder.AddPlatformFeatures();   // IConfigurationBuilder, before every other la
 and the mechanism joins the container:
 
 ```csharp
-services.AddPlatformFeatureManagement(configuration);
+services.AddPlatformFeatureManagement();
 ```
 
 `AddPlatformFeatures` anchors the file to the application's base directory rather than the content
@@ -127,11 +127,11 @@ After it:
 | Evaluate in code | `IFeatureManager` from `Microsoft.FeatureManagement`, backed by the shared file |
 | Guard an endpoint | `[FeatureGate(FeatureKeys.SomeFeature)]` - while the flag is off the route answers 404 and is left out of the Swagger document |
 | Read the platform view | `IFeatureCatalog` - value plus owner, expiry, tags and the deciding layer |
-| Change a value | `IFeatureStore`, or `PUT /api/v1/features/{key}` |
+| Change a value | edit `features.json` on disk or the value in the secret store |
 
 Evaluation stays with `Microsoft.FeatureManagement`: its evaluation, its snapshots and its
-`[FeatureGate]` are already written and tested. The template adds the schema, the shared file, the
-source reporting and the write path.
+`[FeatureGate]` are already written and tested. The template adds the schema, the shared file and the
+source reporting.
 
 Keys are named through constants:
 
@@ -146,21 +146,24 @@ constant at all.
 
 ## Changing a value
 
-`IFeatureStore` writes to the file: atomically, through a temporary file and a move, so a reader never
-sees half a document. It changes only the value: description, owner, expiry and ticket are decisions
-someone recorded, and a write keeps them. A key nothing declares is refused, by name, so that the file
-keeps describing every flag the system has.
+A flag is switched by editing the configuration it comes from: `features.json` on disk, or the value in
+the secret store (`-I` or `--Vault`). Services re-read it, so the change applies without a restart. In a
+container `features.json` is part of the image, so changing it there means a new image and a deployment. The
+platform has no write endpoint: a service that wrote flags would need write access to the store it
+reads.
 
-Over HTTP:
+A management UI built on top follows the same shape, as the secret store's own UI does: it writes to the
+source, `features.json` or the store, and services keep reading it. To apply a change before the next
+periodic read, the UI signals the services to re-read; it does not send them the value.
+
+Over HTTP the platform view is read-only:
 
 ```
 GET  /api/v1/features        → every flag, with value, source, expiry and metadata
-PUT  /api/v1/features/{key}  → { "enabled": true, "environment": "Staging" }
 ```
 
 `GET` is anonymous. Nothing in the list is secret, and a client needs it before anyone signs in: a
-login screen has to know which of two login flows to draw. `PUT` requires authorization: it changes how
-the platform behaves.
+login screen has to know which of two login flows to draw.
 
 Enforcement stays on the server. A flag list decides what a client *draws*, never what it is
 *permitted* to do: neither a flag nor a stale mobile cache is a security boundary.
@@ -200,8 +203,7 @@ and every declared key keeps the agreed shape.
 With a secret store (`-I` or `--Vault`), `FeatureFlagsStoreOutageTests` in `Common.Tests` runs the layers
 above end to end on the store's real configuration provider, with only the store faked: a flag set in the
 store decides, a change applies on the next read, a store that goes down leaves the flags as they were, a
-start with the store down takes them from the snapshot, a pinned flag keeps the file's value over both,
-and a start with the store down and no snapshot does not happen.
+pinned flag keeps the file's value over the store, and a start with the store down does not happen.
 
 ## How a frontend should integrate
 

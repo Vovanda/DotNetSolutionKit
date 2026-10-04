@@ -264,7 +264,7 @@
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "false",
-      "description": "Add platform feature flags: a shared features.json, the catalogue and store, and GET/PUT /api/v1/features"
+      "description": "Add platform feature flags: a shared features.json, the catalogue, and GET /api/v1/features"
     },
     "HierarchyRules": {
       "type": "parameter",
