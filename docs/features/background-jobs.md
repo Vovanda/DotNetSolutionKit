@@ -60,6 +60,10 @@ Of the job libraries for .NET it is the most convenient for a service's tasks:
 
 Quartz.NET is much harder to maintain: the same job takes more code, and a dashboard is not part of it.
 
+The template offers no other job library. Where Hangfire does not fit, generate the service with
+`--Hangfire false` and do it the classic way: an external cron starts what runs on a schedule, and a
+`BackgroundService` does the work inside the process.
+
 ## Tests
 
 A job only orchestrates; its tests mock the ports it calls and verify the calls, and the logic it calls is
