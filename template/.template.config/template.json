@@ -468,7 +468,8 @@
             "src/common/NamespaceRoot.ProductName.Common/FeatureManagement/**",
             "src/common/NamespaceRoot.ProductName.Common.Application/FeatureManagement/**",
             "src/common/NamespaceRoot.ProductName.Common.Web/FeatureManagement/**",
-            "src/common/NamespaceRoot.ProductName.Common.Tests/FeatureManagement/**"
+            "src/common/NamespaceRoot.ProductName.Common.Tests/FeatureManagement/**",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Secrets/FeatureFlagsStoreOutageTests.cs"
           ]
         },
         {

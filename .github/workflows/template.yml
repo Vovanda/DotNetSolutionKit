@@ -39,8 +39,8 @@ jobs:
           - name: direct bus
             first: -N Acme -P Shop -S Orders -M false --Messaging direct
           - name: vault
-            first: -N Acme -P Shop -S Orders -M false --Vault true --GitHubCiCd true
-            more: -N Acme -P Shop -S Billing --Vault true
+            first: -N Acme -P Shop -S Orders -M false --Vault true --GitHubCiCd true --FeatureFlags true
+            more: -N Acme -P Shop -S Billing --Vault true --FeatureFlags true
             integration: true
           - name: sql server
             first: >-
