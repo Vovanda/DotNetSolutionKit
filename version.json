@@ -1,6 +1,13 @@
 {
-  "version": "2.6.3",
+  "version": "2.7.0",
   "releaseNotes": {
+    "2.7.0": {
+      "headline": "A generated solution names the version of the template it came from, and the template's own files carry its author.",
+      "highlights": [
+        "Directory.Build.props has DotNetSolutionKitVersion: the release the solution was generated from, written when the template is packed, or source when it was installed from the sources. Upgrading tells how to use it to see what the team and the template changed since.",
+        "The files where the template's own mechanisms start, its README files, Dockerfile, CI workflows and deployment scripts carry one line: the template, its site, the MIT license and its author. The line does not mark a file as generated, so analyzers and nullable warnings stay on."
+      ]
+    },
     "2.6.3": {
       "headline": "The package on nuget.org carries the notes of its release and targets .NET 8.",
       "highlights": [

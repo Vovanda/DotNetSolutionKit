@@ -74,6 +74,11 @@ jobs:
           bash src/services/manual-add-projects.sh
           dotnet sln src/services/*.All.sln list
 
+      # The files that carry the template's authorship carry it, and the solution says it comes from the sources.
+      - name: Authorship and version
+        working-directory: ${{ runner.temp }}/solution
+        run: bash "$GITHUB_WORKSPACE/scripts/check-authorship.sh" . source
+
       # The generated secret scan checks only the commits a push brings in, so the first push of a new
       # solution scans everything: a value in the template that looks like a secret fails a team's first push.
       - name: Secret scan of the whole solution
@@ -139,6 +144,7 @@ jobs:
           mkdir "$RUNNER_TEMP/solution" && cd "$RUNNER_TEMP/solution"
           dotnet new DotNetSolutionKit -N Acme -P Shop -S Orders -M false --GitHubCiCd true
           test -f .github/workflows/ci.yml && test -f tools/gitleaks/.gitleaks.toml
+          bash "$GITHUB_WORKSPACE/scripts/check-authorship.sh" . "$(jq -r .version "$GITHUB_WORKSPACE/version.json")"
           dotnet build src/services/*.All.sln --configuration Release
 
   # Names that must not appear in the template. The list is a repository secret, LEAK_PATTERN (an extended

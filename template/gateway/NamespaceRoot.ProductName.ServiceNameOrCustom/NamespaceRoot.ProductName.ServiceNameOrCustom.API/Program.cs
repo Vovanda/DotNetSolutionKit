@@ -1,3 +1,5 @@
+// Part of DotNetSolutionKit (https://dnsk.sawking.tech/). MIT License, Copyright (c) 2025 Vladimir Savkin.
+
 using System.Reflection;
 using NamespaceRoot.ProductName.Common.Application.Configuration;
 using NamespaceRoot.ProductName.Common.Web.Authentication;
