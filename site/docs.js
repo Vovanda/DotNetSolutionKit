@@ -68,8 +68,10 @@ function resolveLink(href, fromPath) {
     else if (part !== "." && part !== "") base.push(part);
   }
   const target = byPath.get(base.join("/"));
-  const hash = href.includes("#") ? "#" + href.split("#")[1] : "";
-  return target ? `#${target.id}` : REPO + base.join("/") + hash;
+  const section = href.includes("#") ? href.split("#")[1] : "";
+  if (!target) return REPO + base.join("/") + (section ? "#" + section : "");
+  // a section of another document is addressed as #<document>:<section>; a slug has no colon
+  return `#${target.id}${section ? ":" + section : ""}`;
 }
 
 /* ==== MATH ==== */
@@ -124,23 +126,30 @@ async function renderDiagrams(root) {
 
 /* ==== ANCHORS ==== */
 // A heading gets the id GitHub gives it, so the same "#section" link works in the repository and here;
-// on this page the hash names the document, so a link to a section scrolls instead of navigating.
+// on this page the hash names the document, so a link to a section scrolls instead of navigating, and the
+// address becomes #<document>:<section>, which opens the document on that section again.
 function slug(text) {
   return text.trim().toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu, "").replace(/\s/g, "-");
 }
 
-function anchorSections(body) {
+function scrollToSection(section) {
+  doc.querySelector(`[id="${CSS.escape(section)}"]`)?.scrollIntoView();
+}
+
+function anchorSections(body, docId) {
   for (const heading of body.querySelectorAll("h1, h2, h3, h4, h5, h6")) heading.id = slug(heading.textContent);
   for (const link of body.querySelectorAll('a[href^="#"]')) {
     const section = decodeURIComponent(link.getAttribute("href").slice(1));
     link.addEventListener("click", (event) => {
       event.preventDefault();
-      doc.querySelector(`[id="${CSS.escape(section)}"]`)?.scrollIntoView();
+      history.replaceState(null, "", `#${docId}:${encodeURIComponent(section)}`);
+      scrollToSection(section);
     });
   }
 }
 
-async function show(id) {
+async function show(address) {
+  const [id, section = ""] = address.split(/:(.*)/s);
   const entry = BY_ID.get(ALIASES[id] ?? id) ?? BY_ID.get(DEFAULT_DOC);
   const path = fileOf(entry);
   markCurrent(entry.id);
@@ -159,7 +168,7 @@ async function show(id) {
   const body = document.createElement("div");
   const { text: markdown, formulas } = extractMath(stripFrontMatter(text));
   body.innerHTML = renderMath(marked.parse(markdown), formulas);
-  anchorSections(body);
+  anchorSections(body, entry.id);
   for (const link of body.querySelectorAll("a[href]:not([href^='#'])")) {
     const resolved = resolveLink(link.getAttribute("href"), path);
     if (resolved) link.setAttribute("href", resolved);
@@ -186,6 +195,7 @@ async function show(id) {
   doc.append(...body.childNodes);
   document.title = `${entry.title[langIndex()]} - ${SITE_CFG.name}`;
   doc.focus?.();
+  if (section) scrollToSection(decodeURIComponent(section));
 }
 
 addEventListener("hashchange", () => show(location.hash.slice(1)));

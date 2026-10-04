@@ -110,9 +110,9 @@ internal static class TestSkipSetup
 - Ошибки - это problem details по RFC 9457; обёртки `ErrorResponse` больше нет. См.
   [ошибки](../architecture/errors.md).
 - Перечисления пишутся именами вместо чисел, а значения `DateTimeOffset` - в UTC с `Z` вместо смещения
-  сервера. См. [JSON](../architecture/web-layer.md#json).
+  сервера. См. [JSON](../architecture/web-layer.ru.md#json).
 - Маршрут без сегмента `api/v{n}` попадает только в документ Swagger `all`; раньше он считался `v1`.
-  См. [документы Swagger](../architecture/web-layer.md#swagger-documents).
+  См. [документы Swagger](../architecture/web-layer.ru.md#документы-swagger).
 - Неудачная валидация отвечает 422, а не 400.
 - Эндпоинты здоровья - `/health` и `/ready` вместо `/healthz` и `/readyz`.
 

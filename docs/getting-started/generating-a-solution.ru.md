@@ -32,7 +32,7 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 
 `-M true` не трогает корневой `src/Directory.Packages.props`. В решении, сгенерированном этой версией
 шаблона, там уже есть все версии, нужные сервису, с любыми `-H` и `--Messaging`; флаги, которые добавляют
-файлы в `Common`, выбираются один раз на решение, см. [параметры](#parameters). В более старом решении
+файлы в `Common`, выбираются один раз на решение, см. [параметры](#параметры). В более старом решении
 сборка останавливается с `NU1010` и называет пакеты без версии; скопируйте их строки `PackageVersion`
 из [`Directory.Packages.props`](../../template/src/Directory.Packages.props) шаблона.
 
