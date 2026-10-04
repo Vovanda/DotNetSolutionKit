@@ -34,9 +34,10 @@ flowchart LR
     R([request]) --> FWD[Forwarded headers] --> COR[Correlation id] --> LOG[Request log] --> ROUTE[Routing] --> CORS --> ERR[Errors as problems] --> AUTH[Authentication and authorization] --> SW[Swagger] --> OWN["beforeEndpoints:<br/>the service's own"] --> EP["Controllers,<br/>/health, /ready"]
 ```
 
-1. Forwarded headers: схема и адрес клиента из `X-Forwarded-Proto` и `X-Forwarded-For`, как их видел
-   прокси перед сервисом. Идут первыми, чтобы лог, cookie и всё, что проверяет HTTPS, видели запрос
-   клиента, а не прокси. См. [за прокси](#за-прокси).
+1. Forwarded headers: адрес клиента, схема, хост и базовый путь из `X-Forwarded-For`, `-Proto`, `-Host`
+   и `-Prefix`, как запрос получил прокси перед сервисом. Идут первыми, чтобы лог, cookie, всё, что
+   проверяет HTTPS, и ссылки, которые строит сервис, видели запрос клиента, а не прокси. См.
+   [за прокси](#за-прокси).
 2. Корреляция: читает или создаёт `X-Correlation-Id`, ставит его в каждую строку лога запроса и в ответ.
    См. [корреляцию](#корреляция).
 3. Лог запросов: одна строка на запрос с методом, путём, статусом и длительностью. Идёт после корреляции,
@@ -81,6 +82,16 @@ flowchart LR
 | `ForwardedHeaders:KnownProxies` | адреса прокси, `["10.0.0.2"]` |
 | `ForwardedHeaders:KnownNetworks` | их сети, `["10.1.0.0/16"]` |
 | `ForwardedHeaders:ForwardLimit` | через сколько прокси проходит запрос, по умолчанию 1 |
+| `ForwardedHeaders:AllowedHosts` | публичные имена, которые может нести `X-Forwarded-Host`, `["api.example.com", "*.example.com"]`; пустой список принимает любые |
+
+Хост и базовый путь - то, от чего сервис строит ссылки: `Location` ответа 201, редирект. Без них ссылка
+указывает на внутренний адрес сервиса. Хост из `X-Forwarded-Host`, которого нет в `AllowedHosts`, не
+принимается, и запрос сохраняет свой `Host`; остальные заголовки всё равно применяются.
+
+Прокси перед шлюзом, или перед сервисом, если шлюза нет, - место, где кончается запрос клиента, поэтому
+эти заголовки он ставит сам: `X-Forwarded-Host` из полученного `Host`, а `X-Forwarded-Prefix`, присланный
+клиентом, снимает. Иначе хост и путь в ссылках сервиса выбирает клиент. Edge из
+`deploy/compose/bluegreen.sh` делает и то и другое; свой ingress или TLS-прокси должен тоже.
 
 <a id="swagger-documents"></a>
 ## Документы Swagger

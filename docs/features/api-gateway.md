@@ -54,7 +54,10 @@ sequenceDiagram
    sent, so nobody can claim to be someone else by setting `X-User-Id`. For an authenticated caller it
    then sets the internal API key and the context from the token: user id, login, display name, tenant,
    roles, permissions, the token id and its expiry.
-4. YARP sends the request to the service its route names.
+4. YARP sends the request to the service its route names, with `X-Forwarded-For`, `-Proto`, `-Host` and
+   `-Prefix`. The service takes them (see [behind a proxy](../architecture/web-layer.md#behind-a-proxy)),
+   so the links it builds - the `Location` of a 201, a redirect - point at the gateway. Without them a
+   link would carry the service's internal address, which a client cannot reach and should not learn.
 
 ## Routes
 
@@ -74,6 +77,25 @@ Routes and clusters are YARP configuration, in the `ReverseProxy` section of the
 
 Under docker compose the address is the service's name in its compose file; under Kubernetes, its
 Service name.
+
+### A route that changes the path
+
+A service builds its links from its own path. When a route removes a prefix, the service does not know
+it, and its links lose it; the route tells it in `X-Forwarded-Prefix`:
+
+```json
+"catalog": {
+  "ClusterId": "catalog",
+  "Match": { "Path": "/catalog/{**rest}" },
+  "Transforms": [
+    { "PathRemovePrefix": "/catalog" },
+    { "X-Forwarded": "Set", "Prefix": "Off" },
+    { "RequestHeader": "X-Forwarded-Prefix", "Set": "/catalog" }
+  ]
+}
+```
+
+`"Prefix": "Off"` keeps YARP from replacing the header with the gateway's own path base, which is empty.
 
 ### The services' Swagger
 
@@ -111,6 +133,7 @@ documents outside Production only, and the gateway serves its page and these cop
 | `Jwt:PublicKeyPath` | the PEM public key the tokens are signed for; the private key stays with whoever issues the tokens |
 | `InternalApi:ApiKey` | the key the services accept; it must be the same on the gateway and on every service |
 | `Swagger:PublicServers`, `Swagger:ScrubPatterns` | the servers and the clean-up of the documents, as on a service; see [Swagger documents](../architecture/web-layer.md#swagger-documents) |
+| `AllowedHosts`, `ForwardedHeaders:AllowedHosts` | the public host names, `*` and empty by default. In production list them in both: the host a client sends goes on to the services in `X-Forwarded-Host` and into their links. The first checks the `Host` header, the second the `X-Forwarded-Host` a proxy in front sets; see [behind a proxy](../architecture/web-layer.md#behind-a-proxy) |
 
 The deployment files mount the public key: from `deploy/compose/keys/jwt-public.pem` under compose, from
 the Secret `<gateway>-jwt` under Kubernetes. The generated `.gitignore` keeps `*private*.pem` out of the
