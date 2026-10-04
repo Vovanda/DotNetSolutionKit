@@ -32,6 +32,9 @@ in the same shape as a generated solution's ([ADR-004](docs/adr/004-product-vers
 - a release is a tag `v<version>` on the commit where `version` names it. The tag starts
   `.github/workflows/release.yml`, which refuses a tag that does not match `version.json` and publishes a
   GitHub release with that version's notes. `scripts/release-notes.sh <version>` prints the same text.
+- the tag sits on `master`, or on `2.x` for a fix of the .NET 8 line once 3.0 is out. `2.x` takes
+  pull requests the way `master` does, its pushes run `template.yml`, and it releases `2.*` tags only;
+  their GitHub release is not marked latest.
 
 The release also packs the template, `DotNetSolutionKit.Templates.csproj`, and attaches the package to the
 GitHub release. With the repository secret `NUGET_API_KEY` set, it publishes the package to nuget.org as

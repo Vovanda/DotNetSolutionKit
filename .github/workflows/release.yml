@@ -2,8 +2,8 @@ name: Release
 
 # A tag v<version> publishes a GitHub release of the template and its package on nuget.org. The tag has
 # to name the version in version.json, and the release text is that version's release notes, so the two
-# cannot drift apart. It has to sit on master, where the template's checks passed: a tag on any other
-# commit, or on one whose checks failed, publishes nothing.
+# cannot drift apart. It has to sit on master, or on 2.x for a fix of the .NET 8 line, where the
+# template's checks passed: a tag on any other commit, or on one whose checks failed, publishes nothing.
 
 on:
   push:
@@ -24,13 +24,23 @@ jobs:
 
       # A merge into master starts template.yml on the merged commit; a tag set right after the merge
       # waits for it here, up to CHECKS_WAIT_MIN.
-      - name: The tag is on master and the template's checks passed on it
+      # 2.x carries the .NET 8 line after 3.0: only a 2.* tag goes out from it, and its release does not
+      # become the repository's latest, which stays the newest major.
+      - name: The tag is on master or 2.x and the template's checks passed on it
+        id: line
         env:
           GH_TOKEN: ${{ github.token }}
           CHECKS_WAIT_MIN: 40
         run: |
-          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/master; then
-            echo "::error::$GITHUB_REF_NAME is not on master; a release is made from a commit that passed review and checks"
+          if git merge-base --is-ancestor "$GITHUB_SHA" origin/master; then
+            echo "latest=true" >> "$GITHUB_OUTPUT"
+          elif git rev-parse -q --verify origin/2.x >/dev/null && git merge-base --is-ancestor "$GITHUB_SHA" origin/2.x; then
+            case "$GITHUB_REF_NAME" in
+              v2.*) echo "latest=false" >> "$GITHUB_OUTPUT" ;;
+              *) echo "::error::$GITHUB_REF_NAME is on 2.x, which releases 2.* only"; exit 1 ;;
+            esac
+          else
+            echo "::error::$GITHUB_REF_NAME is neither on master nor on 2.x; a release is made from a commit that passed review and checks"
             exit 1
           fi
           for minute in $(seq 1 "$CHECKS_WAIT_MIN"); do
@@ -63,7 +73,8 @@ jobs:
           version="${GITHUB_REF_NAME#v}"
           bash scripts/release-notes.sh "$version" > notes.md
           headline=$(jq -r --arg v "$version" '.releaseNotes[$v].headline' version.json)
-          gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME: $headline" --notes-file notes.md --verify-tag
+          gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME: $headline" --notes-file notes.md --verify-tag \
+            --latest=${{ steps.line.outputs.latest }}
 
       - uses: actions/setup-dotnet@v6
         with:
