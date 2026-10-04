@@ -47,8 +47,11 @@ kind of work:
 | `code-review` | a review of someone else's pull request |
 | `plan-and-iterate` | the plan of long work |
 
-The skills are the author's own. Their rules grew out of real cases on products built on the template and
-were corrected by them, so many rules say which mistake they prevent.
+The skills are part of the solution. The author of the project designed each of them deliberately, as a
+"DSL layer" for an AI agent. A `SKILL.md` describes the operations allowed on the system and what their
+result must be. A skill names the invariants and the problem spots, explains the reason for the
+non-obvious ones, and shows by examples how to write code without breaking the architecture the project
+is built on.
 
 ## How to use them
 
