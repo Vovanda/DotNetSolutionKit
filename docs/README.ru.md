@@ -51,6 +51,7 @@ mindmap
 - [Валидация и пагинация](architecture/validation-and-pagination.md)
 - [Аутентификация и права](architecture/authentication-and-permissions.md)
 - [Хранение данных](architecture/persistence.md): схемы, миграции, репозитории, поиск
+- [Настройки](architecture/settings.md): откуда берутся и что меняется, пока сервис работает
 - [Доменные события](architecture/domain-events.md)
 - [Тестирование](architecture/testing.md)
 

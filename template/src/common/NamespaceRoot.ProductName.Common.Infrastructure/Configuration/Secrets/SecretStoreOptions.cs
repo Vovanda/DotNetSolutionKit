@@ -55,6 +55,16 @@ public abstract class SecretStoreOptions
     public string SnapshotPath { get; set; } = string.Empty;
 
     /// <summary>
+    /// How often a running service reads the store again, in seconds; 0 reads it at startup only.
+    /// </summary>
+    /// <remarks>
+    /// A value changed in the store reaches the settings read through <c>IOptionsMonitor</c> or
+    /// <c>IReloadable</c> within this time; what was built from a value at startup, such as a connection
+    /// pool, keeps the old one until a restart.
+    /// </remarks>
+    public int ReloadSeconds { get; set; } = 300;
+
+    /// <summary>
     /// Whether enough is configured to read anything at all.
     /// </summary>
     public abstract bool IsConfigured { get; }

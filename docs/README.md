@@ -51,6 +51,7 @@ mindmap
 - [Validation and pagination](architecture/validation-and-pagination.md)
 - [Authentication and permissions](architecture/authentication-and-permissions.md)
 - [Persistence](architecture/persistence.md): schemas, migrations, repositories, search
+- [Settings](architecture/settings.md): their sources, and what changes while a service runs
 - [Domain events](architecture/domain-events.md)
 - [Testing](architecture/testing.md)
 
