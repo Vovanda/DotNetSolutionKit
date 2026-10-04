@@ -59,10 +59,10 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--Vault` | `false` | [Secrets from HashiCorp Vault](../features/secrets.md#hashicorp-vault). |
 | `--DiffApi` | `false` | [API contract diff](../features/api-diff.md) on pull requests. |
 | `--GitHubCiCd` | `false` | [CI on GitHub Actions](../features/ci.md): build, tests on real servers, coverage, secret scan. With `-M false`: the workflows cover every service in `All.sln`. |
-| `--FeatureFlags` | `false` | [Feature flags](../features/feature-flags.md). |
+| `-FF`, `--FeatureFlags` | `false` | [Feature flags](../features/feature-flags.md). |
 | `--HierarchyRules` | `false` | [Access rules over a tenant tree](../features/hierarchy-rules.md). |
 | `--Storage` | `false` | [Object storage](../features/object-storage.md), S3-compatible. |
-| `--ClickHouse` | `false` | [ClickHouse](../features/clickhouse.md): connections, schema check, readiness. |
+| `-CH`, `--ClickHouse` | `false` | [ClickHouse](../features/clickhouse.md): connections, schema check, readiness. |
 | `--TestFramework` | `nunit` | Test framework of the service's tests, `nunit` or `xunit` (v3); per service. `Common`'s own tests stay on NUnit. See [testing](../architecture/testing.md). |
 | `--Audit` | `false` | [Audit journal](../features/audit.md) of entity changes; takes effect only with `--Messaging outbox`. |
 | `--ApiGateway` | `false` | An [API gateway](../features/api-gateway.md) on YARP in place of a service. With `-M true` only. |

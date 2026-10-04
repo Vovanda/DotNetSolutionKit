@@ -52,10 +52,10 @@ shows their files and how their CI ran.
 | `--Vault` | `false` | [Secrets and settings from HashiCorp Vault](docs/features/secrets.md#hashicorp-vault). |
 | `--DiffApi` | `false` | [API contract diff](docs/features/api-diff.md) on pull requests. |
 | `--GitHubCiCd` | `false` | [CI on GitHub Actions](docs/features/ci.md): build, tests on real servers, coverage, secret scan. |
-| `--FeatureFlags` | `false` | [Feature flags](docs/features/feature-flags.md). |
+| `-FF`, `--FeatureFlags` | `false` | [Feature flags](docs/features/feature-flags.md). |
 | `--HierarchyRules` | `false` | [Access rules over a tenant tree](docs/features/hierarchy-rules.md). |
 | `--Storage` | `false` | [Object storage](docs/features/object-storage.md), S3-compatible. |
-| `--ClickHouse` | `false` | [ClickHouse](docs/features/clickhouse.md): connections, schema check, readiness. |
+| `-CH`, `--ClickHouse` | `false` | [ClickHouse](docs/features/clickhouse.md): connections, schema check, readiness. |
 | `--TestFramework` | `nunit` | Test framework of the service's tests: `nunit` or `xunit` (v3). |
 | `--Audit` | `false` | [Audit journal](docs/features/audit.md) of entity changes, through the outbox; with `--Messaging outbox`. |
 | `--ApiGateway` | `false` | An [API gateway](docs/features/api-gateway.md) on YARP in place of a service, with `-M true`. |

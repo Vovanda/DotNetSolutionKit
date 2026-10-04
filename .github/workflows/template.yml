@@ -28,7 +28,8 @@ jobs:
               -N Acme -P Shop -S Orders -M false --Messaging outbox -I true --DiffApi true --FeatureFlags true
               --HierarchyRules true --Storage true --ClickHouse true --GitHubCiCd true --Audit true
             # Flags that change a service's code are passed again to a later service, as the docs say.
-            more: -N Acme -P Shop -S Billing --Messaging outbox -I true --DiffApi true --FeatureFlags true --Storage true --ClickHouse true --Audit true
+            # The second service by the short names, so they keep working.
+            more: -N Acme -P Shop -S Billing --Messaging outbox -I true --DiffApi true -FF true --Storage true -CH true --Audit true
             gateway: -N Acme -P Shop -S Gateway --ApiGateway true
             integration: true
             schemas: true

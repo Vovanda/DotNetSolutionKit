@@ -42,10 +42,10 @@ Generated solutions, regenerated from every release with their CI running:
 | `--Vault` | `false` | [Secrets and settings from HashiCorp Vault](https://dnsk.sawking.tech/docs.html#secrets:hashicorp-vault). |
 | `--DiffApi` | `false` | [API contract diff](https://dnsk.sawking.tech/docs.html#api-diff) on pull requests. |
 | `--GitHubCiCd` | `false` | [CI on GitHub Actions](https://dnsk.sawking.tech/docs.html#ci): build, tests on real servers, coverage, secret scan. |
-| `--FeatureFlags` | `false` | [Feature flags](https://dnsk.sawking.tech/docs.html#feature-flags). |
+| `-FF`, `--FeatureFlags` | `false` | [Feature flags](https://dnsk.sawking.tech/docs.html#feature-flags). |
 | `--HierarchyRules` | `false` | [Access rules over a tenant tree](https://dnsk.sawking.tech/docs.html#hierarchy-rules). |
 | `--Storage` | `false` | [Object storage](https://dnsk.sawking.tech/docs.html#storage), S3-compatible. |
-| `--ClickHouse` | `false` | [ClickHouse](https://dnsk.sawking.tech/docs.html#clickhouse): connections, schema check, readiness. |
+| `-CH`, `--ClickHouse` | `false` | [ClickHouse](https://dnsk.sawking.tech/docs.html#clickhouse): connections, schema check, readiness. |
 | `--TestFramework` | `nunit` | Test framework of the service's tests: `nunit` or `xunit` (v3). |
 | `--Audit` | `false` | [Audit journal](https://dnsk.sawking.tech/docs.html#audit) of entity changes, through the outbox; with `--Messaging outbox`. |
 | `--ApiGateway` | `false` | An [API gateway](https://dnsk.sawking.tech/docs.html#gateway) on YARP in place of a service, with `-M true`. |
