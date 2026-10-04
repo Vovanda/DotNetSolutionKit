@@ -223,7 +223,8 @@ rule written once beats a rounding error found in a report.
 
 An entity changed by both the API and background jobs carries a concurrency token: `xmin` on PostgreSQL
 (`builder.Property<uint>("xmin").IsRowVersion()`), `rowversion` on SQL Server. The losing write fails
-instead of overwriting the other; the client reloads and retries.
+with `ConcurrencyException` instead of overwriting the other, the API answers 409, and the client reloads
+and retries.
 
 ## No dead code
 

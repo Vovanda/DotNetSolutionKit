@@ -89,8 +89,9 @@ as a parameter, never into its text.
 ## Unit of work
 
 `IUnitOfWork` is the transaction boundary of a use case; the service's `DbContext` implements it through
-`DbContextBase`. A unique-constraint violation on save becomes a `UniqueViolationException`, which the API
-answers with 409.
+`DbContextBase`. A unique-constraint violation on save becomes a `UniqueViolationException`, and a write that
+lost a race on a concurrency token (`xmin` on PostgreSQL, `rowversion` on SQL Server) a
+`ConcurrencyException`; the API answers both with 409.
 
 ## Commands a client may repeat
 
