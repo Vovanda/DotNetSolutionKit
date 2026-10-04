@@ -2,7 +2,7 @@
     using NamespaceRoot.ProductName.Common.Domain.Persistence;
     using Microsoft.EntityFrameworkCore;
 using NamespaceRoot.ProductName.Common.Exceptions;
-using Npgsql;
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
     using Microsoft.EntityFrameworkCore.Storage;
 
     using NamespaceRoot.ProductName.Common.Domain.Events;
@@ -38,8 +38,15 @@ namespace NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFram
 
         private const string UniqueViolationMessage = "A record with these values already exists.";
 
-        private static bool IsUniqueViolation(DbUpdateException exception) =>
-            exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation };
+        // One provider per generated solution; the template's own sources keep every one.
+        private static bool IsUniqueViolation(DbUpdateException exception)
+        {
+//#if (Database != "mssql")
+            if (PostgresErrors.IsUniqueViolation(exception))
+                return true;
+//#endif
+            return false;
+        }
 
         public Dictionary<string, (Type Type, object? OriginalValue, object? CurrentValue)> GetChangesFor(
             object entity, bool isNewEntity = false)
