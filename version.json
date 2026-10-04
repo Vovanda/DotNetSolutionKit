@@ -5,7 +5,8 @@
       "headline": "The template installs from nuget.org: dotnet new install SawKing.DotNetSolutionKit.",
       "highlights": [
         "The package has a page of its own on nuget.org: an icon, the install and generate commands, the parameters with links to the documentation on dnsk.sawking.tech, and a link to the notes of its release.",
-        "The README and the site install the template from nuget.org; a release still carries the package as a file."
+        "The README and the site install the template from nuget.org; a release still carries the package as a file.",
+        "dotnet new list and search show the template with a plain description and the Web and WebAPI classifications; its identity is SawKing.DotNetSolutionKit, as the package's. Installed from nuget.org, 2.6.1 is replaced by the update. Installed from a .nupkg file, remove it first with dotnet new uninstall, or both stay listed."
       ]
     },
     "2.6.1": {
