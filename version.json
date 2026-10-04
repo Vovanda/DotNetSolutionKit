@@ -1,6 +1,12 @@
 {
-  "version": "2.8.0",
+  "version": "2.8.1",
   "releaseNotes": {
+    "2.8.1": {
+      "headline": "A domain event handler that would run one Handle in two phases is refused at startup.",
+      "highlights": [
+        "A class implementing IDomainPreSaveHandler<T> and IDomainPostCommitHandler<T> for one event ran its Handle both before the save and after the commit; registering it now fails at startup and names the class. A rollback handler still goes with either phase."
+      ]
+    },
     "2.8.0": {
       "headline": "The gateway shows each service's Swagger document as a caller of the gateway can use it.",
       "highlights": [
