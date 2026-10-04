@@ -100,9 +100,10 @@ The in-memory provider is not a database. These are tested against PostgreSQL, a
 - migrations and the schema guard;
 - concurrency tokens.
 
-The connection comes from the same sources the service reads: `appsettings.Test.json`, then a
-developer's `appsettings.Test.Secrets.json`, then `ConnectionStrings__DefaultConnection` from the
-environment, which is what a build agent sets. Each fixture creates its own database on that server.
+The server comes from the `TEST_POSTGRES` environment variable (`TEST_SQLSERVER` with
+`--Database mssql`), which a build agent sets; without it the test is skipped with that reason, so a
+plain `dotnet test` needs no database. Each test gets a database of its own on that server, cloned from
+one migrated once per run.
 
 A scenario gets one test of the cheapest kind that covers it, not a unit test and an integration test.
 

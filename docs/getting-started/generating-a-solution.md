@@ -96,6 +96,10 @@ Where a dot cannot go, the name is derived from the service name:
 | C# identifiers | without dots | `SalesOrdersDbContext` |
 | Database schema, Infisical folder, queue names | lower case, dots replaced by underscores | `sales_orders` |
 
+Name a service after its area, not after its main aggregate: `-S Basket` with a class `Basket` in it makes
+`Basket` both a namespace and a type, and C# refuses the type where the namespace is in scope (CS0118).
+`Baskets`, `Shopping` or `Sales.Baskets` avoid it.
+
 ## Add the first migration
 
 A generated service has a model and no migrations, so its database starts without tables. Add the first

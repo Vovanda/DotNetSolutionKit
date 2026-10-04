@@ -64,11 +64,10 @@ runs in is part of the contract** - it defines what the handler is allowed to do
 
 Each handler class must implement **exactly one phase interface**. One class = one phase.
 
-> **Known limitation:** A class implementing multiple phase interfaces for the same event type
-> will have its `Handle` method called in every matched phase (same logic runs twice).
-> The dispatcher resolves handlers via `IDomainEventHandler.Handle` (non-generic bridge),
-> which always calls the public `Handle(TEvent, ...)` - explicit `IDomainEventHandler<T>.Handle`
-> overloads are unreachable. See TODO in `DomainEventDispatcher`.
+> The pre-save and the post-commit interfaces share one `Handle` method, so a class implementing both
+> for one event would run the same code in both phases. Registration refuses such a class at startup and
+> names it (`DomainEventHandlerPhases`); make it two classes. A rollback handler has `HandleRollback` of
+> its own and goes with either.
 
 ```C#
 // Phase 1 - publish to the bus outbox inside the SAME transaction as the write
