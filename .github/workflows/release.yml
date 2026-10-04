@@ -73,7 +73,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          dotnet pack DotNetSolutionKit.Templates.csproj --configuration Release -o package
+          bash scripts/release-notes.sh "${GITHUB_REF_NAME#v}" plain > "$RUNNER_TEMP/release-notes.txt"
+          dotnet pack DotNetSolutionKit.Templates.csproj --configuration Release -o package \
+            -p:ReleaseNotesFile="$RUNNER_TEMP/release-notes.txt"
           gh release upload "$GITHUB_REF_NAME" package/*.nupkg
 
       # nuget.org only with its key in the repository secrets. A version published there cannot be

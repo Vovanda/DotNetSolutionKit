@@ -24,10 +24,13 @@
          relative links to docs/, so the package's README links the site -->
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReleaseNotes>What this version brings: https://github.com/sawking-tech/DotNetSolutionKit/releases/tag/v$(Version)</PackageReleaseNotes>
+    <!-- the release notes of the version, from version.json: release.yml writes them with
+         scripts/release-notes.sh and passes the file as ReleaseNotesFile; a pack by hand links the release -->
+    <PackageReleaseNotes Condition="'$(ReleaseNotesFile)' != ''">$([System.IO.File]::ReadAllText('$(ReleaseNotesFile)'))</PackageReleaseNotes>
+    <PackageReleaseNotes Condition="'$(ReleaseNotesFile)' == ''">What this version brings: https://github.com/sawking-tech/DotNetSolutionKit/releases/tag/v$(Version)</PackageReleaseNotes>
     <Copyright>Copyright (c) 2025 Vladimir Savkin</Copyright>
 
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
