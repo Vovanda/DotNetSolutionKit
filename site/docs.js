@@ -170,11 +170,22 @@ async function show(id) {
     table.replaceWith(scroll);
     scroll.append(table);
   }
+  // A document with diagrams is drawn off screen at the sheet's width first: put on the sheet with the
+  // sources of its diagrams, it would jump when they turn into pictures of another height.
+  if (body.querySelector("pre > code.language-mermaid")) {
+    const shown = location.hash;
+    body.className = "doc doc-stage";
+    body.style.width = doc.clientWidth + "px";
+    document.body.append(body);
+    await renderDiagrams(body);
+    body.remove();
+    body.className = ""; body.style.width = "";
+    if (location.hash !== shown) return;   // the reader moved on while it was drawn
+  }
   doc.innerHTML = `<p class="meta"><span>${path}</span> <a href="${REPO}${path}">${STR.source}</a></p>`;
   doc.append(...body.childNodes);
   document.title = `${entry.title[langIndex()]} - ${SITE_CFG.name}`;
   doc.focus?.();
-  renderDiagrams(doc);
 }
 
 addEventListener("hashchange", () => show(location.hash.slice(1)));
