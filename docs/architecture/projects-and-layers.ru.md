@@ -23,11 +23,14 @@ flowchart BT
         D["#lt;Service#gt;"] --> C
         A["#lt;Service#gt;.Application"] --> D
         A --> CA
+        A --> C
+        A --> CC
         I["#lt;Service#gt;.Infrastructure"] --> D
         I --> A
         I --> C
         I --> CA
         I --> CI
+        I --> CC
         API["#lt;Service#gt;.API"] --> A
         API --> I
         API --> CW
@@ -46,20 +49,23 @@ flowchart BT
 | `Common.Application` | Абстракции приложения: диспетчер доменных событий, `IPermissionService`, интерфейсы сообщений и трассировки | `Common` |
 | `Common.Infrastructure` | Базовые классы EF Core, interceptor'ы, репозитории, миграции, schema guard, сообщения на MassTransit, безопасность | `Common`, `Common.Application`, `Common.Contracts` |
 | `Common.Web` | Веб-слой сервиса: pipeline, ошибки, валидация, Swagger, аутентификация, права, здоровье | `Common`, `Common.Contracts`, `Common.Application`, `Common.Infrastructure` |
-| `Common.Tests` | Тестовая инфраструктура для сервисов и тесты `Common` | все перечисленные выше |
+| `Common.Testing` | Тестовая инфраструктура для тестов сервисов: контексты, тестовые базы, заглушки, проверки правил; без тестового фреймворка | все перечисленные выше |
+| `Common.Tests` | Тесты `Common` | все перечисленные выше, `Common.Testing` |
 
 ## Сервис
 
 | Проект | Что содержит | Ссылается на |
 |---|---|---|
 | `<Service>` | Домен сервиса: сущности, агрегаты, доменные события, политики | `Common` |
-| `<Service>.Application` | Use case'ы, обработчики доменных событий, порты, которые реализует инфраструктура | `Common.Application`, домен |
-| `<Service>.Infrastructure` | `DbContext`, конфигурации сущностей, репозитории, фоновые задачи, консьюмеры | домен, `Common`, `Common.Application`, `Common.Infrastructure`, приложение |
+| `<Service>.Application` | Use case'ы, обработчики доменных событий, порты, которые реализует инфраструктура | `Common`, `Common.Application`, `Common.Contracts`, домен |
+| `<Service>.Infrastructure` | `DbContext`, конфигурации сущностей, репозитории, фоновые задачи, консьюмеры | домен, `Common`, `Common.Application`, `Common.Contracts`, `Common.Infrastructure`, приложение |
 | `<Service>.API` | Контроллеры, `Program`, настройка хоста | проекты `Common`, приложение, инфраструктура |
-| `<Service>.Tests` | Тесты сервиса | `Common.Tests`, `Common` |
+| `<Service>.Tests` | Тесты сервиса | `Common.Testing`, проекты `Common`, проекты сервиса |
 
 Проект API не ссылается на домен: он работает с доменом через слой приложения, который регистрирует и
-доменные сервисы. Инфраструктура ссылается на домен напрямую, потому что EF Core маппит сущности домена и
+доменные сервисы. Слой приложения отвечает типами запросов и ответов из `Common.Contracts` и бросает
+исключения из `Common`, поэтому ссылается на оба; инфраструктура ссылается на `Common.Contracts` ради
+сообщений шины, которые принимают её консьюмеры. Инфраструктура ссылается на домен напрямую, потому что EF Core маппит сущности домена и
 отдельных моделей хранения, которые пришлось бы переводить, нет.
 
 ## Каждая ссылка явная

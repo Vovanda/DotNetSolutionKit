@@ -82,6 +82,21 @@ internal static class TestSkipSetup
 }
 ```
 
+## Слои сервиса видят то, что нужно их первому коду
+
+В решении, сгенерированном до октября 2026 года, слой приложения сервиса ссылается только на
+`Common.Application` и домен, а инфраструктура и тесты не ссылаются на `Common.Contracts`. Все ссылки явные,
+поэтому не собирается первый use case (он бросает `NotFoundException` из `Common` и отвечает типом из
+`Common.Contracts`) и первый консьюмер сообщения шины. В каждом сервисе добавьте в
+`<Service>.Application.csproj`:
+
+```xml
+<ProjectReference Include="..\..\..\common\MyCompany.MyProduct.Common\MyCompany.MyProduct.Common.csproj" />
+<ProjectReference Include="..\..\..\common\MyCompany.MyProduct.Common.Contracts\MyCompany.MyProduct.Common.Contracts.csproj" />
+```
+
+а вторую строку - в `<Service>.Infrastructure.csproj` и `<Service>.Tests.csproj`.
+
 ## Одна in-memory база на тест
 
 В решении, сгенерированном до октября 2026 года, `InMemoryTestExecutionContext` берёт имя своей базы внутри колбэка `AddDbContext`, который
