@@ -38,7 +38,7 @@ window.SITE = {
     { group: ["Features", "Возможности"], docs: [
       ["jobs", "docs/features/background-jobs", ["Background jobs", "Фоновые задачи"], true],
       ["messaging", "docs/features/messaging", ["Message bus", "Шина сообщений"], true],
-      ["secrets", "docs/features/secrets", ["Secrets from Infisical", "Секреты из Infisical"], true],
+      ["secrets", "docs/features/secrets", ["Secrets from Infisical or Vault", "Секреты из Infisical или Vault"], true],
       ["feature-flags", "docs/features/feature-flags", ["Feature flags", "Фича-флаги"], true],
       ["api-diff", "docs/features/api-diff", ["API diff", "Дифф API"], true],
       ["ci", "docs/features/ci", ["CI on GitHub Actions", "CI на GitHub Actions"], true],

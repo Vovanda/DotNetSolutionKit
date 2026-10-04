@@ -77,6 +77,14 @@ jobs:
             -e AWS_ACCESS_KEY_ID=tester -e AWS_SECRET_ACCESS_KEY=test-do-not-use \
             chrislusf/seaweedfs server -s3 -dir=/data
 #endif
+#if (Vault)
+
+      - name: Start Vault for the tests
+        run: |
+          docker run -d --name tests-vault -p 8200:8200 \
+            -e VAULT_DEV_ROOT_TOKEN_ID=test-do-not-use -e VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200 \
+            hashicorp/vault:1.17
+#endif
 
       - name: Restore
         run: dotnet restore src/services/*.All.sln
@@ -104,6 +112,9 @@ jobs:
             echo "s3.bucket.create -name tests" | docker exec -i tests-s3 weed shell -master=localhost:9333 2>&1 \
               | grep -qE 'created|exists' || ready=0
 #endif
+#if (Vault)
+            curl -fsS http://localhost:8200/v1/sys/health >/dev/null 2>&1 || ready=0
+#endif
             [ $ready = 1 ] && exit 0
             sleep 1
           done
@@ -118,6 +129,9 @@ jobs:
 #endif
 #if (Storage)
           TEST_S3: ServiceUrl=http://localhost:8333;Bucket=tests;AccessKey=tester;SecretKey=test-do-not-use
+#endif
+#if (Vault)
+          TEST_VAULT: Address=http://localhost:8200;Token=test-do-not-use
 #endif
         run: >
           dotnet test src/services/*.All.sln --configuration Release --no-build

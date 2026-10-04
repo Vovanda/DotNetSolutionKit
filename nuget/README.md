@@ -38,6 +38,7 @@ Generated solutions, regenerated from every release with their CI running:
 | `-H`, `--Hangfire` | `true` | [Background jobs](https://dnsk.sawking.tech/docs.html#jobs) on Hangfire. |
 | `--Messaging` | `none` | [Message bus](https://dnsk.sawking.tech/docs.html#messaging): `outbox` or `direct`. |
 | `-I`, `--Infisical` | `false` | [Secrets and settings from Infisical](https://dnsk.sawking.tech/docs.html#secrets). |
+| `--Vault` | `false` | [Secrets and settings from HashiCorp Vault](https://dnsk.sawking.tech/docs.html#secrets:hashicorp-vault). |
 | `--DiffApi` | `false` | [API contract diff](https://dnsk.sawking.tech/docs.html#api-diff) on pull requests. |
 | `--GitHubCiCd` | `false` | [CI on GitHub Actions](https://dnsk.sawking.tech/docs.html#ci): build, tests on real servers, coverage, secret scan. |
 | `--FeatureFlags` | `false` | [Feature flags](https://dnsk.sawking.tech/docs.html#feature-flags). |

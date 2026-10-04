@@ -1,9 +1,10 @@
-# Secrets from Infisical
+# Secrets from Infisical or Vault
 
-Generated with `-I`, off by default. Pass it with `-M false`, and to each service generated later that
-reads secrets.
+Generated with `-I` for [Infisical](https://infisical.com) or `--Vault` for [HashiCorp Vault](https://www.vaultproject.io),
+off by default. Pass the flag with `-M false`, and to each service generated later that reads secrets.
+What follows holds for both; [Vault](#hashicorp-vault) has its own section for what differs.
 
-The service reads two folders of an [Infisical](https://infisical.com) project, the shared one and its own,
+The service reads two folders of an Infisical project, the shared one and its own,
 and lays them over the rest of configuration. Code reads a secret like any other setting: a secret named
 `ConnectionStrings__DefaultConnection` is `configuration.GetConnectionString("DefaultConnection")`.
 
@@ -37,6 +38,24 @@ until it is set; see below.
 The machine identity, `Infisical__ClientId` and `Infisical__ClientSecret`, comes from environment
 variables only. A file in the repository holding the key to the store would bring back the problem the
 store solves.
+
+## HashiCorp Vault
+
+With `--Vault` the two folders are two key-value secrets of a KV version 2 engine: the shared one,
+`shared` by default, and the service's, `orders` or `sales_orders` for `Sales.Orders`. Each key of a
+secret is one setting, named as above.
+
+```json
+"Vault": {
+  "Address": ""
+}
+```
+
+`Address` is required outside `Local`. `Mount` (`secret`), `SharedPath`, `ServicePath`, `SnapshotPath` and
+`Optional` have defaults. The service signs in with a token, `Vault__Token`, or with an AppRole,
+`Vault__RoleId` and `Vault__SecretId`, from environment variables only. A path without a secret reads as
+empty, as an empty folder does, so a service with no secrets of its own needs none created; a refusal or
+an unreachable Vault is handled as below.
 
 ## Why not environment variables
 
@@ -109,4 +128,6 @@ in `features.json` instead of editing the snapshot.
 
 `Common.Tests` covers the order of the folders, the optional and required store, and the snapshot: kept
 after a read, read when the store does not answer, owner-only on Linux, and a write that fails reported,
-with the store replaced by a stub.
+with the store replaced by a stub. With `--Vault`, the same rules are checked through the `Vault`
+section, and the Vault store itself against a real Vault in development mode (`TEST_VAULT`) in the
+integration tests of the template's CI and of a generated solution's.

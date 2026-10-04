@@ -48,6 +48,7 @@ shows their files and how their CI ran.
 | `-H`, `--Hangfire` | `true` | [Background jobs](docs/features/background-jobs.md) on Hangfire. |
 | `--Messaging` | `none` | [Message bus](docs/features/messaging.md): `outbox` or `direct`. |
 | `-I`, `--Infisical` | `false` | [Secrets and settings from Infisical](docs/features/secrets.md). |
+| `--Vault` | `false` | [Secrets and settings from HashiCorp Vault](docs/features/secrets.md#hashicorp-vault). |
 | `--DiffApi` | `false` | [API contract diff](docs/features/api-diff.md) on pull requests. |
 | `--GitHubCiCd` | `false` | [CI on GitHub Actions](docs/features/ci.md): build, tests on real servers, coverage, secret scan. |
 | `--FeatureFlags` | `false` | [Feature flags](docs/features/feature-flags.md). |

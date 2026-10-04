@@ -19,14 +19,12 @@ gantt
     v2.6 NUnit or xUnit                                   :done, s8, after s7, 1000ms
 
     section Now
-    v2.7 site, samples, nuget.org, major check, gateway Swagger and permissions (#5) :active, s9, after s8, 2000ms
+    v2.7 site, samples, nuget.org, major check, gateway Swagger and permissions (#5), Vault :active, s9, after s8, 2500ms
 
     section Next
-    Upgrade path between majors                           :s11, after s9, 1000ms
-    HashiCorp Vault as a second secret store              :s12, after s9, 1500ms
-    Settings and secrets reloaded without a redeploy      :s13, after s12, 1000ms
+    Settings and secrets reloaded without a redeploy      :s13, after s9, 1000ms
     SQL Server as a second database                       :s14, after s9, 3000ms
-    3.0 on .NET 10 in master, 2.x stays on .NET 8         :s15, after s11 s13 s14, 2500ms
+    3.0 on .NET 10 in master, with the path from 2.x; 2.x stays on .NET 8 :s15, after s13 s14, 3000ms
 ```
 
 Что принёс каждый релиз: [version.json](https://github.com/sawking-tech/DotNetSolutionKit/blob/master/version.json).
@@ -40,5 +38,5 @@ gantt
 | Технология | Где шаблон от неё зависит сейчас |
 |---|---|
 | PostgreSQL | защита схемы, блокировка миграций, разбор нарушения уникальности, поиск через `ILIKE`, хранилище Hangfire |
-| Infisical | только настройки: секреты читаются через порт `ISecretStore`, см. [секреты](features/secrets.ru.md#почему-infisical) |
+| Infisical | нет: `--Vault` читает так же из HashiCorp Vault, через тот же порт `ISecretStore`, см. [секреты](features/secrets.ru.md#hashicorp-vault) |
 | GitHub CI | только сгенерированный workflow; проверки - это скрипты, которые вызовет любой CI |
