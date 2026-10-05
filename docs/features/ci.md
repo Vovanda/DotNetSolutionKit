@@ -12,7 +12,7 @@ Runs on every pull request, on a push to `main` or `master`, and by hand, with c
    `src/services/manual-add-projects.sh`; forgotten, the service would drop out of the build and its tests
    without anything failing.
 2. Builds `All.sln` in Release.
-3. Runs the unit tests: everything not marked `[Category(TestCategories.Integration)]`.
+3. Runs the unit tests: everything outside the category `TestCategory=Integration` (`[Integration]` in a service, `[Category(TestCategories.Integration)]` in `Common`).
 4. Runs the integration tests against real servers started in the job: PostgreSQL always, ClickHouse with
    `--ClickHouse`, SeaweedFS with `--Storage`. PostgreSQL keeps its data on a ramdisk with durability off,
    which is safe only because the data dies with the job. See [testing](../architecture/testing.md).

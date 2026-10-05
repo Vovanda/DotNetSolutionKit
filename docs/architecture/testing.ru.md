@@ -8,10 +8,12 @@
 тестовый проект сервиса и задаёт в `TestSkip.Handler`, как этот фреймворк пропускает тест.
 `Common.Tests` - тестовый проект самого `Common`.
 
-`--TestFramework xunit` генерирует тесты сервиса на xUnit v3 вместо NUnit; инфраструктура та же.
-Интеграционный тест на xUnit несёт категорию как trait,
-`[Trait(TestCategories.TraitName, TestCategories.Integration)]`, поэтому фильтры
-`TestCategory=Integration` и `TestCategory!=Integration` отбирают его так же, как категорию NUnit.
+`--TestFramework xunit` генерирует тесты сервиса на xUnit v3 вместо NUnit; инфраструктура та же, и
+тесты те же. Фреймворк знает один файл тестового проекта, `TestFramework.cs`: в нём атрибуты, которые
+носят тесты, - `[Test]`, `[TestOf]`, `[Integration]`, `[RunsInParallel]`, `[RunsAlone]` - поверх атрибутов
+самого фреймворка, поэтому в тесте нет `#if`, а смена фреймворка трогает только этот файл.
+`[Integration]` - категория в NUnit и trait `TestCategory` в xUnit, поэтому фильтры
+`TestCategory=Integration` и `TestCategory!=Integration` отбирают одни и те же тесты в обоих.
 
 ## Тест сервиса
 
@@ -19,7 +21,7 @@
 `DbContext` на in-memory провайдере, а моки - только для того, что выходит за пределы сервиса.
 
 ```csharp
-internal abstract class OrderServiceTestBase
+public abstract class OrderServiceTestBase
 {
     protected InMemoryTestExecutionContext<OrderService, OrdersDbContext> CreateTestContext()
     {
@@ -39,10 +41,9 @@ internal abstract class OrderServiceTestBase
 Одна fixture на метод, в `OrderService.Place.Tests.cs`:
 
 ```csharp
-[TestFixture]
 [TestOf(typeof(OrderService))]
-[Parallelizable(ParallelScope.All)]
-internal class OrderServicePlaceTests : OrderServiceTestBase
+[RunsInParallel]
+public class OrderServicePlaceTests : OrderServiceTestBase
 {
     [Test(Description = "A placed order is saved with its lines")]
     public async Task Should_SaveTheOrder_When_TheCartHasLines()
@@ -76,8 +77,9 @@ internal class OrderServicePlaceTests : OrderServiceTestBase
 NUnit. `Common.Testing`, на который ссылаются оба, от тестового фреймворка не зависит: каждый in-memory
 контекст называет свою базу новым Guid, а каждый тестовый проект через `TestSkip.Handler` говорит ему,
 как его фреймворк пропускает тест. Параллельность у каждого фреймворка своя: NUnit запускает fixture с
-`[Parallelizable]` рядом с другими, xUnit запускает классы тестов параллельно, а тесты одного класса -
-друг за другом.
+`[RunsInParallel]` рядом с другими, xUnit запускает классы тестов параллельно, а тесты одного класса -
+друг за другом. NUnit, как и xUnit, создаёт fixture на каждый тест, поэтому в обоих тест готовится в
+конструкторе и убирает за собой в `Dispose`.
 
 Для проверок - Shouldly под лицензией MIT; FluentAssertions с версии 8 перешёл на коммерческую лицензию,
 которая не подходит шаблону под MIT.
@@ -85,7 +87,8 @@ NUnit. `Common.Testing`, на который ссылаются оба, от т�
 ## Интеграционные тесты
 
 То, что зависит от PostgreSQL (транзакции и outbox, ограничения, `ILIKE` и сырой SQL, миграции),
-проверяется на настоящей базе в fixture'ах с пометкой `[Category(TestCategories.Integration)]`. Они
+проверяется на настоящей базе в тестах категории `TestCategory=Integration`: `[Integration]` в
+сервисе, `[Category(TestCategories.Integration)]` в `Common`. Они
 читают строку подключения из `TEST_POSTGRES` и пропускаются с этой причиной, если переменная не задана,
 поэтому обычному `dotnet test` база не нужна:
 
