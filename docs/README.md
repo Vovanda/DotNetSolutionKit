@@ -39,6 +39,7 @@ mindmap
 
 ## Getting started
 
+- [What the template gives](getting-started/what-it-gives.md): what a solution gets, the principles, the cost and the risks
 - [Generating a solution](getting-started/generating-a-solution.md): install, parameters, dotted names,
   running locally
 - [Versions of the template](getting-started/upgrading.md): v1 and v2, what changed, how to update

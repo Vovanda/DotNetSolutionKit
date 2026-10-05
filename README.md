@@ -15,7 +15,8 @@ Site: [dnsk.sawking.tech](https://dnsk.sawking.tech/). Documentation, in English
 A `dotnet new` template for microservices on .NET 8 and PostgreSQL or SQL Server. It generates shared `Common` libraries
 and services split into domain, application, infrastructure and API projects, with the host, errors,
 validation, persistence, domain events, background jobs and tests already wired, and optional parts behind
-flags.
+flags. What it gives a solution in full - the principles, the economics, the cost:
+[what the template gives](docs/getting-started/what-it-gives.md).
 
 ## Install and generate
 

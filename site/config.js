@@ -20,6 +20,7 @@ window.SITE = {
      and the page shows it to a reader of Russian. */
   shelf: [
     { group: ["Getting started", "С чего начать"], docs: [
+      ["gives", "docs/getting-started/what-it-gives", ["What the template gives", "Что даёт шаблон"], true],
       ["generating", "docs/getting-started/generating-a-solution", ["Generating a solution", "Генерация решения"], true],
       ["upgrading", "docs/getting-started/upgrading", ["Versions of the template", "Версии шаблона"], true],
       ["agents", "docs/getting-started/working-with-ai-agents", ["Working with AI agents", "Работа с ИИ-агентами"], true],
