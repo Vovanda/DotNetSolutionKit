@@ -64,7 +64,7 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--Storage` | `false` | [Object storage](../features/object-storage.md), S3-compatible. |
 | `-CH`, `--ClickHouse` | `false` | [ClickHouse](../features/clickhouse.md): connections, schema check, readiness. |
 | `--MongoDB` | `false` | [MongoDB](../features/mongodb.md) beside the main database: the client, the service's database, readiness. |
-| `--Notify` | none | Channels of [notifications](../features/notifications.md): `email` - through SMTP or Graph API, with a sandbox outside Production. |
+| `--Notify` | none | Channels of [notifications](../features/notifications.md): `email` - through SMTP or Graph API, with a sandbox outside Production; with `--Messaging` other services ask for it by a bus command. |
 | `--TestFramework` | `nunit` | Test framework of the service's tests, `nunit` or `xunit` (v3); per service. `Common`'s own tests stay on NUnit. See [testing](../architecture/testing.md). |
 | `--Audit` | `false` | [Audit journal](../features/audit.md) of entity changes; takes effect only with `--Messaging outbox`. |
 | `--ApiGateway` | `false` | An [API gateway](../features/api-gateway.md) on YARP in place of a service. With `-M true` only. |
