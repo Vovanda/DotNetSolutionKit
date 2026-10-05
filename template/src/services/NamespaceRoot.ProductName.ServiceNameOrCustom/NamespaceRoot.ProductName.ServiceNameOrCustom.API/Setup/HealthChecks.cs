@@ -1,6 +1,7 @@
 using NamespaceRoot.ProductName.Common.Application.Configuration;
 using NamespaceRoot.ProductName.Common.Contracts.Health;
 using NamespaceRoot.ProductName.Common.Web.Health;
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence;
 using NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.API.Setup;
@@ -23,11 +24,7 @@ internal static class HealthChecks
 
 //#endif
         if (switches.Database)
-//#if (Database == "mssql")
-            checks.AddDbContextCheck<ServiceIdentifierDbContext>(name: "sqlserver", tags: [HealthConstants.ReadyTag]);
-//#else
-            checks.AddDbContextCheck<ServiceIdentifierDbContext>(name: "postgres", tags: [HealthConstants.ReadyTag]);
-//#endif
+            checks.AddDbContextCheck<ServiceIdentifierDbContext>(name: DatabaseProvider.Name, tags: [HealthConstants.ReadyTag]);
 
         return builder;
     }

@@ -151,6 +151,12 @@ services.AddIdempotency<OrdersDbContext>();
 | хранилище Hangfire | `Hangfire.PostgreSql` | `Hangfire.SqlServer` |
 | outbox | MassTransit на PostgreSQL | MassTransit на SQL Server |
 
+Какая из двух баз в решении, знает одно место - `DatabaseProvider` в `Common.Infrastructure`: сервис и
+`Common` берут у него провайдер EF, guard схемы, блокировку миграций, блокировки и статистику outbox, поиск
+и читаемые номера и сами провайдер не называют. У Hangfire своё хранилище на каждую базу, поэтому
+`DependencyInjection.BackgroundJobs.cs` сервиса - второе место, которое её знает. Третья база трогает эти
+два файла и реализации за ними.
+
 Что заметит команда:
 
 - Guard создаёт базу из строки подключения, если её нет: контейнер SQL Server стартует с одной `master`.

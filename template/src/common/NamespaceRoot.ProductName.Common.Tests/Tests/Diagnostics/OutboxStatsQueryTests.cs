@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NamespaceRoot.ProductName.Common.Infrastructure.Diagnostics;
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence;
 using NamespaceRoot.ProductName.Common.Infrastructure.Messaging;
 
 namespace NamespaceRoot.ProductName.Common.Tests.Tests.Diagnostics;
@@ -36,13 +37,7 @@ internal class OutboxStatsQueryTests
         using var db = new OrdersOutbox();
 
         // Each provider quotes as it does: SQL Server always, PostgreSQL only what needs it.
-        var expected = "";
-//#if (Database == "mssql")
-        expected = "[orders].[outbox_message]";
-//#endif
-//#if (Database != "mssql")
-        expected = "orders.outbox_message";
-//#endif
+        var expected = DatabaseProvider.IsSqlServer ? "[orders].[outbox_message]" : "orders.outbox_message";
         OutboxStatsQuery.ResolveOutboxTable(db).ShouldBe(expected);
     }
 
@@ -51,13 +46,9 @@ internal class OutboxStatsQueryTests
     {
         using var db = new OddSchemaOutbox();
 
-        var expected = "";
-//#if (Database == "mssql")
-        expected = "[odd\"schema].[outbox_message]";
-//#endif
-//#if (Database != "mssql")
-        expected = "\"odd\"\"schema\".outbox_message";
-//#endif
+        var expected = DatabaseProvider.IsSqlServer
+            ? "[odd\"schema].[outbox_message]"
+            : "\"odd\"\"schema\".outbox_message";
         OutboxStatsQuery.ResolveOutboxTable(db).ShouldBe(expected);
     }
 

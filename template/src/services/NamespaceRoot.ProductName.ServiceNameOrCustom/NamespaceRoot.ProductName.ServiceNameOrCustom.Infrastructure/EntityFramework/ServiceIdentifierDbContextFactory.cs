@@ -2,33 +2,18 @@ using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-//#if (Database == "mssql")
-using Microsoft.Data.SqlClient;
-//#else
-using Npgsql;
-//#endif
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence;
 
 namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Infrastructure.EntityFramework;
 
 [UsedImplicitly]
 public class ServiceIdentifierDbContextFactory : IDesignTimeDbContextFactory<ServiceIdentifierDbContext>
 {
-//#if (Database == "mssql")
-    private const string PlaceholderConnectionString = "Server=localhost;Database=design-time-placeholder;TrustServerCertificate=true";
-//#else
-    private const string PlaceholderConnectionString = "Host=localhost;Database=design-time-placeholder";
-//#endif
-
     private static DbContextOptions<ServiceIdentifierDbContext> GetOptions(string connectionString)
     {
-        return new DbContextOptionsBuilder<ServiceIdentifierDbContext>()
-//#if (Database == "mssql")
-            .UseSqlServer(connectionString,
-//#else
-            .UseNpgsql(connectionString,
-//#endif
-                x => { x.MigrationsHistoryTable("__EFMigrationsHistory", ServiceIdentifierDbContext.DefaultSchemaName); })
-            .Options;
+        var options = new DbContextOptionsBuilder<ServiceIdentifierDbContext>();
+        options.UseDatabase(connectionString, ServiceIdentifierDbContext.DefaultSchemaName);
+        return options.Options;
     }
 
     private static string GetConnectionString()
@@ -73,7 +58,7 @@ public class ServiceIdentifierDbContextFactory : IDesignTimeDbContextFactory<Ser
             Console.WriteLine(
                 "Connection string 'DefaultConnection' not found: using a placeholder. " +
                 "Enough to add a migration; set ConnectionStrings__DefaultConnection to touch a database.");
-            return PlaceholderConnectionString;
+            return DatabaseProvider.DesignTimeConnectionString;
         }
 
         Console.WriteLine("Successfully found connection string");
@@ -85,13 +70,7 @@ public class ServiceIdentifierDbContextFactory : IDesignTimeDbContextFactory<Ser
         var connectionString = GetConnectionString();
 
         // Name the target database without the credentials: this output lands in terminals and CI logs.
-//#if (Database == "mssql")
-        var target = new SqlConnectionStringBuilder(connectionString);
-        Console.WriteLine($"Database: {target.DataSource}/{target.InitialCatalog} as {(string.IsNullOrEmpty(target.UserID) ? "(integrated)" : target.UserID)}");
-//#else
-        var target = new NpgsqlConnectionStringBuilder(connectionString);
-        Console.WriteLine($"Database: {target.Host}:{target.Port}/{target.Database} as {target.Username ?? "(no user)"}");
-//#endif
+        Console.WriteLine($"Database: {DatabaseProvider.DescribeTarget(connectionString)}");
 
         return new ServiceIdentifierDbContext(GetOptions(connectionString));
     }

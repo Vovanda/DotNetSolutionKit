@@ -334,7 +334,8 @@
           "condition": "(!Hangfire)",
           "exclude": [
             "**/Setup/BackgroundJobsSetup.cs",
-            "**/Security/Filters/HangfireAdminAuthorizationFilter.cs"
+            "**/Security/Filters/HangfireAdminAuthorizationFilter.cs",
+            "**/DependencyInjection.BackgroundJobs.cs"
           ]
         },
         {
@@ -405,12 +406,14 @@
             "src/common/NamespaceRoot.ProductName.Common.Testing/SqlServerDbTestExecutionContext.cs",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/SqlServerIntegrationTestBaseTests.cs",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/SqlServerDomainEventPhasesTests.cs",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/IdempotentExecutorOnSqlServerTests.cs",
             "**/Integration/SqlServerDbTestExecutionContext.cs"
           ]
         },
         {
           "condition": "(Database == \"mssql\")",
           "exclude": [
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/IdempotentExecutorOnPostgresTests.cs",
             "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Persistence/Postgres/**",
             "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Persistence/EntityFramework/Specifications/PostgresCaseInsensitiveSearch.cs",
             "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Diagnostics/PostgresOutboxStatsDialect.cs",
@@ -525,7 +528,8 @@
           "condition": "(!Hangfire)",
           "exclude": [
             "**/Setup/BackgroundJobsSetup.cs",
-            "**/Security/Filters/HangfireAdminAuthorizationFilter.cs"
+            "**/Security/Filters/HangfireAdminAuthorizationFilter.cs",
+            "**/DependencyInjection.BackgroundJobs.cs"
           ]
         },
         {

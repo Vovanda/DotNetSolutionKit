@@ -8,12 +8,6 @@ using NamespaceRoot.ProductName.Common.Exceptions;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
 using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework.Idempotency;
 using NamespaceRoot.ProductName.Common.Tests.Stubs;
-//#if (Database != "mssql")
-using Npgsql;
-//#endif
-//#if (Database != "postgres")
-using Microsoft.Data.SqlClient;
-//#endif
 
 namespace NamespaceRoot.ProductName.Common.Tests.Integration;
 
@@ -228,65 +222,3 @@ internal abstract class IdempotentExecutorTests
         (await WidgetsAsync()).ShouldBe(2);
     }
 }
-//#if (Database != "mssql")
-
-[TestFixture]
-[Category(TestCategories.Integration)]
-internal sealed class IdempotentExecutorOnPostgresTests : IdempotentExecutorTests
-{
-    protected override async Task<string> CreateDatabaseAsync(string name)
-    {
-        var admin = Postgres.ConnectionString();
-        await using (var connection = new NpgsqlConnection(admin))
-        {
-            await connection.OpenAsync();
-            await new NpgsqlCommand($"CREATE DATABASE \"{name}\"", connection).ExecuteNonQueryAsync();
-        }
-
-        return new NpgsqlConnectionStringBuilder(admin) { Database = name }.ToString();
-    }
-
-    protected override async Task DropDatabaseAsync(string name)
-    {
-        NpgsqlConnection.ClearAllPools();
-        await using var connection = new NpgsqlConnection(Postgres.ConnectionString());
-        await connection.OpenAsync();
-        await new NpgsqlCommand($"DROP DATABASE IF EXISTS \"{name}\" WITH (FORCE)", connection).ExecuteNonQueryAsync();
-    }
-
-    protected override DbContextOptions<Db> Options(string connection) =>
-        new DbContextOptionsBuilder<Db>().UseNpgsql(connection).Options;
-}
-//#endif
-//#if (Database != "postgres")
-
-[TestFixture]
-[Category(TestCategories.Integration)]
-internal sealed class IdempotentExecutorOnSqlServerTests : IdempotentExecutorTests
-{
-    protected override async Task<string> CreateDatabaseAsync(string name)
-    {
-        var admin = SqlServer.ConnectionString();
-        await using (var connection = new SqlConnection(admin))
-        {
-            await connection.OpenAsync();
-            await new SqlCommand($"CREATE DATABASE [{name}]", connection).ExecuteNonQueryAsync();
-        }
-
-        return new SqlConnectionStringBuilder(admin) { InitialCatalog = name }.ConnectionString;
-    }
-
-    protected override async Task DropDatabaseAsync(string name)
-    {
-        SqlConnection.ClearAllPools();
-        await using var connection = new SqlConnection(SqlServer.ConnectionString());
-        await connection.OpenAsync();
-        await new SqlCommand(
-            $"IF DB_ID(N'{name}') IS NOT NULL BEGIN ALTER DATABASE [{name}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [{name}]; END",
-            connection).ExecuteNonQueryAsync();
-    }
-
-    protected override DbContextOptions<Db> Options(string connection) =>
-        new DbContextOptionsBuilder<Db>().UseSqlServer(connection).Options;
-}
-//#endif

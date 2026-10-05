@@ -3,12 +3,6 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-//#if (Database != "mssql")
-using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.Postgres;
-//#endif
-//#if (Database != "postgres")
-using NamespaceRoot.ProductName.Common.Infrastructure.Persistence.SqlServer;
-//#endif
 
 namespace NamespaceRoot.ProductName.Common.Infrastructure.Persistence.EntityFramework;
 
@@ -33,7 +27,7 @@ public sealed class MigrationRunner
 
         var sw = Stopwatch.StartNew();
 
-        var migrationLock = LockFor(context);
+        var migrationLock = DatabaseProvider.CreateMigrationLock();
         using var lockConnection = migrationLock.Connect(connectionString);
 
         try
@@ -102,19 +96,5 @@ public sealed class MigrationRunner
     {
         var hash = SHA256.HashData(Encoding.UTF8.GetBytes(scope));
         return BitConverter.ToInt64(hash, 0);
-    }
-
-    // One provider per generated solution; the template's own sources keep every one, so each is asked in turn.
-    private static IMigrationLock LockFor(DbContext context)
-    {
-//#if (Database != "mssql")
-        if (context.Database.IsNpgsql())
-            return new PostgresMigrationLock();
-//#endif
-//#if (Database != "postgres")
-        if (context.Database.IsSqlServer())
-            return new SqlServerMigrationLock();
-//#endif
-        throw new InvalidOperationException($"No migration lock for the provider {context.Database.ProviderName}.");
     }
 }
