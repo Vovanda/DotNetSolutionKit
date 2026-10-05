@@ -64,6 +64,7 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--Storage` | `false` | [Object storage](../features/object-storage.md), S3-compatible. |
 | `-CH`, `--ClickHouse` | `false` | [ClickHouse](../features/clickhouse.md): connections, schema check, readiness. |
 | `--MongoDB` | `false` | [MongoDB](../features/mongodb.md) beside the main database: the client, the service's database, readiness. |
+| `--Notify` | none | Channels of [notifications](../features/notifications.md): `email` - through SMTP or Graph API, with a sandbox outside Production. |
 | `--TestFramework` | `nunit` | Test framework of the service's tests, `nunit` or `xunit` (v3); per service. `Common`'s own tests stay on NUnit. See [testing](../architecture/testing.md). |
 | `--Audit` | `false` | [Audit journal](../features/audit.md) of entity changes; takes effect only with `--Messaging outbox`. |
 | `--ApiGateway` | `false` | An [API gateway](../features/api-gateway.md) on YARP in place of a service. With `-M true` only. |
@@ -71,8 +72,8 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--Agent` | `claude` | [Rules and skills for an AI agent](working-with-ai-agents.md): `claude`, `opencode` or `none`. With `-M false`. |
 | `--HttpPort` | free port | Port in `launchSettings.json` and on the host under compose; without it, a free port from 5000-5999 on the generating machine, so services generated one after another do not share a port. |
 
-`-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage`, `--ClickHouse`, `--MongoDB` and `--Audit` add files to `Common`, so they have to be
-passed with `-M false`, when `Common` is generated. Pass `-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--Storage`, `--ClickHouse`, `--MongoDB` and `--Audit` again to
+`-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage`, `--ClickHouse`, `--MongoDB`, `--Notify` and `--Audit` add files to `Common`, so they have to be
+passed with `-M false`, when `Common` is generated. Pass `-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--Storage`, `--ClickHouse`, `--MongoDB`, `--Notify` and `--Audit` again to
 each service generated later that should use them: they change the service's code too, and the service
 then wires what `Common` already has. A service generated without them leaves them out.
 

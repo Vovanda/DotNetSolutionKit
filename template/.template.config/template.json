@@ -8,7 +8,7 @@
   },
   "identity": "SawKing.DotNetSolutionKit",
   "name": "DotNet Solution Kit",
-  "description": "Microservices on .NET 8 and PostgreSQL: shared Common libraries and services split into domain, application, infrastructure and API projects; the message bus, secrets, feature flags, object storage, ClickHouse, MongoDB, a gateway, deployment files and CI by flags. Documentation: https://dnsk.sawking.tech/",
+  "description": "Microservices on .NET 8 and PostgreSQL: shared Common libraries and services split into domain, application, infrastructure and API projects; the message bus, secrets, feature flags, object storage, ClickHouse, MongoDB, email, a gateway, deployment files and CI by flags. Documentation: https://dnsk.sawking.tech/",
   "shortName": "DotNetSolutionKit",
   "preferNameDirectory": false,
 
@@ -134,6 +134,21 @@
       "datatype": "bool",
       "defaultValue": "false",
       "description": "MongoDB beside the main database: the client, the service's database and readiness in Common, registered in the service"
+    },
+    "Notify": {
+      "type": "parameter",
+      "datatype": "choice",
+      "allowMultipleValues": true,
+      "enableQuotelessLiterals": true,
+      "defaultValue": "",
+      "choices": [
+        { "choice": "email", "description": "Email through SMTP or Graph API, with a sandbox outside Production" }
+      ],
+      "description": "Notifications and their channels, in Common, registered in the service; more than one channel may be given"
+    },
+    "NotifyEmail": {
+      "type": "computed",
+      "value": "(Notify == email)"
     },
     "Audit": {
       "type": "parameter",
@@ -385,6 +400,15 @@
             "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Mongo/**",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Tests/Mongo/**",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/Mongo*.cs"
+          ]
+        },
+        {
+          "condition": "(!NotifyEmail)",
+          "exclude": [
+            "src/common/NamespaceRoot.ProductName.Common.Application/Notifications/**",
+            "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Notifications/**",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Tests/Notifications/**",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/Smtp*.cs"
           ]
         },
         {

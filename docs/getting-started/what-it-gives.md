@@ -22,6 +22,7 @@ mindmap
         S3 object storage
         ClickHouse
         MongoDB beside the main database
+        Email with a sandbox
         Audit journal through the outbox
         Feature flags
         API diff on pull requests

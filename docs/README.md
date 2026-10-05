@@ -16,6 +16,7 @@ mindmap
         S3 object storage
         ClickHouse
         MongoDB beside the main database
+        Email with a sandbox
         Audit journal through the outbox
         Feature flags
         API diff on pull requests
@@ -77,6 +78,7 @@ mindmap
 - [Object storage](features/object-storage.md): S3-compatible, `--Storage`
 - [ClickHouse](features/clickhouse.md): `--ClickHouse`
 - [MongoDB](features/mongodb.md): `--MongoDB`
+- [Notifications](features/notifications.md): email, `--Notify`
 - [Audit journal](features/audit.md): `--Audit`, with `--Messaging outbox`
 - [API gateway](features/api-gateway.md): YARP, `--ApiGateway`
 
