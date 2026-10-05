@@ -34,6 +34,7 @@ gantt
     MongoDB by flag, beside the main database :done, s22, after s21, 1000ms
     notifications by email, SMTP or Graph, with a sandbox :done, s23, after s22, 800ms
     another service asks for an email by a bus command :done, s24, after s23, 300ms
+    the site's release notes are in its HTML, for readers without JavaScript (#61) :done, s25, after s24, 500ms
 
     section Next
     3.0 on .NET 10 in master, with the path from 2.x; 2.x stays on .NET 8 :s15, after s9, 3000ms

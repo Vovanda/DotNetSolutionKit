@@ -36,7 +36,9 @@ several pull requests going at once and work on one while the checks of another 
   about, for whoever decides to update, in a sentence each; they are not a log of every change. The details
   are in the commits and the documentation, the steps to update in upgrading.
 - Documentation and the site (`docs/`, `index.html`, `docs.html`, `site/`) change in the same pull request
-  as what they describe. The site is served from `master`, so it describes the released version.
+  as what they describe. The site is published from `master` by [site.yml](.github/workflows/site.yml),
+  which promote.yml starts once master has moved; it writes the notes of the released versions from
+  `version.json` into `index.html`, so the site describes the released version.
 
 ## Releases
 

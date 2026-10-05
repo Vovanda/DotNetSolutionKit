@@ -1,6 +1,7 @@
 /* ==== WHAT'S NEW ==============================================================================
-   Every version as a digest, from version.json next to the page - the one source the GitHub release
-   and the package on nuget.org take the notes from too; a version's "ru" holds the Russian text, shown
+   Every version as a digest, from version.json - the one source the GitHub release and the package on
+   nuget.org take the notes from too; the published page carries them inside, a page served straight from
+   the repository asks for the file (loadReleaseNotes); a version's "ru" holds the Russian text, shown
    when the page is read in Russian. Each version is a paragraph: its headline led by its number, its points.
 
    The digest stands in a window of fixed height, so filling it moves nothing on the page and a short
@@ -13,9 +14,19 @@
    Four parts, each with one job: loading the notes, drawing the digest, the window and its buttons,
    the field. The entry at the bottom wires them. */
 
-/* The notes of the released versions, newest first; null when the file does not come. A version with a
-   label, as 2.8.0-rc on dev, is not out yet, so the page does not show it (CONTRIBUTING.md). */
+/* The notes of the released versions, newest first; null when they do not come. The published page has
+   them inside, written with the list by scripts/build-site.py, so it asks for nothing; a page served
+   straight from the repository asks for version.json. A version with a label, as 2.8.0-rc on dev, is not
+   out yet, so the page does not show it (CONTRIBUTING.md). */
 async function loadReleaseNotes() {
+  const built = document.getElementById("release-notes");
+  if (built) {
+    try {
+      return JSON.parse(built.textContent);
+    } catch (e) {
+      return null;
+    }
+  }
   try {
     const response = await fetch("version.json", { cache: "no-cache" });
     if (!response.ok) return null;
