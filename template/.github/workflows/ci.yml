@@ -97,6 +97,11 @@ jobs:
             -e CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1 \
             clickhouse/clickhouse-server:24.8-alpine
 #endif
+#if (NotifyEmail)
+
+      - name: Start an SMTP server for the tests
+        run: docker run -d --name tests-smtp -p 1025:1025 -p 8025:8025 mailhog/mailhog:v1.0.1
+#endif
 #if (MongoDB)
 
       - name: Start MongoDB for the tests
@@ -150,6 +155,9 @@ jobs:
 #if (ClickHouse)
             curl -fsS http://localhost:8123/ping >/dev/null 2>&1 || ready=0
 #endif
+#if (NotifyEmail)
+            curl -fsS "http://localhost:8025/api/v2/messages?limit=1" >/dev/null 2>&1 || ready=0
+#endif
 #if (MongoDB)
             docker exec tests-mongo mongosh --quiet -u tester -p test-do-not-use \
               --eval "db.adminCommand('ping').ok" >/dev/null 2>&1 || ready=0
@@ -180,6 +188,10 @@ jobs:
 #endif
 #if (ClickHouse)
           TEST_CLICKHOUSE: Host=localhost;Port=8123;Username=tester;Password=test-do-not-use
+#endif
+#if (NotifyEmail)
+          TEST_SMTP: localhost:1025
+          TEST_SMTP_API: http://localhost:8025/
 #endif
 #if (MongoDB)
           TEST_MONGO: mongodb://tester:test-do-not-use@localhost:27017/?authSource=admin

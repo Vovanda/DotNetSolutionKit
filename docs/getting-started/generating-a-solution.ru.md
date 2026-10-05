@@ -65,6 +65,7 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--Storage` | `false` | [Объектное хранилище](../features/object-storage.md), совместимое с S3. |
 | `-CH`, `--ClickHouse` | `false` | [ClickHouse](../features/clickhouse.md): подключения, проверка схемы, готовность. |
 | `--MongoDB` | `false` | [MongoDB](../features/mongodb.md) рядом с основной базой: клиент, база сервиса, готовность. |
+| `--Notify` | нет | Каналы [уведомлений](../features/notifications.md): `email` - через SMTP или Graph API, с песочницей вне Production. |
 | `--TestFramework` | `nunit` | Тестовый фреймворк для тестов сервиса, `nunit` или `xunit` (v3); задаётся для каждого сервиса. Собственные тесты `Common` остаются на NUnit. См. [тестирование](../architecture/testing.md). |
 | `--Audit` | `false` | [Журнал аудита](../features/audit.md) изменений сущностей; действует только с `--Messaging outbox`. |
 | `--ApiGateway` | `false` | [API-шлюз](../features/api-gateway.md) на YARP вместо сервиса. Только с `-M true`. |
@@ -72,10 +73,10 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--Agent` | `claude` | [Правила и скиллы для ИИ-агента](working-with-ai-agents.md): `claude`, `opencode` или `none`. С `-M false`. |
 | `--HttpPort` | свободный порт | Порт в `launchSettings.json` и на хосте под compose. Без параметра берётся свободный порт из диапазона 5000-5999 на машине, где идёт генерация, поэтому сервисы, сгенерированные один за другим, не получают один и тот же порт. |
 
-`-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage`, `--ClickHouse`, `--MongoDB` и `--Audit` добавляют
+`-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage`, `--ClickHouse`, `--MongoDB`, `--Notify` и `--Audit` добавляют
 файлы в `Common`, поэтому их нужно передать с `-M false`, когда генерируется `Common`. Каждому сервису,
 сгенерированному позже, которому они нужны, передайте `-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--Storage`,
-`--ClickHouse`, `--MongoDB` и `--Audit` ещё раз: они меняют и код сервиса, и сервис подключает то, что уже есть в
+`--ClickHouse`, `--MongoDB`, `--Notify` и `--Audit` ещё раз: они меняют и код сервиса, и сервис подключает то, что уже есть в
 `Common`. Сервис, сгенерированный без них, обходится без этих частей.
 
 ## Имена с точками

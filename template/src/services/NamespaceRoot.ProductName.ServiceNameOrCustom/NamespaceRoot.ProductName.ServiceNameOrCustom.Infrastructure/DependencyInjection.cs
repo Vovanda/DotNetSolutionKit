@@ -21,6 +21,9 @@ using NamespaceRoot.ProductName.Common.Infrastructure.ClickHouse;
 //#if (MongoDB)
 using NamespaceRoot.ProductName.Common.Infrastructure.Mongo;
 //#endif
+//#if (NotifyEmail)
+using NamespaceRoot.ProductName.Common.Infrastructure.Notifications;
+//#endif
 //#if (Storage)
 using NamespaceRoot.ProductName.Common.Infrastructure.Storage;
 //#endif
@@ -121,6 +124,11 @@ public static partial class DependencyInjection
 //#if (MongoDB)
         // MongoDB, the MongoDB section: the client, the service's database, readiness
         services.AddMongoDB(configuration);
+
+//#endif
+//#if (NotifyEmail)
+        // Email, the Email section: the transport of the provider it names, the sandbox outside Production
+        services.AddNotifications(configuration);
 
 //#endif
 //#if (Storage)

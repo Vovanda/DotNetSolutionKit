@@ -5,13 +5,15 @@
       "headline": "",
       "highlights": [
         "Coverage on demand, with a report per service.",
-        "MongoDB by flag, beside the main database."
+        "MongoDB by flag, beside the main database.",
+        "Notifications by email, through SMTP or Graph API, with a sandbox that keeps a test stand from mailing anyone outside."
       ],
       "ru": {
         "headline": "",
         "highlights": [
           "Покрытие по запросу, с отчётом по каждому сервису.",
-          "MongoDB по флагу, рядом с основной базой."
+          "MongoDB по флагу, рядом с основной базой.",
+          "Уведомления почтой, через SMTP или Graph API, с песочницей, которая не даёт тестовому стенду писать никому снаружи."
         ]
       }
     },

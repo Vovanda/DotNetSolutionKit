@@ -49,6 +49,7 @@ window.SITE = {
       ["storage", "docs/features/object-storage", ["Object storage", "Объектное хранилище"], true],
       ["clickhouse", "docs/features/clickhouse", ["ClickHouse", "ClickHouse"], true],
       ["mongodb", "docs/features/mongodb", ["MongoDB", "MongoDB"], true],
+      ["notifications", "docs/features/notifications", ["Notifications", "Уведомления"], true],
       ["audit", "docs/features/audit", ["Audit journal", "Журнал аудита"], true],
       ["gateway", "docs/features/api-gateway", ["API gateway", "API-шлюз"], true],
     ]},

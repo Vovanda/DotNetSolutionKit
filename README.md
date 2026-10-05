@@ -58,6 +58,7 @@ shows their files and how their CI ran.
 | `--Storage` | `false` | [Object storage](docs/features/object-storage.md), S3-compatible. |
 | `-CH`, `--ClickHouse` | `false` | [ClickHouse](docs/features/clickhouse.md): connections, schema check, readiness. |
 | `--MongoDB` | `false` | [MongoDB](docs/features/mongodb.md) beside the main database: the client, the service's database, readiness. |
+| `--Notify` | none | Channels of [notifications](docs/features/notifications.md): `email` - through SMTP or Graph API, with a sandbox outside Production. |
 | `--TestFramework` | `nunit` | Test framework of the service's tests: `nunit` or `xunit` (v3). |
 | `--Audit` | `false` | [Audit journal](docs/features/audit.md) of entity changes, through the outbox; with `--Messaging outbox`. |
 | `--ApiGateway` | `false` | An [API gateway](docs/features/api-gateway.md) on YARP in place of a service, with `-M true`. |

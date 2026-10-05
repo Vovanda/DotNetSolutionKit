@@ -16,6 +16,7 @@ mindmap
         S3 object storage
         ClickHouse
         MongoDB beside the main database
+        Email with a sandbox
         Audit journal through the outbox
         Feature flags
         API diff on pull requests
@@ -77,6 +78,7 @@ mindmap
 - [Объектное хранилище](features/object-storage.md): совместимое с S3, `--Storage`
 - [ClickHouse](features/clickhouse.md): `--ClickHouse`
 - [MongoDB](features/mongodb.md): `--MongoDB`
+- [Уведомления](features/notifications.md): почта, `--Notify`
 - [Журнал аудита](features/audit.md): `--Audit`, вместе с `--Messaging outbox`
 - [API-шлюз](features/api-gateway.md): YARP, `--ApiGateway`
 
