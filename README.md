@@ -51,7 +51,7 @@ shows their files and how their CI ran.
 | `-I`, `--Infisical` | `false` | [Secrets and settings from Infisical](docs/features/secrets.md). |
 | `--Vault` | `false` | [Secrets and settings from HashiCorp Vault](docs/features/secrets.md#hashicorp-vault). |
 | `--DiffApi` | `false` | [API contract diff](docs/features/api-diff.md) on pull requests. |
-| `--GitHubCiCd` | `false` | [CI on GitHub Actions](docs/features/ci.md): build, tests on real servers, coverage, secret scan. |
+| `--GitHubCiCd` | `false` | [CI on GitHub Actions](docs/features/ci.md): build, tests on real servers, coverage on demand, secret scan. |
 | `-FF`, `--FeatureFlags` | `false` | [Feature flags](docs/features/feature-flags.md). |
 | `--HierarchyRules` | `false` | [Access rules over a tenant tree](docs/features/hierarchy-rules.md). |
 | `--Storage` | `false` | [Object storage](docs/features/object-storage.md), S3-compatible. |

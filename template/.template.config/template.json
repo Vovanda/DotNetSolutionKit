@@ -258,7 +258,7 @@
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "false",
-      "description": "GitHub Actions workflows: build, unit and integration tests on real servers, coverage, and a secret scan of incoming commits"
+      "description": "GitHub Actions workflows: build, unit and integration tests on real servers, coverage on demand, and a secret scan of incoming commits"
     },
     "FeatureFlags": {
       "type": "parameter",
@@ -460,6 +460,7 @@
           "condition": "(!GitHubCiCd)",
           "exclude": [
             ".github/workflows/ci.yml",
+            ".github/workflows/coverage.yml",
             ".github/workflows/secret-scan.yml",
             "tools/gitleaks/**"
           ]

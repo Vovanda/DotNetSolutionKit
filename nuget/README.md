@@ -41,7 +41,7 @@ Generated solutions, regenerated from every release with their CI running:
 | `-I`, `--Infisical` | `false` | [Secrets and settings from Infisical](https://dnsk.sawking.tech/docs.html#secrets). |
 | `--Vault` | `false` | [Secrets and settings from HashiCorp Vault](https://dnsk.sawking.tech/docs.html#secrets:hashicorp-vault). |
 | `--DiffApi` | `false` | [API contract diff](https://dnsk.sawking.tech/docs.html#api-diff) on pull requests. |
-| `--GitHubCiCd` | `false` | [CI on GitHub Actions](https://dnsk.sawking.tech/docs.html#ci): build, tests on real servers, coverage, secret scan. |
+| `--GitHubCiCd` | `false` | [CI on GitHub Actions](https://dnsk.sawking.tech/docs.html#ci): build, tests on real servers, coverage on demand, secret scan. |
 | `-FF`, `--FeatureFlags` | `false` | [Feature flags](https://dnsk.sawking.tech/docs.html#feature-flags). |
 | `--HierarchyRules` | `false` | [Access rules over a tenant tree](https://dnsk.sawking.tech/docs.html#hierarchy-rules). |
 | `--Storage` | `false` | [Object storage](https://dnsk.sawking.tech/docs.html#storage), S3-compatible. |

@@ -59,7 +59,7 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `-I`, `--Infisical` | `false` | [Секреты из Infisical](../features/secrets.md). |
 | `--Vault` | `false` | [Секреты из HashiCorp Vault](../features/secrets.ru.md#hashicorp-vault). |
 | `--DiffApi` | `false` | [Сравнение контракта API](../features/api-diff.md) в pull request. |
-| `--GitHubCiCd` | `false` | [CI на GitHub Actions](../features/ci.md): сборка, тесты на настоящих серверах, покрытие, поиск секретов. С `-M false`: workflow покрывают все сервисы в `All.sln`. |
+| `--GitHubCiCd` | `false` | [CI на GitHub Actions](../features/ci.md): сборка, тесты на настоящих серверах, покрытие по запросу, поиск секретов. С `-M false`: workflow покрывают все сервисы в `All.sln`. |
 | `-FF`, `--FeatureFlags` | `false` | [Фича-флаги](../features/feature-flags.md). |
 | `--HierarchyRules` | `false` | [Правила доступа по дереву тенантов](../features/hierarchy-rules.md). |
 | `--Storage` | `false` | [Объектное хранилище](../features/object-storage.md), совместимое с S3. |

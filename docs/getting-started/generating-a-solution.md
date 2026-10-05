@@ -58,7 +58,7 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `-I`, `--Infisical` | `false` | [Secrets from Infisical](../features/secrets.md). |
 | `--Vault` | `false` | [Secrets from HashiCorp Vault](../features/secrets.md#hashicorp-vault). |
 | `--DiffApi` | `false` | [API contract diff](../features/api-diff.md) on pull requests. |
-| `--GitHubCiCd` | `false` | [CI on GitHub Actions](../features/ci.md): build, tests on real servers, coverage, secret scan. With `-M false`: the workflows cover every service in `All.sln`. |
+| `--GitHubCiCd` | `false` | [CI on GitHub Actions](../features/ci.md): build, tests on real servers, coverage on demand, secret scan. With `-M false`: the workflows cover every service in `All.sln`. |
 | `-FF`, `--FeatureFlags` | `false` | [Feature flags](../features/feature-flags.md). |
 | `--HierarchyRules` | `false` | [Access rules over a tenant tree](../features/hierarchy-rules.md). |
 | `--Storage` | `false` | [Object storage](../features/object-storage.md), S3-compatible. |
