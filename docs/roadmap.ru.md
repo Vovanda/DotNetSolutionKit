@@ -24,6 +24,7 @@ gantt
     gateway Swagger like a product's, open bugs closed :done, s11, after s10, 2000ms
     rules and skills for an AI agent, Claude Code or OpenCode (--Agent) :done, s12, after s11, 1000ms
     a marketplace on the template, end to end; what it finds is fixed :active, s13, after s12, 2000ms
+    a solution's coverage on demand, a report per service (#65) :active, s14, after s9, 1000ms
 
     section Next
     3.0 on .NET 10 in master, with the path from 2.x; 2.x stays on .NET 8 :s15, after s9, 3000ms

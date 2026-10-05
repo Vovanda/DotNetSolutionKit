@@ -3,10 +3,14 @@
   "releaseNotes": {
     "2.8.0-rc": {
       "headline": "",
-      "highlights": [],
+      "highlights": [
+        "Coverage on demand, with a report per service."
+      ],
       "ru": {
         "headline": "",
-        "highlights": []
+        "highlights": [
+          "Покрытие по запросу, с отчётом по каждому сервису."
+        ]
       }
     },
     "2.7.0": {

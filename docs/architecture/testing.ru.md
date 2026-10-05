@@ -125,5 +125,6 @@ TEST_SQLSERVER='Server=localhost,1433;User Id=sa;Password=Test-do-not-use-1;Trus
 dotnet test --collect:"XPlat Code Coverage"
 ```
 
-Каждый тестовый проект пишет отчёт Cobertura в `TestResults/`. С `--GitHubCiCd` CI сводит отчёты
+Каждый тестовый проект пишет отчёт Cobertura в `TestResults/`. С `--GitHubCiCd` покрытие снимается по
+запросу, а не на каждом пулл-реквесте: `coverage.yml` даёт отчёт по каждому сервису и по `Common` для
 unit- и интеграционных прогонов и может падать по порогу покрытия ветвей; см. [CI](../features/ci.md).

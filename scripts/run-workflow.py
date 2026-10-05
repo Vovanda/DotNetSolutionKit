@@ -14,8 +14,9 @@ What only GitHub has is handled the way GitHub does it, or refused:
   shipped workflow is then seen here, not skipped.
 - `uses:` steps of the actions below are passed by: the calling job checked out, installed the SDK and
   has nothing to cache or upload. Any other action stops the run.
-- `if:` is `always()`, `success()`, `failure()` or a comparison of an expression with ''. After a failed
-  step only `always()` and `failure()` steps run, and the run fails.
+- `if:` is `always()`, `success()`, `failure()` or a comparison of an expression with '', true or false
+  (an input of type boolean given as true or false). After a failed step only `always()` and `failure()`
+  steps run, and the run fails.
 - `GITHUB_OUTPUT`, `GITHUB_ENV` and `GITHUB_STEP_SUMMARY` are files, read after each step.
 
 The YAML is read through yq, which GitHub's Ubuntu runners have.
@@ -63,13 +64,13 @@ def condition(expression, values, failed):
         return not failed
     if text == "failure()":
         return failed
-    match = re.fullmatch(r"([\w.\-]+)\s*(==|!=)\s*''", text)
+    match = re.fullmatch(r"([\w.\-]+)\s*(==|!=)\s*(''|true|false)", text)
     if match:
-        name, op = match.groups()
+        name, op, literal = match.groups()
         if name not in values:
             raise SystemExit(f"run-workflow: no value for {name} in if: {expression}")
-        empty = values[name] == ""
-        return (not failed) and (empty if op == "==" else not empty)
+        same = values[name] == ("" if literal == "''" else literal)
+        return (not failed) and (same if op == "==" else not same)
     raise SystemExit(f"run-workflow: cannot evaluate if: {expression}")
 
 
