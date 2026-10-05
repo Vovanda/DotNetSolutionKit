@@ -81,7 +81,7 @@ sequenceDiagram
 services.AddDomainEvents(typeof(ApplicationMarker).Assembly);
 services.AddDbContext<OrdersDbContext>((sp, options) =>
 {
-    options.UseNpgsql(connectionString);
+    options.UseDatabase(connectionString, OrdersDbContext.DefaultSchemaName);
     options.ApplyDomainEventInterceptors(sp);
 });
 ```

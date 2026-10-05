@@ -2,6 +2,7 @@ using NamespaceRoot.ProductName.Common.Contracts.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using NamespaceRoot.ProductName.Common.Infrastructure.Persistence;
 
 namespace NamespaceRoot.ProductName.Common.Infrastructure.Diagnostics;
 
@@ -23,7 +24,7 @@ public static class OutboxStatsQuery
         CancellationToken ct)
     {
         var outboxTable = ResolveOutboxTable(db);
-        var dialect = DialectFor(db);
+        var dialect = DatabaseProvider.CreateOutboxStatsDialect();
 
         // Aggregate counters across the whole table - pending vs sent + the age of the oldest pending row
         // + the freshness of the last sent row tells the operator at a glance whether the delivery worker
@@ -47,20 +48,6 @@ public static class OutboxStatsQuery
             LastSentAt = totals.LastSentAt,
             Sample = rows,
         };
-    }
-
-    // One provider per generated solution; the template's own sources keep every one.
-    private static IOutboxStatsDialect DialectFor(DbContext db)
-    {
-//#if (Database != "mssql")
-        if (db.Database.IsNpgsql())
-            return new PostgresOutboxStatsDialect();
-//#endif
-//#if (Database != "postgres")
-        if (db.Database.IsSqlServer())
-            return new SqlServerOutboxStatsDialect();
-//#endif
-        throw new InvalidOperationException($"No outbox statistics for the provider {db.Database.ProviderName}.");
     }
 
     /// <summary>The quoted, schema-qualified outbox table of <paramref name="db"/>.</summary>

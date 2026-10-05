@@ -149,6 +149,12 @@ behind the same seam, and only one of the two goes into a generated solution:
 | Hangfire storage | `Hangfire.PostgreSql` | `Hangfire.SqlServer` |
 | outbox | MassTransit on PostgreSQL | MassTransit on SQL Server |
 
+Which of the two a solution has is known in one place, `DatabaseProvider` in `Common.Infrastructure`: the
+service and `Common` ask it for the EF provider, the schema guard, the migration lock, the outbox's lock
+statements and statistics, the search and the readable numbers, and never name a provider themselves.
+Hangfire keeps a storage package per database, so a service's `DependencyInjection.BackgroundJobs.cs` is the
+second place that knows it. A third database touches these two files and the implementations behind them.
+
 What a team notices:
 
 - The guard creates the database of the connection string when there is none: the SQL Server container
