@@ -39,6 +39,7 @@ mindmap
 
 ## Начало работы
 
+- [Что даёт шаблон](getting-started/what-it-gives.md): что получает решение, принципы, цена и риски
 - [Генерация решения](getting-started/generating-a-solution.md): установка, параметры, имена с точками,
   локальный запуск
 - [Версии шаблона](getting-started/upgrading.md): v1 и v2, что изменилось, как обновиться
