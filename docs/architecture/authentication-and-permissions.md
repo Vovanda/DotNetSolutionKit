@@ -4,10 +4,15 @@
 
 A service authenticates every request itself, with one composite scheme:
 
-- a JWT, from the `Authorization: Bearer` header or the access-token cookie, when a `Jwt` section is
-  configured. A service that only validates tokens needs the public key; the signing key stays with the
+- a JWT, from the `Authorization: Bearer` header or the access-token cookie, when `Jwt:PublicKeyPath`
+  is set. A service that only validates tokens needs the public key; the signing key stays with the
   service that issues them;
-- an `X-API-Key` for calls between services and from the platform itself.
+- an `X-API-Key` for every other request: calls between services and from the platform itself.
+
+A request with a token goes to the JWT scheme when it is configured, any other to the API key handler.
+The [gateway](../features/api-gateway.md) forwards the caller it verified with its internal key and passes
+the token on: a service without `Jwt:PublicKeyPath`, the default, takes the request by the key; a service
+with it validates the token again.
 
 `Common.Web` has helpers that set and clear the access and refresh token cookies.
 
