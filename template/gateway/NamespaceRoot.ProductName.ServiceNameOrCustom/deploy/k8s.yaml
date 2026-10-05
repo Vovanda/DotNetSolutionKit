@@ -29,6 +29,12 @@ spec:
       containers:
         - name: service-name-kebab
           image: __REGISTRY__/productnamelower-servicenameorcustom:__TAG__
+          # The root filesystem is read-only: the running container is changed only by a new image, which
+          # passes review and CI, so features.json and the code cannot be edited in place. /tmp stays
+          # writable for what .NET and ASP.NET Core keep there: the diagnostics socket, large request bodies.
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
           ports:
             - name: http
               containerPort: 8080
@@ -45,6 +51,8 @@ spec:
             - name: jwt
               mountPath: /app/keys
               readOnly: true
+            - name: tmp
+              mountPath: /tmp
           readinessProbe:
             httpGet:
               path: /ready
@@ -67,6 +75,10 @@ spec:
           secret:
             secretName: service-name-kebab-jwt
             optional: true
+        - name: tmp
+          emptyDir:
+            medium: Memory
+            sizeLimit: 64Mi
 ---
 apiVersion: v1
 kind: Service

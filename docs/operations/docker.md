@@ -42,6 +42,11 @@ and would give every build a new digest.
 - The ASP.NET runtime image, with `curl` for the health check.
 - The service runs as an unprivileged user (uid 1000) on port 8080.
 - `HEALTHCHECK` calls `/health`.
+- The container's root filesystem is read-only under compose (`read_only`) and Kubernetes
+  (`readOnlyRootFilesystem`), with `/tmp` in memory for what .NET and ASP.NET Core keep there. A running
+  container is changed only by a new image, which passes review and CI: nobody edits `features.json` or
+  the code in place. The service logs to stdout; a file log is set only in `appsettings.Local.json`, for a
+  developer's machine.
 
 `.dockerignore` keeps build output, IDE folders, logs, `.git` and every `appsettings.Secrets.json` out of
 the build context.
