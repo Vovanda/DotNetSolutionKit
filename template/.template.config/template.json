@@ -8,7 +8,7 @@
   },
   "identity": "SawKing.DotNetSolutionKit",
   "name": "DotNet Solution Kit",
-  "description": "Microservices on .NET 8 and PostgreSQL: shared Common libraries and services split into domain, application, infrastructure and API projects; the message bus, secrets, feature flags, object storage, ClickHouse, a gateway, deployment files and CI by flags. Documentation: https://dnsk.sawking.tech/",
+  "description": "Microservices on .NET 8 and PostgreSQL: shared Common libraries and services split into domain, application, infrastructure and API projects; the message bus, secrets, feature flags, object storage, ClickHouse, MongoDB, a gateway, deployment files and CI by flags. Documentation: https://dnsk.sawking.tech/",
   "shortName": "DotNetSolutionKit",
   "preferNameDirectory": false,
 
@@ -128,6 +128,12 @@
       "datatype": "bool",
       "defaultValue": "false",
       "description": "ClickHouse connections, schema check and readiness in Common, registered in the service"
+    },
+    "MongoDB": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "MongoDB beside the main database: the client, the service's database and readiness in Common, registered in the service"
     },
     "Audit": {
       "type": "parameter",
@@ -371,6 +377,14 @@
             "src/common/NamespaceRoot.ProductName.Common.Infrastructure/ClickHouse/**",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Tests/ClickHouse/**",
             "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/ClickHouse*.cs"
+          ]
+        },
+        {
+          "condition": "(!MongoDB)",
+          "exclude": [
+            "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Mongo/**",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Tests/Mongo/**",
+            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/Mongo*.cs"
           ]
         },
         {

@@ -97,6 +97,14 @@ jobs:
             -e CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1 \
             clickhouse/clickhouse-server:24.8-alpine
 #endif
+#if (MongoDB)
+
+      - name: Start MongoDB for the tests
+        run: |
+          docker run -d --name tests-mongo -p 27017:27017 \
+            -e MONGO_INITDB_ROOT_USERNAME=tester -e MONGO_INITDB_ROOT_PASSWORD=test-do-not-use \
+            mongo:7.0
+#endif
 #if (Storage)
 
       - name: Start S3-compatible storage for the tests
@@ -142,6 +150,10 @@ jobs:
 #if (ClickHouse)
             curl -fsS http://localhost:8123/ping >/dev/null 2>&1 || ready=0
 #endif
+#if (MongoDB)
+            docker exec tests-mongo mongosh --quiet -u tester -p test-do-not-use \
+              --eval "db.adminCommand('ping').ok" >/dev/null 2>&1 || ready=0
+#endif
 #if (Storage)
             echo "s3.bucket.create -name tests" | docker exec -i tests-s3 weed shell -master=localhost:9333 2>&1 \
               | grep -qE 'created|exists' || ready=0
@@ -168,6 +180,9 @@ jobs:
 #endif
 #if (ClickHouse)
           TEST_CLICKHOUSE: Host=localhost;Port=8123;Username=tester;Password=test-do-not-use
+#endif
+#if (MongoDB)
+          TEST_MONGO: mongodb://tester:test-do-not-use@localhost:27017/?authSource=admin
 #endif
 #if (Storage)
           TEST_S3: ServiceUrl=http://localhost:8333;Bucket=tests;AccessKey=tester;SecretKey=test-do-not-use

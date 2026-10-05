@@ -4,12 +4,14 @@
     "2.8.0-rc": {
       "headline": "",
       "highlights": [
-        "Coverage on demand, with a report per service."
+        "Coverage on demand, with a report per service.",
+        "MongoDB by flag, beside the main database."
       ],
       "ru": {
         "headline": "",
         "highlights": [
-          "Покрытие по запросу, с отчётом по каждому сервису."
+          "Покрытие по запросу, с отчётом по каждому сервису.",
+          "MongoDB по флагу, рядом с основной базой."
         ]
       }
     },

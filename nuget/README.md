@@ -3,7 +3,7 @@
 A `dotnet new` template for microservices on .NET 8 and PostgreSQL or SQL Server. It generates a solution with shared
 `Common` libraries and services split into domain, application, infrastructure and API projects. The host,
 errors, validation, persistence, domain events, background jobs and tests are wired in every service; the
-message bus, secrets, feature flags, object storage, ClickHouse, an API gateway, deployment files and CI are
+message bus, secrets, feature flags, object storage, ClickHouse, MongoDB, an API gateway, deployment files and CI are
 switched on by flags.
 
 **Site and documentation, in English and Russian: [dnsk.sawking.tech](https://dnsk.sawking.tech/)**
@@ -46,6 +46,7 @@ Generated solutions, regenerated from every release with their CI running:
 | `--HierarchyRules` | `false` | [Access rules over a tenant tree](https://dnsk.sawking.tech/docs.html#hierarchy-rules). |
 | `--Storage` | `false` | [Object storage](https://dnsk.sawking.tech/docs.html#storage), S3-compatible. |
 | `-CH`, `--ClickHouse` | `false` | [ClickHouse](https://dnsk.sawking.tech/docs.html#clickhouse): connections, schema check, readiness. |
+| `--MongoDB` | `false` | [MongoDB](https://dnsk.sawking.tech/docs.html#mongodb) beside the main database: the client, the service's database, readiness. |
 | `--TestFramework` | `nunit` | Test framework of the service's tests: `nunit` or `xunit` (v3). |
 | `--Audit` | `false` | [Audit journal](https://dnsk.sawking.tech/docs.html#audit) of entity changes, through the outbox; with `--Messaging outbox`. |
 | `--ApiGateway` | `false` | An [API gateway](https://dnsk.sawking.tech/docs.html#gateway) on YARP in place of a service, with `-M true`. |

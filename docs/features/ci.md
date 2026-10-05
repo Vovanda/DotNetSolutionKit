@@ -14,7 +14,7 @@ Runs on every pull request, on a push to `main` or `master`, and by hand, with c
 2. Builds `All.sln` in Release.
 3. Runs the unit tests: everything outside the category `TestCategory=Integration` (`[Integration]` in a service, `[Category(TestCategories.Integration)]` in `Common`).
 4. Runs the integration tests against real servers started in the job: PostgreSQL always, ClickHouse with
-   `--ClickHouse`, SeaweedFS with `--Storage`. PostgreSQL keeps its data on a ramdisk with durability off,
+   `--ClickHouse`, MongoDB with `--MongoDB`, SeaweedFS with `--Storage`. PostgreSQL keeps its data on a ramdisk with durability off,
    which is safe only because the data dies with the job. See [testing](../architecture/testing.md).
 5. With coverage asked for, measures it over both runs: a report per service and one for `Common`, a summary
    of each on the run page, the HTML reports as an artifact. Left out is wiring with no logic of its own:

@@ -15,6 +15,7 @@ mindmap
         Secrets from Infisical or Vault
         S3 object storage
         ClickHouse
+        MongoDB beside the main database
         Audit journal through the outbox
         Feature flags
         API diff on pull requests
@@ -75,6 +76,7 @@ mindmap
 - [Правила доступа по дереву тенантов](features/hierarchy-rules.md): `--HierarchyRules`
 - [Объектное хранилище](features/object-storage.md): совместимое с S3, `--Storage`
 - [ClickHouse](features/clickhouse.md): `--ClickHouse`
+- [MongoDB](features/mongodb.md): `--MongoDB`
 - [Журнал аудита](features/audit.md): `--Audit`, вместе с `--Messaging outbox`
 - [API-шлюз](features/api-gateway.md): YARP, `--ApiGateway`
 

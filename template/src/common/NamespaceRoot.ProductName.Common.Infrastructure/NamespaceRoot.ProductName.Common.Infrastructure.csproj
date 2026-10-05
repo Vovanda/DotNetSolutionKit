@@ -20,6 +20,9 @@
         <!--#if (ClickHouse) -->
         <PackageReference Include="ClickHouse.Client" />
         <!--#endif -->
+        <!--#if (MongoDB) -->
+        <PackageReference Include="MongoDB.Driver" />
+        <!--#endif -->
         <PackageReference Include="Hangfire.Core" />
         <PackageReference Include="MassTransit.RabbitMQ" />
         <PackageReference Include="MassTransit.EntityFrameworkCore" />
