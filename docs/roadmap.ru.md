@@ -29,6 +29,7 @@ gantt
     the map of what a solution gets knows every flag of 2.7 :done, s17, after s16, 300ms
     tests carry one set of attributes on NUnit and xUnit, no #if :done, s18, after s17, 500ms
     the database is chosen in one place, DatabaseProvider :done, s19, after s18, 500ms
+    Samples full-alt: SQL Server, xUnit, Vault, Kubernetes, audit :done, s20, after s19, 300ms
 
     section Next
     3.0 on .NET 10 in master, with the path from 2.x; 2.x stays on .NET 8 :s15, after s9, 3000ms
