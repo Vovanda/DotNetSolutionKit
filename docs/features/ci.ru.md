@@ -12,7 +12,7 @@
    `src/services/manual-add-projects.sh`; если про это забыть, сервис выпадет из сборки и из тестов, и
    ничего не упадёт.
 2. Собирает `All.sln` в Release.
-3. Запускает юнит-тесты: всё, что не помечено `[Category(TestCategories.Integration)]`.
+3. Запускает юнит-тесты: всё вне категории `TestCategory=Integration` (`[Integration]` в сервисе, `[Category(TestCategories.Integration)]` в `Common`).
 4. Запускает интеграционные тесты на реальных серверах, поднятых в джобе: PostgreSQL всегда, ClickHouse
    с `--ClickHouse`, SeaweedFS с `--Storage`. PostgreSQL держит данные на ramdisk с выключенной
    надёжностью записи; это безопасно только потому, что данные умирают вместе с джобом. См.

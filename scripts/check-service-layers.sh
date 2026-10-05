@@ -86,11 +86,6 @@ CS
     echo "with a consumer"
 fi
 
-if grep -q 'Include="xunit' "$dir/$root.$service.Tests/$root.$service.Tests.csproj"; then
-    test_attr="[Fact]" fixture=""
-else
-    test_attr='[Test(Description = "probe")]' fixture="[TestFixture]"
-fi
 cat > "$dir/$root.$service.Tests/Tests/LayerProbe/LayerProbeTests.cs" <<CS
 using $root.Common.Contracts.LayerProbe;
 using $root.Common.Domain.Context;
@@ -101,7 +96,6 @@ using $root.$service.Application.LayerProbe;
 
 namespace $root.$service.Tests.Tests.LayerProbe;
 
-$fixture
 public class LayerProbeTests
 {
     private static ServiceTestExecutionContext<LayerProbeService> Context()
@@ -112,14 +106,14 @@ public class LayerProbeTests
         return context;
     }
 
-    $test_attr
+    [Test(Description = "probe")]
     public async Task Answers_With_The_Contract()
     {
         await using var ctx = Context();
         ctx.Act(s => s.Get("probe")).ShouldBe(new LayerProbeResponse("probe", Guid.Parse(TestDomainExecutionContext.DefaultTestUserId)));
     }
 
-    $test_attr
+    [Test(Description = "probe")]
     public async Task Refuses_With_The_Common_Exception()
     {
         await using var ctx = Context();

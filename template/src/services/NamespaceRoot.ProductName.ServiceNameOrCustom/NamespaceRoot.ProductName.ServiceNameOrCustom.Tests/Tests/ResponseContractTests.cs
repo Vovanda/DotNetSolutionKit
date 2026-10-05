@@ -6,16 +6,9 @@ namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Tests.Tests;
 /// <summary>
 /// What the service's controllers answer with.
 /// </summary>
-//#if (TestFramework == "nunit")
-[TestFixture]
-//#endif
 public class ResponseContractTests
 {
-//#if (TestFramework == "xunit")
-    [Fact]
-//#else
     [Test]
-//#endif
     public void No_response_carries_a_token()
     {
         TokensInResponses.Find(typeof(SchemaHost).Assembly).ShouldBeEmpty(

@@ -142,6 +142,22 @@ public InMemoryTestExecutionContext()
 который стартует при упавшем хранилище, вне `Local` не стартует. Где был задан `Infisical__SnapshotPath` или
 `Vault__SnapshotPath`, удалите ключ и файл снимка: в нём лежат секреты, а обновлять его больше некому.
 
+## С v2.7 на v2.8
+
+### Тесты сервиса носят один набор атрибутов
+
+Тестовые проекты сервиса и шлюза получают `TestFramework.cs` - единственный файл, который знает тестовый
+фреймворк, - вместо `GlobalUsings.cs` и `TestSkipSetup.cs`. Тесты носят его атрибуты - `[Test]`,
+`[TestOf]`, `[Integration]`, `[RunsInParallel]`, `[RunsAlone]` - без `#if` по фреймворку, и скилл
+`add-tests` пишет их так же. Перенос: взять `TestFramework.cs` из сервиса, сгенерированного v2.8 с тем же
+`--TestFramework`, удалить два старых файла и заменить в тестах `[TestFixture]`,
+`[Parallelizable(ParallelScope.All)]`, `[NonParallelizable]` и `[Category(TestCategories.Integration)]` на
+ничего, `[RunsInParallel]`, `[RunsAlone]` и `[Integration]`; на xUnit - `[Fact]` и
+`[Fact(DisplayName = ...)]` на `[Test]` и `[Test(Description = ...)]`, trait интеграционных тестов на
+`[Integration]`, а `[Collection]`, чьё определение отключает параллельность, на `[RunsAlone]`. Под NUnit файл создаёт fixture на каждый тест:
+fixture, которая держит состояние между тестами в полях или готовится в `[OneTimeSetUp]` на экземпляре,
+должна сделать это состояние статическим или перенести его в каждый тест.
+
 ## Не генерируйте поверх старого решения
 
 `dotnet new ... --force` поверх решения, сгенерированного из `v1`, перезаписывает файлы, которые изменила

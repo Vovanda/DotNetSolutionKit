@@ -27,6 +27,7 @@ gantt
     a solution's coverage on demand, a report per service (#65) :done, s14, after s9, 1000ms
     a page on what the template gives: principles, economics, price :done, s16, after s14, 500ms
     the map of what a solution gets knows every flag of 2.7 :done, s17, after s16, 300ms
+    tests carry one set of attributes on NUnit and xUnit, no #if :done, s18, after s17, 500ms
 
     section Next
     3.0 on .NET 10 in master, with the path from 2.x; 2.x stays on .NET 8 :s15, after s9, 3000ms

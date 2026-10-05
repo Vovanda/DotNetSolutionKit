@@ -15,9 +15,6 @@ namespace NamespaceRoot.ProductName.ServiceNameOrCustom.Tests.Tests;
 /// What the gateway sends to a service: the request as YARP forwards it with the gateway's transforms,
 /// caught before it leaves the gateway.
 /// </summary>
-//#if (TestFramework == "nunit")
-[TestFixture]
-//#endif
 public class GatewayTransformsTests
 {
     private const string Site = "https://app.example.com";
@@ -61,11 +58,7 @@ public class GatewayTransformsTests
         answer.Headers.Where(h => h.Key.StartsWith("Access-Control-", StringComparison.OrdinalIgnoreCase))
             .Select(h => $"{h.Key}: {string.Join(",", h.Value)}").OrderBy(h => h).ToArray();
 
-//#if (TestFramework == "xunit")
-    [Fact]
-//#else
     [Test]
-//#endif
     public async Task The_service_does_not_see_the_origin()
     {
         var request = FromSite();
@@ -78,20 +71,12 @@ public class GatewayTransformsTests
         sent.Headers.AcceptLanguage.ToString().ShouldBe("de");
     }
 
-//#if (TestFramework == "xunit")
-    [Fact]
-//#else
     [Test]
-//#endif
     public async Task A_service_s_cors_headers_do_not_reach_the_client() =>
         Cors((await Forward(FromSite())).Answer).ShouldBeEmpty(
             "the gateway allows no origin, so the service's own CORS headers would let the site read the answer");
 
-//#if (TestFramework == "xunit")
-    [Fact]
-//#else
     [Test]
-//#endif
     public async Task The_gateway_s_cors_headers_reach_the_client() =>
         Cors((await Forward(FromSite(), ("Cors:AllowedOrigins:0", Site), ("Cors:AllowCredentials", "true"))).Answer)
             .ShouldBe([$"Access-Control-Allow-Credentials: true", $"Access-Control-Allow-Origin: {Site}"]);

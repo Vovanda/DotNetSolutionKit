@@ -9,9 +9,11 @@ project picks one, and sets `TestSkip.Handler` to how that framework skips a tes
 test project of `Common` itself.
 
 `--TestFramework xunit` generates the service's tests on xUnit v3 instead of NUnit; the infrastructure
-is the same. An xUnit integration test carries its category as a trait,
-`[Trait(TestCategories.TraitName, TestCategories.Integration)]`, so the filters
-`TestCategory=Integration` and `TestCategory!=Integration` select it as they select an NUnit category.
+is the same, and so are the tests. One file in the test project, `TestFramework.cs`, knows the framework:
+it defines the attributes the tests carry - `[Test]`, `[TestOf]`, `[Integration]`, `[RunsInParallel]`,
+`[RunsAlone]` - on top of the framework's own, so a test has no `#if` and a change of framework touches
+that file alone. `[Integration]` is an NUnit category and an xUnit trait named `TestCategory`, so the
+filters `TestCategory=Integration` and `TestCategory!=Integration` select the same tests on both.
 
 ## A service test
 
@@ -19,7 +21,7 @@ A base class builds the context for one class under test: the class, its real re
 `DbContext` on the in-memory provider, with mocks only for what leaves the service.
 
 ```csharp
-internal abstract class OrderServiceTestBase
+public abstract class OrderServiceTestBase
 {
     protected InMemoryTestExecutionContext<OrderService, OrdersDbContext> CreateTestContext()
     {
@@ -39,10 +41,9 @@ internal abstract class OrderServiceTestBase
 One fixture per method, in `OrderService.Place.Tests.cs`:
 
 ```csharp
-[TestFixture]
 [TestOf(typeof(OrderService))]
-[Parallelizable(ParallelScope.All)]
-internal class OrderServicePlaceTests : OrderServiceTestBase
+[RunsInParallel]
+public class OrderServicePlaceTests : OrderServiceTestBase
 {
     [Test(Description = "A placed order is saved with its lines")]
     public async Task Should_SaveTheOrder_When_TheCartHasLines()
@@ -76,8 +77,9 @@ A service's tests are on NUnit by default and on xUnit v3 with `--TestFramework 
 on NUnit. `Common.Testing`, which both reference, has no test framework: each in-memory test context names
 its database with a new Guid, and each test project tells it how its framework skips a test through
 `TestSkip.Handler`. Parallelism is the framework's own: NUnit runs a fixture marked
-`[Parallelizable]` alongside others, xUnit runs test classes in parallel and the tests of one class one
-after another.
+`[RunsInParallel]` alongside others, xUnit runs test classes in parallel and the tests of one class one
+after another. NUnit builds a fixture for each test, as xUnit does, so a test sets up in the constructor
+and cleans up in `Dispose` under both.
 
 Assertions use Shouldly, which is MIT-licensed; FluentAssertions moved to a commercial licence with
 version 8, which does not fit a template under MIT.
@@ -85,7 +87,8 @@ version 8, which does not fit a template under MIT.
 ## Integration tests
 
 What depends on PostgreSQL (transactions and the outbox, constraints, `ILIKE` and raw SQL, migrations)
-runs against a real database in fixtures marked `[Category(TestCategories.Integration)]`. They read the
+runs against a real database in tests of the category `TestCategory=Integration`: `[Integration]` in a
+service, `[Category(TestCategories.Integration)]` in `Common`. They read the
 connection string from `TEST_POSTGRES` and are skipped, with that reason, when it is not set, so a plain
 `dotnet test` needs no database:
 

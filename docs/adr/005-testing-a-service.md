@@ -32,7 +32,7 @@ Each kind of code gets the cheapest test that can fail when the code is wrong.
 | Pipeline | What a request goes through: validation, errors, permissions, pagination | a test server (`Microsoft.AspNetCore.TestHost`) | the outside world |
 | Contract | The OpenAPI document | `SchemaHost.Build` in schema-only mode | the infrastructure |
 | Rule | Rules over the code itself: every auditable entity is marked, every flag key exists | reflection over assemblies | nothing |
-| Integration | What depends on PostgreSQL | a real database, `[Category("Integration")]` | nothing |
+| Integration | What depends on PostgreSQL | a real database, `[Integration]` | nothing |
 
 ### Service, consumer: a real container and a database per test
 
@@ -43,7 +43,7 @@ style known as sociable unit tests.
   the `DbContext`; mocks stand only for what leaves the service.
 - **A database per test.** `InMemoryTestExecutionContext` gives every test its own EF Core in-memory
   database, named after the test. Tests share no state, so a fixture runs with
-  `[Parallelizable(ParallelScope.All)]`.
+  `[RunsInParallel]`.
 - **Arrange, act and assert in separate scopes.** `ArrangeAsync` seeds through one scope, `ActAsync`
   resolves the class under test in a fresh one, `AssertAsync` reads the database in another. An assertion
   sees what was saved, not an entity still tracked by the context that changed it.
@@ -53,10 +53,9 @@ style known as sociable unit tests.
   post-commit handlers run as they do in the service.
 
 ```csharp
-[TestFixture]
 [TestOf(typeof(OrderService))]
-[Parallelizable(ParallelScope.All)]
-internal class OrderServicePlaceTests : OrderServiceTestBase
+[RunsInParallel]
+public class OrderServicePlaceTests : OrderServiceTestBase
 {
     [Test(Description = "A placed order is saved with its lines")]
     public async Task Should_SaveTheOrder_When_TheCartHasLines()

@@ -33,7 +33,7 @@
 | Конвейер | То, через что проходит запрос: валидация, ошибки, права, пагинация | тестовый сервер (`Microsoft.AspNetCore.TestHost`) | внешний мир |
 | Контракт | Документ OpenAPI | `SchemaHost.Build` в режиме только схемы | инфраструктура |
 | Правило | Правила о самом коде: каждая аудируемая сущность помечена, каждый ключ флага существует | рефлексия по сборкам | ничего |
-| Интеграционный | То, что зависит от PostgreSQL | настоящая база данных, `[Category("Integration")]` | ничего |
+| Интеграционный | То, что зависит от PostgreSQL | настоящая база данных, `[Integration]` | ничего |
 
 ### Сервис и потребитель: настоящий контейнер и база на каждый тест
 
@@ -44,7 +44,7 @@
   и `DbContext`; моки стоят только на месте того, что выходит за пределы сервиса.
 - **База на каждый тест.** `InMemoryTestExecutionContext` даёт каждому тесту свою базу EF Core в памяти,
   названную по имени теста. Общего состояния у тестов нет, поэтому фикстура запускается с
-  `[Parallelizable(ParallelScope.All)]`.
+  `[RunsInParallel]`.
 - **Arrange, act и assert в разных областях.** `ArrangeAsync` заполняет данные через одну область,
   `ActAsync` получает тестируемый класс в новой, `AssertAsync` читает базу в третьей. Проверка видит то,
   что сохранено, а не сущность, которую ещё отслеживает изменивший её контекст.
@@ -54,10 +54,9 @@
   обработчики pre-save и post-commit выполняются так же, как в сервисе.
 
 ```csharp
-[TestFixture]
 [TestOf(typeof(OrderService))]
-[Parallelizable(ParallelScope.All)]
-internal class OrderServicePlaceTests : OrderServiceTestBase
+[RunsInParallel]
+public class OrderServicePlaceTests : OrderServiceTestBase
 {
     [Test(Description = "A placed order is saved with its lines")]
     public async Task Should_SaveTheOrder_When_TheCartHasLines()
