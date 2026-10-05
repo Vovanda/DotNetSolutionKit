@@ -9,14 +9,21 @@ mindmap
       Common once, a service per run
       Dotted names in every part
       Flags
+        PostgreSQL or SQL Server
         Hangfire jobs
         Message bus with outbox or direct
-        Infisical secrets
+        Secrets from Infisical or Vault
+        S3 object storage
+        ClickHouse
+        Audit journal through the outbox
         Feature flags
         API diff on pull requests
         Access rules over a tenant tree
         API gateway on YARP
+        CI on GitHub Actions
         Deploy with compose or Kubernetes
+        NUnit or xUnit
+        Rules and skills for an AI agent
     Architecture
       Layers with explicit references
       Domain events in three phases
@@ -61,7 +68,7 @@ mindmap
 
 - [Background jobs](features/background-jobs.md): Hangfire, `--Hangfire`
 - [Message bus](features/messaging.md): MassTransit, `--Messaging`
-- [Secrets from Infisical](features/secrets.md): `-I`
+- [Secrets from Infisical or Vault](features/secrets.md): `-I`, `--Vault`
 - [Feature flags](features/feature-flags.md): `--FeatureFlags`
 - [API diff](features/api-diff.md): `--DiffApi`
 - [CI on GitHub Actions](features/ci.md): `--GitHubCiCd`
