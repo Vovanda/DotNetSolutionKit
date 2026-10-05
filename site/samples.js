@@ -27,7 +27,8 @@ const raw = (branch, path) =>
 const DAY_MS = 86400000, WEEK = 7, YEAR_DAYS = 365;
 const ISO_DAY = "YYYY-MM-DD".length;
 const GRID = {
-  fadeDays: 30,        // a pass fades to blue, a failure to dark red, over this many days without a run
+  fadeDays: 30,        // a pass turns to ice, a failure to dark red, over this many days without a run
+  passStepDays: 2,     // a pass turns a step bluer every this many days, so the steps are told apart
   pastWeeks: 52,       // a year back
   futureWeeks: 8,      // the weeks after today that fade out
   aheadInView: 6,      // weeks after today in view when the grid opens on a narrow screen
@@ -230,11 +231,19 @@ async function fetchCopy() {
 }
 const sameData = (a, b) => JSON.stringify([a.variants, a.branches]) === JSON.stringify([b.variants, b.branches]);
 
+/* How far a day has gone from its result, 0 to 1, by the days since the run. A pass goes in steps, a
+   step bluer every two days and ice by day 30, so a branch a week without a run looks unlike one run
+   yesterday; a failure rots evenly. The same rule as ci-svg.py of the samples repository. */
+function fadeOf(ok, age) {
+  const days = ok ? Math.floor(age / GRID.passStepDays) * GRID.passStepDays : age;
+  return Math.min(days / GRID.fadeDays, 1);
+}
+
 // The dot has the colour today's cell of the sample's grid has: its last result, faded by the days since.
 function resultDot(run) {
-  const age = daysBetween(day(run.started), localDay(new Date()));
-  const fade = Math.min(age / GRID.fadeDays, 1);
-  return `<i class="dot ${run.conclusion === "success" ? "ok" : "bad"}" style="--fade:${(fade * 100).toFixed(0)}%"></i>`;
+  const ok = run.conclusion === "success";
+  const fade = fadeOf(ok, daysBetween(day(run.started), localDay(new Date())));
+  return `<i class="dot ${ok ? "ok" : "bad"}" style="--fade:${(fade * 100).toFixed(0)}%"></i>`;
 }
 
 /* ==== THE PANEL: SAMPLES ====
@@ -323,9 +332,10 @@ el("explorer").addEventListener("click", (event) => {
 
 /* ==== THE GRID OF DAYS: THE MODEL ====
    The year of the open branch, a column per week, like the contribution grid of a GitHub profile,
-   running on past today into weeks that fade out. A day keeps the branch's last result: a pass freezes
-   to blue and a failure rots to dark red over 30 days without a run, so a branch nobody regenerates, or one
-   left broken, shows as one. This block only counts; the next one draws. */
+   running on past today into weeks that fade out. A day keeps the branch's last result: a pass turns to
+   ice a step every two days and a failure rots to dark red, over 30 days without a run (fadeOf), so a
+   branch nobody regenerates, or one left broken, shows as one. This block only counts; the next one
+   draws. */
 function dayCells(branch) {
   const runs = [];
   for (const report of branch?.reports ?? []) for (const run of report.runs) runs.push({ ...run, version: report.version });
@@ -398,7 +408,7 @@ function dayCell(c, idx) {
   const place = `grid-column:${c.week + 2};grid-row:${c.weekday + 2};--n:${c.week}`;
   if (c.future) return `<i class="day future" style="${place};--far:${Math.min(c.future / (WEEK * GRID.futureWeeks), 1).toFixed(2)}"></i>`;
   if (c.empty) return `<i class="day empty" style="${place}"></i>`;
-  const fade = Math.min(c.age / GRID.fadeDays, 1);
+  const fade = fadeOf(c.ok, c.age);
   const cls = ["day", c.ok ? "ok" : "bad", c.ran.length ? "ran" : "", c.today ? "today" : ""].filter(Boolean).join(" ");
   return `<button type="button" class="${cls}" style="${place};--fade:${(fade * 100).toFixed(0)}%" data-i="${idx}" aria-label="${c.key}"></button>`;
 }

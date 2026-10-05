@@ -61,7 +61,7 @@
 .days .m { grid-row: 1; font-size: 0.7rem; color: var(--muted); white-space: nowrap; line-height: 1rem; }
 .days .w { grid-column: 1; font-size: 0.65rem; color: var(--muted); line-height: var(--cell); }
 .day { display: block; width: var(--cell); height: var(--cell); padding: 0; border: 0; border-radius: 3px; background: var(--empty); }
-/* without a run a pass freezes to blue and a failure rots to dark red, over 30 days */
+/* without a run a pass turns to ice and a failure rots to dark red, over 30 days; --fade comes from fadeOf */
 .day.ok { background: color-mix(in oklab, var(--sleep) var(--fade), var(--ok)); }
 .day.bad { background: color-mix(in oklab, var(--rot) var(--fade), var(--bad)); }
 /* the weeks ahead are the same empty cells, fading out to the right */
