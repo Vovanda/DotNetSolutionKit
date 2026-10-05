@@ -20,6 +20,7 @@ mindmap
         Secrets from Infisical or Vault
         S3 object storage
         ClickHouse
+        MongoDB beside the main database
         Audit journal through the outbox
         Feature flags
         API diff on pull requests

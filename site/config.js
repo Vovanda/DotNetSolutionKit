@@ -48,6 +48,7 @@ window.SITE = {
       ["hierarchy-rules", "docs/features/hierarchy-rules", ["Access rules over a tenant tree", "Правила доступа по дереву тенантов"], true],
       ["storage", "docs/features/object-storage", ["Object storage", "Объектное хранилище"], true],
       ["clickhouse", "docs/features/clickhouse", ["ClickHouse", "ClickHouse"], true],
+      ["mongodb", "docs/features/mongodb", ["MongoDB", "MongoDB"], true],
       ["audit", "docs/features/audit", ["Audit journal", "Журнал аудита"], true],
       ["gateway", "docs/features/api-gateway", ["API gateway", "API-шлюз"], true],
     ]},

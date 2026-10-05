@@ -11,6 +11,7 @@
     "HierarchyRules": { "shortName": "" },
     "FeatureFlags": { "shortName": "FF" },
     "ClickHouse": { "shortName": "CH" },
+    "MongoDB": { "shortName": "" },
     "HttpPort": { "shortName": "" },
     "DiffApi": { "shortName": "" },
     "GitHubCiCd": { "shortName": "" },

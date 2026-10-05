@@ -16,7 +16,7 @@ each use, and nothing else:
 
 | Changes without a restart | Needs a restart |
 |---|---|
-| [feature flags](../features/feature-flags.md), read on each check | connection strings: the database, the bus, ClickHouse, object storage |
+| [feature flags](../features/feature-flags.md), read on each check | connection strings: the database, the bus, ClickHouse, MongoDB, object storage |
 | settings registered with `AddReloadableOptions` and read through `IReloadable<T>` | the JWT keys and issuer, the internal API key, CORS, the permission source |
 | | settings registered with `AddValidatedOptions`, the job server, logging |
 

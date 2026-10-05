@@ -18,6 +18,9 @@ using NamespaceRoot.ProductName.Common.Infrastructure.Persistence;
 //#if (ClickHouse)
 using NamespaceRoot.ProductName.Common.Infrastructure.ClickHouse;
 //#endif
+//#if (MongoDB)
+using NamespaceRoot.ProductName.Common.Infrastructure.Mongo;
+//#endif
 //#if (Storage)
 using NamespaceRoot.ProductName.Common.Infrastructure.Storage;
 //#endif
@@ -113,6 +116,11 @@ public static partial class DependencyInjection
 //#if (ClickHouse)
         // ClickHouse, the ClickHouse section: connections, the schema check, readiness
         services.AddClickHouse(configuration);
+
+//#endif
+//#if (MongoDB)
+        // MongoDB, the MongoDB section: the client, the service's database, readiness
+        services.AddMongoDB(configuration);
 
 //#endif
 //#if (Storage)
