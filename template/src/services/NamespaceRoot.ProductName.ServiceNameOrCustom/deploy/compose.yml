@@ -46,6 +46,12 @@ services:
       Vault__RoleId: ${VAULT_ROLE_ID:-}
       Vault__SecretId: ${VAULT_SECRET_ID:-}
 #endif
+    # The root filesystem is read-only: the running container is changed only by a new image, which passes
+    # review and CI, so features.json and the code cannot be edited in place. /tmp stays writable for what
+    # .NET and ASP.NET Core keep there: the diagnostics socket, large request bodies.
+    read_only: true
+    tmpfs:
+      - /tmp
     # Only on the host's loopback: a reverse proxy or a gateway in front publishes it.
     ports:
       - "127.0.0.1:5054:8080"
