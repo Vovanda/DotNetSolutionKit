@@ -65,7 +65,7 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--Storage` | `false` | [Объектное хранилище](../features/object-storage.md), совместимое с S3. |
 | `-CH`, `--ClickHouse` | `false` | [ClickHouse](../features/clickhouse.md): подключения, проверка схемы, готовность. |
 | `--MongoDB` | `false` | [MongoDB](../features/mongodb.md) рядом с основной базой: клиент, база сервиса, готовность. |
-| `--Notify` | нет | Каналы [уведомлений](../features/notifications.md): `email` - через SMTP или Graph API, с песочницей вне Production. |
+| `--Notify` | нет | Каналы [уведомлений](../features/notifications.md): `email` - через SMTP или Graph API, с песочницей вне Production; с `--Messaging` другие сервисы просят письмо командой шины. |
 | `--TestFramework` | `nunit` | Тестовый фреймворк для тестов сервиса, `nunit` или `xunit` (v3); задаётся для каждого сервиса. Собственные тесты `Common` остаются на NUnit. См. [тестирование](../architecture/testing.md). |
 | `--Audit` | `false` | [Журнал аудита](../features/audit.md) изменений сущностей; действует только с `--Messaging outbox`. |
 | `--ApiGateway` | `false` | [API-шлюз](../features/api-gateway.md) на YARP вместо сервиса. Только с `-M true`. |

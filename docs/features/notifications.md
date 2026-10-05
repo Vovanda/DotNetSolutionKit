@@ -26,6 +26,32 @@ under 3 MB; a larger file needs an
 [upload session](https://learn.microsoft.com/en-us/graph/outlook-large-attachments), which the transport
 does not open; for a larger attachment use SMTP.
 
+## Asking from another service
+
+With `--Messaging`, another service asks for an email with the bus command `SendEmailCommandV1` from
+`Common.Contracts`; nothing calls the owner synchronously. Its consumer, `SendEmailCommandV1Consumer` in the
+owner's Infrastructure, sends the message through the port, so the sandbox applies to it too. With
+`--Storage` the command carries an attachment as a key in object storage and a file name: the sender puts the
+file there first, and when it cannot be read, or sending with it fails, the email goes out without it. The
+sender and the owner read the same bucket, `S3:BucketName`.
+
+Every service generated with both `--Notify email` and `--Messaging` gets the consumer, and the command's queue
+has no service prefix: two such services share the commands between them, each sending with its own `Email`
+settings. Keep the consumer in one service; a service that only sends through its own port does not need it.
+
+```csharp
+await bus.SendAsync(new SendEmailCommandV1
+{
+    Id = Guid.NewGuid(),
+    OccurredOnUtc = time.GetUtcNow(),
+    ToEmail = customer.Email,
+    Subject = $"Invoice {invoice.Number}",
+    Body = "Your invoice is attached.",
+    AttachmentKey = $"invoices/{invoice.Id}.pdf",
+    AttachmentName = $"{invoice.Number}.pdf",
+}, ct);
+```
+
 ## The sandbox
 
 A test stand must not mail anyone outside. Every transport derives from one base whose methods apply the
@@ -61,7 +87,9 @@ in `deploy/compose/.env` name a real server instead.
 
 ## Tests
 
-A service test gives the service a double of `INotificationEmailSender`, as of any other port.
+A service test gives the service a double of `INotificationEmailSender`, as of any other port; the owner's
+tests check that a command sent on the bus to its queue reaches the consumer of `SendEmailCommandV1`, which sends
+what the command says, with its attachment and without it.
 `Common.Tests` checks the core: the settings it requires, the transport of the named provider, what the SMTP
 and Graph transports hand their clients, the security by port and the sandbox; and, against a real MailHog
 named by `TEST_SMTP` and `TEST_SMTP_API`, that a message arrives at its recipient in Production and at the

@@ -47,7 +47,7 @@ Generated solutions, regenerated from every release with their CI running:
 | `--Storage` | `false` | [Object storage](https://dnsk.sawking.tech/docs.html#storage), S3-compatible. |
 | `-CH`, `--ClickHouse` | `false` | [ClickHouse](https://dnsk.sawking.tech/docs.html#clickhouse): connections, schema check, readiness. |
 | `--MongoDB` | `false` | [MongoDB](https://dnsk.sawking.tech/docs.html#mongodb) beside the main database: the client, the service's database, readiness. |
-| `--Notify` | none | Channels of [notifications](https://dnsk.sawking.tech/docs.html#notifications): `email` - through SMTP or Graph API, with a sandbox outside Production. |
+| `--Notify` | none | Channels of [notifications](https://dnsk.sawking.tech/docs.html#notifications): `email` - through SMTP or Graph API, with a sandbox outside Production; with `--Messaging` other services ask for it by a bus command. |
 | `--TestFramework` | `nunit` | Test framework of the service's tests: `nunit` or `xunit` (v3). |
 | `--Audit` | `false` | [Audit journal](https://dnsk.sawking.tech/docs.html#audit) of entity changes, through the outbox; with `--Messaging outbox`. |
 | `--ApiGateway` | `false` | An [API gateway](https://dnsk.sawking.tech/docs.html#gateway) on YARP in place of a service, with `-M true`. |

@@ -142,7 +142,7 @@
       "enableQuotelessLiterals": true,
       "defaultValue": "",
       "choices": [
-        { "choice": "email", "description": "Email through SMTP or Graph API, with a sandbox outside Production" }
+        { "choice": "email", "description": "Email through SMTP or Graph API, with a sandbox outside Production; with Messaging, other services ask for it by a bus command" }
       ],
       "description": "Notifications and their channels, in Common, registered in the service; more than one channel may be given"
     },
@@ -366,6 +366,19 @@
           ]
         },
         {
+          "condition": "(!NotifyEmail)",
+          "exclude": [
+            "**/Messaging/Notifications/SendEmailCommandV1.cs"
+          ]
+        },
+        {
+          "condition": "(!NotifyEmail || Messaging == \"none\")",
+          "exclude": [
+            "**/Messaging/Consumers/SendEmailCommandV1Consumer.cs",
+            "**/Tests/SendEmailCommandV1ConsumerTests.cs"
+          ]
+        },
+        {
           "condition": "(Deploy != \"compose\")",
           "exclude": [
             "deploy/compose/**",
@@ -574,6 +587,13 @@
           "condition": "(!AuditEnabled)",
           "exclude": [
             "**/Tests/AuditGuardTests.cs"
+          ]
+        },
+        {
+          "condition": "(!NotifyEmail || Messaging == \"none\")",
+          "exclude": [
+            "**/Messaging/Consumers/SendEmailCommandV1Consumer.cs",
+            "**/Tests/SendEmailCommandV1ConsumerTests.cs"
           ]
         },
         {
