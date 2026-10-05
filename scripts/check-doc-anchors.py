@@ -51,5 +51,23 @@ for source in sorted(glob.glob("docs/**/*.md", recursive=True) + ["README.md"]):
             print(f"{source}: {match.group(0)} names no heading of {target}")
             failed = 1
 
+# The pages of the site link a document by its key in site/config.js and a section after a colon:
+# docs.html#persistence:sql-server.
+# A document with a Russian twin (the last field of its entry) opens in Russian for a reader of Russian,
+# and the section is looked for there too.
+entries = re.findall(r'^\s*\["([\w-]+)", "([^"]+)", \[[^\]]*\], (true|false)\]', open("site/config.js", encoding="utf-8").read(), flags=re.M)
+shelf = {key: [path + ".md"] + ([path + ".ru.md"] if twin == "true" else []) for key, path, twin in entries}
+for page in ("index.html", "samples.html"):
+    for match in re.finditer(r'docs\.html#([\w-]+)(?::([^"\'\s<)]+))?', open(page, encoding="utf-8").read()):
+        key, section = match.group(1), match.group(2)
+        if key not in shelf:
+            print(f"{page}: {match.group(0)} names no document of site/config.js")
+            failed = 1
+        elif section:
+            for document in shelf[key]:
+                if unquote(section) not in headings(document):
+                    print(f"{page}: {match.group(0)} names no heading of {document}")
+                    failed = 1
+
 print("every link to a section names a heading" if not failed else "fix the links above")
 sys.exit(failed)

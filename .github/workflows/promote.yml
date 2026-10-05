@@ -11,6 +11,8 @@ name: Promote
 #
 # The publication runs in this workflow: a push made with GITHUB_TOKEN starts no other workflow, so
 # release.yml would never see the push that moves master.
+# For the same reason the site is published from here: site.yml is started on the target by hand, which
+# GITHUB_TOKEN may do; on master it publishes, on any other target it only builds.
 
 on:
   workflow_dispatch:
@@ -176,6 +178,19 @@ jobs:
       - name: Comment on the pull request
         if: env.PR_NUMBER != ''
         run: gh pr comment "$PR_NUMBER" --body "Fast-forwarded \`$TARGET\` to \`$SOURCE\`; the release follows in this run."
+
+  # after the release: the site names the version, which the package and the tag must then already have
+  site:
+    name: Site
+    needs: [promote, release]
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TARGET: ${{ needs.promote.outputs.target }}
+    steps:
+      - run: gh workflow run site.yml -R "$GITHUB_REPOSITORY" --ref "$TARGET"
 
   # A run again on a target already moved still publishes what a failed run left out.
   release:
