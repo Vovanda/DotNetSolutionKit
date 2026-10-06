@@ -139,9 +139,9 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      # The package goes on the release in any case, so a version can be installed from a file. A
-      # rehearsal packs it too: that the package builds is part of what it shows.
-      - name: Pack and attach the template package
+      # The packages go on the release in any case, so a version can be installed from a file: the template and
+      # its tool, dotskit, of the same version. A rehearsal packs them too: that they build is part of what it shows.
+      - name: Pack and attach the template and the tool
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.what.outputs.tag }}
@@ -150,12 +150,16 @@ jobs:
           bash scripts/release-notes.sh "${TAG#v}" plain > "$RUNNER_TEMP/release-notes.txt"
           dotnet pack DotNetSolutionKit.Templates.csproj --configuration Release -o package \
             -p:ReleaseNotesFile="$RUNNER_TEMP/release-notes.txt"
+          dotnet pack tool/DotsKit --configuration Release -o package \
+            -p:ReleaseNotesFile="$RUNNER_TEMP/release-notes.txt"
           ls package
           [ "$PUBLISH" = true ] || exit 0
           gh release upload "$TAG" package/*.nupkg --clobber
 
       # nuget.org only with its key in the repository secrets. A version published there cannot be
-      # deleted, only unlisted, so it goes out only from what passed the template checks.
+      # deleted, only unlisted, so it goes out only from what passed the template checks. The tool goes first:
+      # a key that cannot push it stops the step before the template is out, and a run again after the key is
+      # fixed publishes both, --skip-duplicate passing over what is there.
       - name: Publish to nuget.org
         if: steps.what.outputs.publish == 'true'
         env:
@@ -165,7 +169,9 @@ jobs:
             echo "::notice::NUGET_API_KEY is not set; the package is only attached to the release."
             exit 0
           fi
-          dotnet nuget push package/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          for package in package/SawKing.DotsKit.Tool.*.nupkg package/SawKing.DotNetSolutionKit.*.nupkg; do
+            dotnet nuget push "$package" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          done
 
       # The same package in the organization's GitHub Packages, which the repository page lists beside its
       # releases. Installing is meant from nuget.org; GitHub's registry asks for a sign-in even when public.
