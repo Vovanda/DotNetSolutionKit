@@ -115,7 +115,7 @@
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "false",
-      "description": "Generate an API gateway on YARP instead of a service; with -M true, into an existing solution"
+      "description": "Generate an API gateway on YARP instead of a service; without --Solution, into a solution already there"
     },
     "Storage": {
       "type": "parameter",
@@ -179,7 +179,7 @@
         { "choice": "opencode", "description": "OpenCode: AGENTS.md and .opencode/skills" },
         { "choice": "none", "description": "No rules or skills for an AI agent" }
       ],
-      "description": "The format of the rules and skills for an AI agent; with -M false"
+      "description": "The format of the rules and skills for an AI agent; with --Solution"
     },
     "AgentFolder": {
       "type": "generated",
@@ -300,11 +300,21 @@
       "replaces": "DOTNETSOLUTIONKIT_TEMPLATE_VERSION",
       "description": "The template's version, written into the packed copy of this file by DotNetSolutionKit.Templates.csproj; source when the template is installed from its sources"
     },
+    "Solution": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Generate the solution: Common, All.sln and the root files, with this service as its first. Without it, only the service folder, into a solution already there"
+    },
     "Minimal": {
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "true",
-      "description": "true = only microservice; false = full multi-solution kit"
+      "description": "Kept for the commands of earlier versions: -M false is --Solution. Hidden; removed in 3.0"
+    },
+    "IsSolution": {
+      "type": "computed",
+      "value": "(Solution || !Minimal)"
     }
   },
 
@@ -332,7 +342,7 @@
       "target": ".",
       "modifiers": [
         {
-          "condition": "Minimal",
+          "condition": "(!IsSolution)",
           "exclude": ["**/*"]
         },
         {
@@ -664,7 +674,7 @@
           ]
         },
         {
-          "condition": "(!Minimal)",
+          "condition": "IsSolution",
           "exclude": ["**/*"]
         },
         {
@@ -727,7 +737,7 @@
     {
       "source": "gateway",
       "target": "src/services",
-      "condition": "(ApiGateway && Minimal)",
+      "condition": "(ApiGateway && !IsSolution)",
       "modifiers": [
         {
           "condition": "(Deploy != \"compose\")",
@@ -768,12 +778,12 @@
       ]
     },
     {
-      "condition": "(ApiGateway && !Minimal)",
+      "condition": "(ApiGateway && IsSolution)",
       "actionId": "00000000-0000-0000-0000-000000000001",
       "continueOnError": true,
-      "description": "--ApiGateway was not applied: it needs -M true",
+      "description": "--ApiGateway was not applied: the gateway is added to a solution already there, without --Solution",
       "manualInstructions": [
-        { "text": "--ApiGateway was not applied: -M false generates the solution with a service, and the gateway is added to that solution with -M true. Generate the gateway again with -M true." }
+        { "text": "--ApiGateway was not applied: --Solution generates the solution with a service, and the gateway is added to that solution without --Solution. Generate the gateway again without it." }
       ]
     }
 

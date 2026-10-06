@@ -2,7 +2,7 @@
   <!--
     Central package management: every package version in the solution is declared once, here or in
     a file of package-versions/ that this one imports, and a .csproj references a package by name
-    only. A service generated with -M true into an existing solution picks up the versions from them.
+    only. A service added later to an existing solution picks up the versions from them.
 
     Every version is the latest that runs on .NET 8. Microsoft.*, Npgsql and Serilog number their
     releases after the framework, so their 9.x and 10.x are for .NET 9 and 10. A package held below

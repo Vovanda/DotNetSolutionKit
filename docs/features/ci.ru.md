@@ -1,7 +1,7 @@
 # CI на GitHub Actions
 
 Генерируется с `--GitHubCiCd`, по умолчанию выключено: у каждой команды свой CI, а эти workflow работают
-только на GitHub. Флаг передаётся с `-M false`; workflow покрывают все сервисы в `All.sln`, поэтому
+только на GitHub. Флаг передаётся с `--Solution`; workflow покрывают все сервисы в `All.sln`, поэтому
 следующему сервису ничего больше не нужно.
 
 ## `.github/workflows/ci.yml`

@@ -9,8 +9,8 @@ validates the caller's token, routes the request to a service and tells the serv
 dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Gateway --ApiGateway
 ```
 
-The gateway is generated with `-M true`, like any further service: it needs the `Common` projects of a
-solution already there. With `-M false` the flag has no effect, the first service is generated as usual,
+The gateway is generated without `--Solution`, like any further service: it needs the `Common` projects of a
+solution already there. With `--Solution` the flag has no effect, the first service is generated as usual,
 and the generation says so.
 
 ## Two shapes

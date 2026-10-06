@@ -24,7 +24,7 @@ flags. What it gives a solution in full - the principles, the economics, the cos
 dotnet new install SawKing.DotNetSolutionKit
 
 # the shared Common projects, the solution file and the first service
-dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders -M false
+dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders --Solution
 
 # every further service
 dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
@@ -45,7 +45,7 @@ shows their files and how their CI ran.
 | `-N`, `--NamespaceRoot` | `MyCompany` | Organization name, the root namespace. May be dotted. |
 | `-P`, `--ProductName` | `Product` | Product name. May be dotted. |
 | `-S`, `--ServiceNameOrCustom` | `Service` | Service name. May be dotted. |
-| `-M`, `--Minimal` | `true` | `true` generates only the service folder, `false` the full kit. |
+| `--Solution` | `false` | Generates the solution: `Common`, `All.sln` and the root files, with the first service. Without it, only the service folder, into a solution already there. |
 | `--Database` | `postgres` | [Database](docs/architecture/persistence.md#sql-server): `postgres` or `mssql` (SQL Server). |
 | `-H`, `--Hangfire` | `true` | [Background jobs](docs/features/background-jobs.md) on Hangfire. |
 | `--Messaging` | `none` | [Message bus](docs/features/messaging.md): `outbox` or `direct`. |
@@ -61,7 +61,7 @@ shows their files and how their CI ran.
 | `--Notify` | none | Channels of [notifications](docs/features/notifications.md): `email` - through SMTP or Graph API, with a sandbox outside Production; with `--Messaging` other services ask for it by a bus command. |
 | `--TestFramework` | `nunit` | Test framework of the service's tests: `nunit` or `xunit` (v3). |
 | `--Audit` | `false` | [Audit journal](docs/features/audit.md) of entity changes, through the outbox; with `--Messaging outbox`. |
-| `--ApiGateway` | `false` | An [API gateway](docs/features/api-gateway.md) on YARP in place of a service, with `-M true`. |
+| `--ApiGateway` | `false` | An [API gateway](docs/features/api-gateway.md) on YARP in place of a service, into a solution already there (without `--Solution`). |
 | `--Deploy` | `compose` | [Deployment files](docs/operations/deployment.md): `compose`, `k8s` or `none`. |
 | `--Agent` | `claude` | [Rules and skills for an AI agent](docs/getting-started/working-with-ai-agents.md): `claude`, `opencode` or `none`. |
 | `--HttpPort` | free port | Port in `launchSettings.json` and on the host under compose. |

@@ -25,7 +25,7 @@ A change that cannot do either is a new major version.
 
 The value is written when the template is packed, so a solution generated from the package on nuget.org or
 from a release's `.nupkg` names that release; one generated from the template's sources says `source`. The
-file comes with the solution (`-M false`): a service added later with a newer template does not change it.
+file comes with the solution (`--Solution`): a service added later with a newer template does not change it.
 A solution generated before the property was added has none; the dates on the releases page tell its
 version.
 
@@ -50,14 +50,14 @@ A service generated from `v2.0.0` builds unchanged on the `Common` of `v2.1.0`, 
 pass: `Common` only gained types and members. A service generated from `v2.1.0` needs that `Common`, so update
 `Common` first:
 
-1. Generate a solution from `v2.1.0` into an empty folder with `-M false`, your `-N` and `-P`, your
+1. Generate a solution from `v2.1.0` into an empty folder with `--Solution`, your `-N` and `-P`, your
    flags and any you are adding: `--Storage` and `--ClickHouse` add files to `Common`.
 2. Replace your `src/common` and `src/Directory.Packages.props` with the generated ones. Where you changed
    `Common` yourself, merge instead: a diff of the two folders shows your changes next to the template's.
 3. Take from it what you want of the new files: `deploy/`, `.github/`, `tools/`. Nothing in your services
    has to change.
 
-Services generated after that take `-M true` and the same flags.
+Services generated after that take the same flags, without `--Solution`.
 
 ## From v2.5 to v2.6
 
@@ -194,6 +194,12 @@ and `tests/servers/up.sh` starts them all, waits for them and gives the variable
 15433, SQL Server 11433, ClickHouse 18123, MongoDB 17017, MailHog 11025 and 18025, S3 18333, Vault 18200) so they do not meet the local
 stack. To take the change, copy `tests/servers/` and the test steps of `ci.yml` from a solution generated
 by v2.8 with the same flags.
+
+### --Solution generates the solution
+
+The solution is generated with `--Solution`, and every further service without it. `-M false` of earlier
+versions still means the same and is hidden from `dotnet new --help`; it goes in 3.0. Nothing to change in a
+solution; in your scripts, `-M false` can become `--Solution`.
 
 ## Do not regenerate over an older solution
 

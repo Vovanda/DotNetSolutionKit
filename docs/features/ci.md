@@ -1,7 +1,7 @@
 # CI on GitHub Actions
 
 Generated with `--GitHubCiCd`, off by default: each team has its own CI, and these workflows only run on
-GitHub. Pass it with `-M false`; the workflows cover every service in `All.sln`, so a later service needs
+GitHub. Pass it with `--Solution`; the workflows cover every service in `All.sln`, so a later service needs
 nothing more.
 
 ## `.github/workflows/ci.yml`

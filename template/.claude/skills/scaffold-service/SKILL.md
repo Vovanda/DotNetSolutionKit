@@ -53,7 +53,7 @@ All parameters: [generating a solution](https://dnsk.sawking.tech/docs.html#gene
 ## Step 2 - Generate
 
 ```bash
-# From the repository root; -M true (the default) generates the service folder only and uses the Common already there
+# From the repository root; without --Solution the template generates the service folder only and uses the Common already there
 dotnet new DotNetSolutionKit -N NamespaceRoot -P ProductName -S <ServiceName> --Database <db> --Deploy <deploy> [flags]
 ```
 
