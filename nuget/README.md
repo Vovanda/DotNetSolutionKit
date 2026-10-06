@@ -25,6 +25,22 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 Generated solutions, regenerated from every release with their CI running:
 [DotNetSolutionKit.Samples](https://dnsk.sawking.tech/samples.html).
 
+## dotskit
+
+The template's command-line tool, [SawKing.DotsKit.Tool](https://www.nuget.org/packages/SawKing.DotsKit.Tool),
+adds a service or a flag to a solution it has and upgrades a solution to a newer version of the template,
+keeping the team's changes by a three-way merge:
+
+```bash
+dotnet tool install -g SawKing.DotsKit.Tool
+dotskit new -N MyCompany -P MyProduct -S Orders   # a solution with its first service
+dotskit new -S Billing --Storage true              # one more service
+dotskit init                                       # describe a solution made with the template alone
+dotskit upgrade                                    # bring a solution to the tool's version
+```
+
+[dotskit](https://dnsk.sawking.tech/docs.html#dotskit) in the documentation.
+
 ## Parameters
 
 | Parameter | Default | What it does |
