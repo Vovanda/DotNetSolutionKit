@@ -55,6 +55,8 @@ mindmap
 - [What the template gives](getting-started/what-it-gives.md): what a solution gets, the principles, the cost and the risks
 - [Generating a solution](getting-started/generating-a-solution.md): install, parameters, dotted names,
   running locally
+- [dotskit](getting-started/dotskit.md): the tool that makes a solution and adds services and flags to it,
+  keeping the team's changes
 - [Versions of the template](getting-started/upgrading.md): v1 and v2, what changed, how to update
 - [Working with AI agents](getting-started/working-with-ai-agents.md): the rules and skills a solution gets
 

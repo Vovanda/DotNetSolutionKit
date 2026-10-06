@@ -35,6 +35,17 @@ The package is [SawKing.DotNetSolutionKit on nuget.org](https://www.nuget.org/pa
 every [release](https://github.com/sawking-tech/DotNetSolutionKit/releases) also carries it as a `.nupkg` file.
 To try the template from a clone: `dotnet new install /path/to/DotNetSolutionKit/template`.
 
+From 2.8 the tool [dotskit](docs/getting-started/dotskit.md) does the same with shorter commands, adds a flag
+to a service generated earlier, and keeps the team's changes by a three-way merge:
+
+```bash
+dotnet tool install -g SawKing.DotsKit.Tool
+
+dotskit new -N MyCompany -P MyProduct -S Orders   # in an empty folder: the solution and its first service
+dotskit new -S Billing --Storage true             # in the solution: one more service
+dotskit new -S Orders --MongoDB true              # in the solution: a flag for a service it has
+```
+
 What the generated solutions look like:
 [DotNetSolutionKit.Samples](https://github.com/sawking-tech/DotNetSolutionKit.Samples), a branch each for a
 single service, a gateway with services and the full kit, regenerated from every release with their CI

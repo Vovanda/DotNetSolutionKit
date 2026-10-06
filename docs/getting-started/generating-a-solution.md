@@ -2,6 +2,9 @@
 
 ## Install the template
 
+[dotskit](dotskit.md) does the same and also adds flags to services already generated, keeping the
+team's changes. This page is the template on its own.
+
 The template lives in the `template` folder of this repository, next to its `.template.config`:
 
 ```bash

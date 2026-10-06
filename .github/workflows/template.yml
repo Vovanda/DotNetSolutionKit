@@ -238,6 +238,31 @@ jobs:
           if (-not (Select-String -Path src/services/Acme.Shop.All.sln -SimpleMatch '"Billing", "Billing"' -Quiet)) { Write-Error 'All.sln has no solution folder Billing'; exit 1 }
           dotnet build src/services/Acme.Shop.All.sln -warnaserror
 
+  # dotskit merges by git and edits All.sln by dotnet sln, whose paths, line endings and shells differ between
+  # OSes: its tests, the scenarios with the template from these sources among them, run on all three.
+  tool:
+    name: dotskit on ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022, macos-15]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+      - name: Git for the scenarios
+        shell: bash
+        run: |
+          git config --global user.name "dotskit scenarios"
+          git config --global user.email "scenarios@dotskit.invalid"
+          git config --global core.longpaths true
+      - name: Build
+        run: dotnet build tool/DotsKit.Tests -warnaserror
+      - name: Test
+        run: dotnet test tool/DotsKit.Tests --no-build
+
   # A link to a section of a document names a heading of it, in the language of the linking document.
   doc-links:
     name: Links to sections

@@ -55,6 +55,8 @@ mindmap
 - [Что даёт шаблон](getting-started/what-it-gives.md): что получает решение, принципы, цена и риски
 - [Генерация решения](getting-started/generating-a-solution.md): установка, параметры, имена с точками,
   локальный запуск
+- [dotskit](getting-started/dotskit.md): инструмент, который создаёт решение и добавляет в него сервисы и флаги,
+  сохраняя правки команды
 - [Версии шаблона](getting-started/upgrading.md): v1 и v2, что изменилось, как обновиться
 - [Работа с ИИ-агентами](getting-started/working-with-ai-agents.md): правила и скиллы, которые получает решение
 

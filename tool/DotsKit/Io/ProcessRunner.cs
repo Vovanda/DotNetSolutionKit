@@ -1,0 +1,67 @@
+using System.Diagnostics;
+
+namespace DotsKit.Io;
+
+internal sealed record ProcessResult(int Code, string Output, string Error);
+
+/// <summary>Runs a program; the one door to the outside processes the tool calls - dotnet and git.</summary>
+internal interface IProcessRunner
+{
+    Task<ProcessResult> RunAsync(string program, IReadOnlyList<string> args, string workingDirectory, CancellationToken ct);
+}
+
+internal static class ProcessRunnerExtensions
+{
+    /// <summary>Runs a program that must succeed, and returns what it printed.</summary>
+    public static async Task<string> RunCheckedAsync(this IProcessRunner runner, string program, IReadOnlyList<string> args,
+        string workingDirectory, CancellationToken ct)
+    {
+        var result = await runner.RunAsync(program, args, workingDirectory, ct);
+        if (result.Code != 0)
+            throw new InvalidOperationException($"{program} {string.Join(' ', args)} exited with {result.Code}:\n{Why(result)}");
+        return result.Output;
+    }
+
+    /// <summary>What a failed process said: its errors, or its output when it wrote its errors there, as dotnet build does.</summary>
+    private static string Why(ProcessResult result) =>
+        (string.IsNullOrWhiteSpace(result.Error) ? result.Output : result.Error).Trim();
+}
+
+internal sealed class ProcessRunner : IProcessRunner
+{
+    /// <summary>dotnet prints in the language of the machine; the tool keeps the messages it passes on in English.</summary>
+    private const string UiLanguage = "en";
+
+    public async Task<ProcessResult> RunAsync(string program, IReadOnlyList<string> args, string workingDirectory, CancellationToken ct)
+    {
+        var start = new ProcessStartInfo(program)
+        {
+            WorkingDirectory = workingDirectory,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+        };
+        foreach (var arg in args)
+            start.ArgumentList.Add(arg);
+        start.Environment["DOTNET_CLI_UI_LANGUAGE"] = UiLanguage;
+        // MSBuild nodes and the build server kept alive for reuse hold the redirected output open, and reading it
+        // to its end would never finish.
+        start.Environment["MSBUILDDISABLENODEREUSE"] = "1";
+        start.Environment["DOTNET_CLI_USE_MSBUILD_SERVER"] = "0";
+
+        using var process = Process.Start(start) ?? throw new InvalidOperationException($"Could not start {program}");
+        var output = process.StandardOutput.ReadToEndAsync(ct);
+        var error = process.StandardError.ReadToEndAsync(ct);
+        try
+        {
+            await process.WaitForExitAsync(ct);
+        }
+        catch (OperationCanceledException)
+        {
+            // A dotnet sln left running would go on writing All.sln after the transaction has put it back.
+            process.Kill(entireProcessTree: true);
+            throw;
+        }
+        return new(process.ExitCode, await output, await error);
+    }
+}
