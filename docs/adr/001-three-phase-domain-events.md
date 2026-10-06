@@ -2,6 +2,8 @@
 
 **Status:** Accepted, 2026-10-03
 
+**Author:** Vladimir Savkin, the creator of DotNetSolutionKit
+
 ## Context
 
 An aggregate raises a domain event when something happened to it: an order was placed, a balance ran

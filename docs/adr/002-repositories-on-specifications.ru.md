@@ -2,6 +2,8 @@
 
 **Статус:** принято 2026-01-13 в первом продукте на шаблоне; перенесено в шаблон 2026-10-03
 
+**Автор:** Владимир Савкин, создатель DotNetSolutionKit
+
 Интерфейс репозитория в сгенерированном сервисе наследует `ISpecificationRepository<TEntity, TId>`
 (`Common/Domain/Persistence`). Реализация наследует абстрактный
 `EntityFrameworkRepository<TEntity, TId, TContext>` (`Common.Infrastructure/Persistence/EntityFramework`).

@@ -2,6 +2,8 @@
 
 **Status:** Accepted, 2026-10-06
 
+**Author:** Vladimir Savkin, the creator of DotNetSolutionKit
+
 ## Context
 
 The template and `dotskit` write JSON files: `appsettings*.json`, the manifest `.dotskit/manifest.json`,
