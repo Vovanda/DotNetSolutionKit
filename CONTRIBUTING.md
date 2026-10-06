@@ -21,7 +21,7 @@ several pull requests going at once and work on one while the checks of another 
   combinations with `--GitHubCiCd` it runs the workflows the solution ships - `ci.yml` with its test
   servers, integration tests and coverage threshold, `secret-scan.yml`, `api-diff.yml` - with
   [scripts/run-workflow.py](scripts/run-workflow.py), on the runner and nothing published. That their
-  `uses:` steps run on GitHub itself is what the `nightly` branch of
+  `uses:` steps run on GitHub itself is what the `full-dev` branch of
   [DotNetSolutionKit.Samples](https://github.com/sawking-tech/DotNetSolutionKit.Samples) shows: it is
   regenerated from `dev` the day after `dev` moves, and its CI runs then.
 - A change in what a generated solution does comes with a test of that behaviour in the template's tests.
@@ -50,7 +50,7 @@ A release comes about once a week, at the end of a sprint, when the work done is
 then:
 
 - inside the template: `template.yml` is green on the last commit of `dev`;
-- outside it: `nightly` in DotNetSolutionKit.Samples is regenerated from that commit, and its CI is green;
+- outside it: `full-dev` in DotNetSolutionKit.Samples is regenerated from that commit, and its CI is green;
 - the batch is finished: nothing begun and left undone is in `dev`.
 
 Before the release, one commit on `dev` takes the label off: `2.8.0-rc` becomes `2.8.0`, and so does its
