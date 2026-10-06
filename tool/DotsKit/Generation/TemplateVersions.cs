@@ -27,6 +27,35 @@ internal static class TemplateVersions
     public static bool IsVersion(string version) =>
         version == TemplateSource.SourcesVersion || Version.TryParse(version.Split('-')[0], out _);
 
+    /// <summary>
+    /// Why a solution of <paramref name="version"/> cannot be described by the tool of <paramref name="toolVersion"/>,
+    /// with what to do instead; null when it can. The tool run against the template's sources takes any version.
+    /// </summary>
+    /// <param name="version">The version the solution says, or the command names; null when there is none.</param>
+    public static string? WhyNotDescribed(string? version, string toolVersion, bool onSources)
+    {
+        if (version is null)
+            return "The solution does not say its template version (it does since 2.7.0): name it, dotskit init --template-version 2.x.y.";
+        if (version == TemplateSource.SourcesVersion)
+            return onSources ? null : "The solution was made from the template's sources: name the release it came from, dotskit init --template-version 2.x.y.";
+        if (!IsVersion(version))
+            return $"\"{version}\" is not a version of the template: name one, dotskit init --template-version 2.x.y.";
+        if (onSources)
+            return null;
+        var solution = Version.Parse(version.Split('-')[0]);
+        var tool = Version.Parse(toolVersion.Split('-')[0]);
+        if (solution > tool)
+            return $"The solution was made by the template {version}, dotskit is {toolVersion}: update the tool, dotnet tool update -g SawKing.DotsKit.Tool.";
+        return solution.Major < tool.Major
+            ? $"The solution was made by the template {version}; dotskit {toolVersion} describes solutions of {tool.Major}.x: bring it to {tool.Major}.0 by the template's upgrading notes first."
+            : null;
+    }
+
+    /// <summary>Whether <paramref name="version"/> is newer than <paramref name="than"/>; the template's sources are the newest.</summary>
+    public static bool IsNewer(string version, string than) =>
+        version != than && (version == TemplateSource.SourcesVersion
+            || (than != TemplateSource.SourcesVersion && Version.Parse(version.Split('-')[0]) > Version.Parse(than.Split('-')[0])));
+
     /// <summary>The template's sources are always the newest; a pre-release (2.8.0-rc) is its release.</summary>
     private static bool IsAtLeast(string version, Version since) =>
         version == TemplateSource.SourcesVersion || Version.Parse(version.Split('-')[0]) >= since;

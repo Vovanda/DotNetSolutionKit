@@ -21,7 +21,8 @@ if (args[0] is "--version" or "version")
 
 var runner = new ProcessRunner();
 var projects = new SolutionProjects(runner);
-var planner = new Planner(new Staging(new TemplateSource(runner), projects), new ThreeWayMerge(new GitMergeFile(runner)), projects);
+var staging = new Staging(new TemplateSource(runner), projects);
+var planner = new Planner(staging, new ThreeWayMerge(new GitMergeFile(runner)), projects);
 var report = new PlanReport(terminal);
 var writer = new PlanWriter(projects);
 var git = new Git(runner);
@@ -33,11 +34,12 @@ using var cts = new CancellationTokenSource();
 Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
 try
 {
-    var options = Options.Parse(args[1..]);
+    var options = Options.Parse(args[0], args[1..]);
     var folder = Folders.RealPath(Directory.GetCurrentDirectory());
     var code = args[0] switch
     {
         "new" => await new NewCommand(planner, report, writer, git, builder, terminal, ToolVersion.Current).RunAsync(options, folder, cts.Token),
+        "init" => await new InitCommand(staging, projects, terminal, ToolVersion.Current, TemplateSource.SourcesFolder is not null).RunAsync(options, folder, cts.Token),
         _ => throw new ArgumentException($"Unknown command {args[0]}.\n{Options.Usage}"),
     };
     return (int)code;

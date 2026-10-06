@@ -32,6 +32,16 @@ internal sealed class Sandbox
         return sandbox;
     }
 
+    /// <summary>An empty folder under git, for a solution the test makes itself.</summary>
+    public static async Task<Sandbox> EmptyAsync()
+    {
+        var root = Path.Combine(Folders.NewTemp("scenario"), "solution");
+        Directory.CreateDirectory(root);
+        var sandbox = new Sandbox(root);
+        await sandbox.GitAsync("init", "-q");
+        return sandbox;
+    }
+
     /// <summary>The folder with template/.template.config, found from where the tests run.</summary>
     public static string TemplateSources
     {
