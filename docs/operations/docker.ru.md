@@ -14,7 +14,7 @@ docker build --provenance=false \
 ```mermaid
 flowchart LR
     subgraph common_stage [stage common]
-        P[Directory.Build.props, version.json,<br/>Directory.Packages.props] --> CB[build src/common]
+        P[Directory.Build.props, version.json,<br/>Directory.Packages.props, package-versions/] --> CB[build src/common]
     end
     subgraph service_stage [stage service]
         CB --> SF["copy src/services/SERVICE"] --> PUB[dotnet publish]

@@ -530,6 +530,42 @@
           ]
         },
         {
+          "condition": "(!NotifyEmail)",
+          "exclude": ["src/package-versions/notify-email.props"]
+        },
+        {
+          "condition": "(!ClickHouse)",
+          "exclude": ["src/package-versions/clickhouse.props"]
+        },
+        {
+          "condition": "(!Storage)",
+          "exclude": ["src/package-versions/storage.props"]
+        },
+        {
+          "condition": "(!Infisical)",
+          "exclude": ["src/package-versions/infisical.props"]
+        },
+        {
+          "condition": "(!Vault)",
+          "exclude": ["src/package-versions/vault.props"]
+        },
+        {
+          "condition": "(!FeatureFlags)",
+          "exclude": ["src/package-versions/feature-flags.props"]
+        },
+        {
+          "condition": "(!MongoDB)",
+          "exclude": ["src/package-versions/mongodb.props"]
+        },
+        {
+          "condition": "(Database == \"mssql\")",
+          "exclude": ["src/package-versions/postgres.props"]
+        },
+        {
+          "condition": "(Database != \"mssql\")",
+          "exclude": ["src/package-versions/mssql.props"]
+        },
+        {
           "condition": "(!HierarchyRules)",
           "exclude": [
             "src/common/NamespaceRoot.ProductName.Common/Domain/IHierarchicalEntity.cs",

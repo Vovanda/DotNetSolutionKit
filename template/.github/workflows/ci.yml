@@ -48,7 +48,7 @@ jobs:
       - uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props', '**/Directory.Build.props') }}
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props', '**/package-versions/*.props', '**/Directory.Build.props') }}
           restore-keys: ${{ runner.os }}-nuget-
 
       # A service is added to All.sln by src/services/manual-add-projects.sh. Forgotten, the service
