@@ -665,6 +665,24 @@
       "manualInstructions": [
         { "text": "1. Navigate to services folder: cd ./src/services\n2. Run script: ./manual-add-projects.sh\n3. The script will check all service projects and add them to All.sln, skipping already added ones." }
       ]
+    },
+    {
+      "condition": "(Audit && Messaging != \"outbox\")",
+      "actionId": "00000000-0000-0000-0000-000000000001",
+      "continueOnError": true,
+      "description": "--Audit was not applied: it needs --Messaging outbox",
+      "manualInstructions": [
+        { "text": "--Audit was not applied: an audit entry has to commit with the change it describes, and only --Messaging outbox writes it in the same transaction. Generate again with --Audit true --Messaging outbox." }
+      ]
+    },
+    {
+      "condition": "(ApiGateway && !Minimal)",
+      "actionId": "00000000-0000-0000-0000-000000000001",
+      "continueOnError": true,
+      "description": "--ApiGateway was not applied: it needs -M true",
+      "manualInstructions": [
+        { "text": "--ApiGateway was not applied: -M false generates the solution with a service, and the gateway is added to that solution with -M true. Generate the gateway again with -M true." }
+      ]
     }
 
   ]

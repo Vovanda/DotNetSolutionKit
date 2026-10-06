@@ -10,8 +10,8 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Gateway --ApiGateway
 ```
 
 The gateway is generated with `-M true`, like any further service: it needs the `Common` projects of a
-solution already there. With `-M false` the flag has no effect, and the first service is generated as
-usual.
+solution already there. With `-M false` the flag has no effect, the first service is generated as usual,
+and the generation says so.
 
 ## Two shapes
 
