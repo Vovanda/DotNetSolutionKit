@@ -8,9 +8,8 @@ nothing more.
 
 Runs on every pull request, on a push to `main` or `master`, and by hand, with coverage when asked for:
 
-1. Fails when a service project is missing from `All.sln`. A service is added there by
-   `src/services/manual-add-projects.sh`; forgotten, the service would drop out of the build and its tests
-   without anything failing.
+1. Fails when a service project is missing from `All.sln`. Generating a service adds it there; a project
+   added by hand and forgotten would drop out of the build and its tests without anything failing.
 2. Builds `All.sln` in Release.
 3. Runs the unit tests: everything outside the category `TestCategory=Integration` (`[Integration]` in a service, `[Category(TestCategories.Integration)]` in `Common`).
 4. Runs the integration tests against real servers started in the job by `tests/servers/up.sh` - the same

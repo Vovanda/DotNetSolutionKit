@@ -11,8 +11,8 @@ This file is committed: no tokens, keys, credentials or personal data in it.
 ```
 src/
 ├── Directory.Packages.props        # every package version, declared once here or in package-versions/ (central package management)
-├── package-versions/               # the versions a flag brings, a file per flag, imported by Directory.Packages.props
-├── common/                         # generated once, shared by every service
+├── package-versions/               # versions grouped by what needs them (the database, MongoDB, email...), imported by Directory.Packages.props
+├── common/                         # shared by every service
 │   ├── NamespaceRoot.ProductName.Common                 # domain kernel: Entity, AggregateRoot, events, specifications, exceptions
 │   ├── NamespaceRoot.ProductName.Common.Contracts       # what crosses a service boundary: routes, requests, responses, bus messages
 │   ├── NamespaceRoot.ProductName.Common.Application     # domain event pipeline, idempotency, permissions, messaging abstractions
@@ -77,9 +77,6 @@ bash tests/servers/up.sh down
 
 # One service
 dotnet test src/services/NamespaceRoot.ProductName.<Service>/NamespaceRoot.ProductName.<Service>.sln
-
-# After generating a service, add its projects to All.sln
-cd src/services && bash manual-add-projects.sh
 ```
 
 Migrations: `/ef-migration`. A new service: `/scaffold-service`.

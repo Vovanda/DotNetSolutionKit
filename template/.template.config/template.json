@@ -315,6 +315,16 @@
     "IsSolution": {
       "type": "computed",
       "value": "(Solution || !Minimal)"
+    },
+    "HostOS": {
+      "type": "bind",
+      "binding": "env:OS",
+      "defaultValue": "",
+      "description": "Windows_NT on Windows, empty elsewhere: which shell adds a service's projects to All.sln"
+    },
+    "OnWindows": {
+      "type": "computed",
+      "value": "(HostOS == \"Windows_NT\")"
     }
   },
 
@@ -740,7 +750,6 @@
             "**/logs/**",
             "**/*.user",
             "**/*.DotSettings.user",
-            "manual-add-projects.sh",
             "NamespaceRoot.ProductName.All.sln"
           ]
         }
@@ -772,12 +781,36 @@
 
   "postActions": [
     {
-      "condition": "true",
+      "condition": "(!IsSolution && OnWindows)",
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "continueOnError": true,
+      "description": "Add the service's projects to All.sln, each service in a solution folder named after the last segment of its name",
+      "args": {
+        "executable": "powershell",
+        "args": "-NoProfile -Command \"$s = (Get-ChildItem src/services/*.All.sln)[0].FullName; $l = dotnet sln $s list; Get-ChildItem src/services/*/*/*.csproj | Where-Object { $l -notcontains $_.FullName.Substring((Split-Path $s).Length + 1) } | ForEach-Object { dotnet sln $s add $_.FullName --solution-folder ($_.Directory.Parent.Name -replace '.*\\.', '') }\"",
+        "redirectStandardOutput": false
+      },
+      "manualInstructions": [ { "text": "Add the service's projects to src/services/*.All.sln: dotnet sln <All.sln> add <project> --solution-folder <service>" } ]
+    },
+    {
+      "condition": "(!IsSolution && !OnWindows)",
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "continueOnError": true,
+      "description": "Add the service's projects to All.sln, each service in a solution folder named after the last segment of its name",
+      "args": {
+        "executable": "sh",
+        "args": "-c \"d=$(ls src/services | tr A-Z a-z | sort | uniq -d); if [ -n \\\"$d\\\" ]; then echo \\\"A service named $d is there already, in another case: remove the new folder and name the service as it is named.\\\" >&2; exit 1; fi; s=$(ls src/services/*.All.sln); l=$(dotnet sln $s list); for p in src/services/*/*/*.csproj; do echo \\\"$l\\\" | grep -qxF ${p#src/services/} && continue; d=$(basename $(dirname $(dirname $p))); dotnet sln $s add $p --solution-folder ${d##*.}; done\"",
+        "redirectStandardOutput": false
+      },
+      "manualInstructions": [ { "text": "Add the service's projects to src/services/*.All.sln: dotnet sln <All.sln> add <project> --solution-folder <service>" } ]
+    },
+    {
+      "condition": "(!IsSolution && (Infisical || Vault || DiffApi || FeatureFlags || HierarchyRules || Storage || ClickHouse || MongoDB || NotifyEmail || Audit))",
       "actionId": "00000000-0000-0000-0000-000000000001",
       "continueOnError": true,
-      "description": "After generating services, verify and add projects to All.sln",
+      "description": "Common was left as it is: pass only the flags whose part Common already has",
       "manualInstructions": [
-        { "text": "1. Navigate to services folder: cd ./src/services\n2. Run script: ./manual-add-projects.sh\n3. The script will check all service projects and add them to All.sln, skipping already added ones." }
+        { "text": "dotnet new leaves the files already in the solution as they are, so Common gets nothing for a flag of this service it does not have yet: a service takes only the flags whose part Common already has." }
       ]
     },
     {

@@ -51,7 +51,7 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props', '**/package-versions/*.props', '**/Directory.Build.props') }}
           restore-keys: ${{ runner.os }}-nuget-
 
-      # A service is added to All.sln by src/services/manual-add-projects.sh. Forgotten, the service
+      # Generating a service adds its projects to All.sln. A project added by hand and forgotten there
       # drops out of this build and its tests without anything failing.
       - name: Every service project is in All.sln
         run: |
@@ -61,7 +61,7 @@ jobs:
           for project in $(find src/services -mindepth 3 -maxdepth 3 -name '*.csproj'); do
             relative=${project#src/services/}
             if ! grep -qF "$relative" <<< "$listed"; then
-              echo "::error file=$project::not in $solution; run src/services/manual-add-projects.sh"
+              echo "::error file=$project::not in $solution; add it with dotnet sln add"
               missing=1
             fi
           done
