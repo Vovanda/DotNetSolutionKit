@@ -78,7 +78,7 @@ jobs:
       - uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('template/**/*.csproj', 'template/**/Directory.Packages.props') }}
+          key: ${{ runner.os }}-nuget-${{ hashFiles('template/**/*.csproj', 'template/**/Directory.Packages.props', 'template/src/package-versions/*.props') }}
           restore-keys: ${{ runner.os }}-nuget-
 
       - name: Install the template from this commit

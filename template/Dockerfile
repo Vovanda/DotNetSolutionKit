@@ -21,6 +21,7 @@ WORKDIR /src
 
 COPY Directory.Build.props version.json ./
 COPY src/Directory.Packages.props src/
+COPY src/package-versions/ src/package-versions/
 COPY src/common/ src/common/
 
 RUN --mount=type=cache,target=/root/.nuget/packages,sharing=locked \

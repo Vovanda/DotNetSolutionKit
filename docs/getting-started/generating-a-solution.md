@@ -34,7 +34,8 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 of the template it already holds every version a service needs, with any `-H` and `--Messaging`; the flags
 that add files to `Common` are chosen once for the solution, see [parameters](#parameters). In an older
 solution the build stops with `NU1010` and names the packages that have no version; copy their
-`PackageVersion` lines from the template's [`Directory.Packages.props`](../../template/src/Directory.Packages.props).
+`PackageVersion` lines from the template's [`Directory.Packages.props`](../../template/src/Directory.Packages.props)
+and, for a flag, from its file in [`src/package-versions/`](../../template/src/package-versions).
 
 Then add the new projects to the global solution file:
 

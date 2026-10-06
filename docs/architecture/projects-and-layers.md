@@ -79,6 +79,10 @@ Packages still flow transitively; only project references are cut.
 
 ## Packages and versions
 
-Package versions are declared once, in `src/Directory.Packages.props`; a `.csproj` names a package without
-a version. Every package stays on the .NET 8 line: none pulls in a .NET 9 library, directly or
+Package versions are declared once, in `src/Directory.Packages.props` or in a file it imports; a `.csproj`
+names a package without a version. Every package stays on the .NET 8 line: none pulls in a .NET 9 library, directly or
 transitively, so some packages are held below their newest version.
+
+The versions a flag brings - the database, `--Notify`, `--MongoDB` and the rest - live in a file of their
+own, `src/package-versions/<flag>.props`, which `Directory.Packages.props` imports by mask: a flag adds a
+file and leaves the shared one as it is.
