@@ -69,6 +69,11 @@ dotnet test src/services/NamespaceRoot.ProductName.All.sln
 # Without the tests that need real servers (PostgreSQL, RabbitMQ and the rest)
 dotnet test src/services/NamespaceRoot.ProductName.All.sln --filter "TestCategory!=Integration"
 
+# The test servers of the solution, a script per part in tests/servers/, and the integration tests on them
+eval "$(bash tests/servers/up.sh)"
+dotnet test src/services/NamespaceRoot.ProductName.All.sln --filter "TestCategory=Integration"
+bash tests/servers/up.sh down
+
 # One service
 dotnet test src/services/NamespaceRoot.ProductName.<Service>/NamespaceRoot.ProductName.<Service>.sln
 

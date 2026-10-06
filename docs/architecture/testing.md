@@ -93,24 +93,22 @@ connection string from `TEST_POSTGRES` and are skipped, with that reason, when i
 `dotnet test` needs no database:
 
 ```bash
-docker run -d --name tests-pg -p 15433:5432 -e POSTGRES_PASSWORD=test-do-not-use postgres:16-alpine
-TEST_POSTGRES='Host=localhost;Port=15433;Database=postgres;Username=postgres;Password=test-do-not-use' \
-  dotnet test --filter "TestCategory=Integration"
+eval "$(bash tests/servers/up.sh)"     # every test server of the solution, and its TEST_* variables
+dotnet test --filter "TestCategory=Integration"
+bash tests/servers/up.sh down          # removes the containers
 
 dotnet test --filter "TestCategory!=Integration"   # everything else
 ```
 
+Each server is a script in `tests/servers/` - `postgres.sh`, and one per flag that needs a server - with
+`start`, `ready`, `logs` and `down`; `up.sh` runs every script it finds there, and CI runs the same scripts,
+so a flag added later brings its script and changes nothing shared.
+
 A solution generated with `--Database mssql` reads `TEST_SQLSERVER` instead, and its service tests use
 `SqlServerDbTestExecutionContext` in place of `PostgresDbTestExecutionContext`. The service's schema is
 migrated into one template database once per run, backed up, and each test restores the backup under a
-name of its own, which is faster on SQL Server than migrating each test's database:
-
-```bash
-docker run -d --name tests-mssql -p 1433:1433 -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD=Test-do-not-use-1 \
-  mcr.microsoft.com/mssql/server:2022-latest
-TEST_SQLSERVER='Server=localhost,1433;User Id=sa;Password=Test-do-not-use-1;TrustServerCertificate=true' \
-  dotnet test --filter "TestCategory=Integration"
-```
+name of its own, which is faster on SQL Server than migrating each test's database. `up.sh` starts SQL
+Server for it.
 
 `Common.Tests/Integration` has such fixtures, for numbers from a sequence and for object storage.
 

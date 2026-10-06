@@ -67,65 +67,10 @@ jobs:
           done
           exit $missing
 
-#if (Database == "mssql")
-      # The integration tests restore a database of their own per test from one migrated once. SQL
-      # Server on Linux does not run its files on a ramdisk, so they stay on the runner's disk.
-      - name: Start SQL Server for the tests
-        run: |
-          docker run -d --name tests-mssql -p 1433:1433 \
-            -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD=Test-do-not-use-1 \
-            mcr.microsoft.com/mssql/server:2022-latest
-#else
-      # The integration tests create and drop a database of their own per test. On a ramdisk with
-      # durability off that is several times faster - safe only because the data dies with the job.
-      # The ramdisk is larger than max_wal_size: a full one stops the server mid-run.
-      - name: Start PostgreSQL for the tests
-        run: |
-          docker run -d --name tests-pg -p 5432:5432 \
-            -e POSTGRES_PASSWORD=test-do-not-use \
-            --tmpfs /var/lib/postgresql/data:rw,size=2g \
-            postgres:16-alpine \
-            -c fsync=off -c synchronous_commit=off -c full_page_writes=off \
-            -c max_wal_size=512MB -c autovacuum=off
-#endif
-#if (ClickHouse)
-
-      - name: Start ClickHouse for the tests
-        run: |
-          docker run -d --name tests-ch -p 8123:8123 \
-            -e CLICKHOUSE_USER=tester -e CLICKHOUSE_PASSWORD=test-do-not-use \
-            -e CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1 \
-            clickhouse/clickhouse-server:24.8-alpine
-#endif
-#if (NotifyEmail)
-
-      - name: Start an SMTP server for the tests
-        run: docker run -d --name tests-smtp -p 1025:1025 -p 8025:8025 mailhog/mailhog:v1.0.1
-#endif
-#if (MongoDB)
-
-      - name: Start MongoDB for the tests
-        run: |
-          docker run -d --name tests-mongo -p 27017:27017 \
-            -e MONGO_INITDB_ROOT_USERNAME=tester -e MONGO_INITDB_ROOT_PASSWORD=test-do-not-use \
-            mongo:7.0
-#endif
-#if (Storage)
-
-      - name: Start S3-compatible storage for the tests
-        run: |
-          docker run -d --name tests-s3 -p 8333:8333 \
-            -e AWS_ACCESS_KEY_ID=tester -e AWS_SECRET_ACCESS_KEY=test-do-not-use \
-            chrislusf/seaweedfs server -s3 -dir=/data
-#endif
-#if (Vault)
-
-      - name: Start Vault for the tests
-        run: |
-          docker run -d --name tests-vault -p 8200:8200 \
-            -e VAULT_DEV_ROOT_TOKEN_ID=test-do-not-use -e VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200 \
-            hashicorp/vault:1.17
-#endif
+      # Every test server of the solution - a script per part in tests/servers/; a flag added later brings
+      # its own - started now, so they come up while the solution builds and the unit tests run.
+      - name: Start the test servers
+        run: bash tests/servers/up.sh start
 
       - name: Restore
         run: dotnet restore src/services/*.All.sln
@@ -143,65 +88,10 @@ jobs:
             --filter "TestCategory!=Integration" "${collect[@]}"
 
       - name: Wait for the test servers
-        run: |
-          for attempt in $(seq 1 60); do
-            ready=1
-#if (Database == "mssql")
-            docker exec tests-mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P Test-do-not-use-1 \
-              -Q "SELECT 1" -b >/dev/null 2>&1 || ready=0
-#else
-            docker exec tests-pg pg_isready -U postgres >/dev/null 2>&1 || ready=0
-#endif
-#if (ClickHouse)
-            curl -fsS http://localhost:8123/ping >/dev/null 2>&1 || ready=0
-#endif
-#if (NotifyEmail)
-            curl -fsS "http://localhost:8025/api/v2/messages?limit=1" >/dev/null 2>&1 || ready=0
-#endif
-#if (MongoDB)
-            docker exec tests-mongo mongosh --quiet -u tester -p test-do-not-use \
-              --eval "db.adminCommand('ping').ok" >/dev/null 2>&1 || ready=0
-#endif
-#if (Storage)
-            echo "s3.bucket.create -name tests" | docker exec -i tests-s3 weed shell -master=localhost:9333 2>&1 \
-              | grep -qE 'created|exists' || ready=0
-#endif
-#if (Vault)
-            curl -fsS http://localhost:8200/v1/sys/health >/dev/null 2>&1 || ready=0
-#endif
-            [ $ready = 1 ] && exit 0
-            sleep 1
-          done
-#if (Database == "mssql")
-          docker logs tests-mssql
-#else
-          docker logs tests-pg
-#endif
-          exit 1
+        run: bash tests/servers/up.sh wait
 
+      # The TEST_* variables come from the test servers' scripts, through $GITHUB_ENV.
       - name: Integration tests
-        env:
-#if (Database == "mssql")
-          TEST_SQLSERVER: Server=localhost,1433;User Id=sa;Password=Test-do-not-use-1;TrustServerCertificate=true
-#else
-          TEST_POSTGRES: Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=test-do-not-use
-#endif
-#if (ClickHouse)
-          TEST_CLICKHOUSE: Host=localhost;Port=8123;Username=tester;Password=test-do-not-use
-#endif
-#if (NotifyEmail)
-          TEST_SMTP: localhost:1025
-          TEST_SMTP_API: http://localhost:8025/
-#endif
-#if (MongoDB)
-          TEST_MONGO: mongodb://tester:test-do-not-use@localhost:27017/?authSource=admin
-#endif
-#if (Storage)
-          TEST_S3: ServiceUrl=http://localhost:8333;Bucket=tests;AccessKey=tester;SecretKey=test-do-not-use
-#endif
-#if (Vault)
-          TEST_VAULT: Address=http://localhost:8200;Token=test-do-not-use
-#endif
         run: |
           collect=()
           [ "$COVERAGE" = true ] && collect=(--collect:"XPlat Code Coverage" --results-directory coverage/integration)

@@ -59,10 +59,8 @@ await guard.EnsureColumnsAsync("reports.usage", UsageWriter.Columns, "Apply depl
 создаёт свои таблицы через `ExecuteAsync`. Без переменной тест пропускается.
 
 ```bash
-docker run -d --name tests-ch -p 18123:8123 -e CLICKHOUSE_USER=tester -e CLICKHOUSE_PASSWORD=test-do-not-use \
-  -e CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1 clickhouse/clickhouse-server:24.8-alpine
-TEST_CLICKHOUSE='Host=localhost;Port=18123;Username=tester;Password=test-do-not-use' \
-  dotnet test --filter "FullyQualifiedName~ClickHouse"
+eval "$(bash tests/servers/up.sh)"     # тестовые серверы, среди них ClickHouse (tests/servers/clickhouse.sh)
+dotnet test --filter "FullyQualifiedName~ClickHouse"
 ```
 
 Так `Common.Tests` проверяет ядро: подходящая таблица проходит, отсутствующая колонка и отсутствующая

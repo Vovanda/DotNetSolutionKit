@@ -594,6 +594,34 @@
           "exclude": ["deploy/compose/infra/s3.yml"]
         },
         {
+          "condition": "(Database == \"mssql\")",
+          "exclude": ["tests/servers/postgres.sh"]
+        },
+        {
+          "condition": "(Database != \"mssql\")",
+          "exclude": ["tests/servers/sqlserver.sh"]
+        },
+        {
+          "condition": "(!ClickHouse)",
+          "exclude": ["tests/servers/clickhouse.sh"]
+        },
+        {
+          "condition": "(!NotifyEmail)",
+          "exclude": ["tests/servers/mailhog.sh"]
+        },
+        {
+          "condition": "(!MongoDB)",
+          "exclude": ["tests/servers/mongo.sh"]
+        },
+        {
+          "condition": "(!Storage)",
+          "exclude": ["tests/servers/s3.sh"]
+        },
+        {
+          "condition": "(!Vault)",
+          "exclude": ["tests/servers/vault.sh"]
+        },
+        {
           "condition": "(!HierarchyRules)",
           "exclude": [
             "src/common/NamespaceRoot.ProductName.Common/Domain/IHierarchicalEntity.cs",
