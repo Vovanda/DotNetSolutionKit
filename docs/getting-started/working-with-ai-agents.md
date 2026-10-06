@@ -4,11 +4,13 @@ In most tasks there is no weighty reason to refuse AI tools. With them or withou
 work answers for the quality and the purpose of the result: that responsibility cannot be passed to a tool,
 and should not be.
 
-The template was written with an AI agent on the Claude Opus model. There is no attribution or co-authorship
-of the model in the commits or in the files: the model is not the author of the project's decisions. It is
-used as a tool, a high-level compiler and generator: the author makes a decision, the model turns it into
-code, the author checks the result and answers for it. Neither an operating system nor a compiler that
-generates optimal code is named as a co-author, and the model is in the same role here.
+The architecture of v1 (August 2025 - February 2026, 10 commits) was laid down by the author by hand. AI
+agents came into the work as they matured: from the work on v2 on, the template is written with an agent on
+the Claude Opus model. There is no attribution or co-authorship of the model in the commits or in the
+files: the model is not the author of the project's decisions. It is used as a tool, a high-level compiler
+and generator: the author makes a decision, the model turns it into code, the author checks the result and
+answers for it. Neither an operating system nor a compiler that generates optimal code is named as a
+co-author, and the model is in the same role here.
 
 The template can generate a solution that is also set up for work with AI agents. Its rules and skills are
 written to keep the agent as close as possible to the task it was given, but they do not guarantee that the
