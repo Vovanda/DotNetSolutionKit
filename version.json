@@ -4,20 +4,26 @@
     "2.8.0-rc": {
       "headline": "",
       "highlights": [
-        "Coverage on demand, with a report per service.",
+        "A solution keeps up with the template: dotskit adds services and flags to it and upgrades it to a new version, keeping the team's changes.",
+        "A service generated into a solution adds itself to All.sln.",
+        "Email by flag, with a sandbox that keeps a test stand from mailing real people.",
         "MongoDB by flag, beside the main database.",
-        "Notifications by email, through SMTP or Graph API, with a sandbox that keeps a test stand from mailing anyone outside; another service asks for an email by a bus command.",
-        "A service generated into a solution adds itself to All.sln, on any OS, without a script.",
-        "A solution keeps up with the template: dotskit adds services and flags to it and upgrades it to a new version, keeping the team's changes."
+        "Containers run on a read-only filesystem.",
+        "The test servers start with one command, the same on a developer's machine as in CI.",
+        "Coverage on demand, with a report per service.",
+        "The solution is generated with --Solution; -M false still works."
       ],
       "ru": {
         "headline": "",
         "highlights": [
-          "Покрытие по запросу, с отчётом по каждому сервису.",
+          "Решение не отстаёт от шаблона: dotskit добавляет в него сервисы и флаги и переводит его на новую версию, сохраняя правки команды.",
+          "Сервис, сгенерированный в готовое решение, сам добавляется в All.sln.",
+          "Почта по флагу, с песочницей, которая не даёт тестовому стенду писать реальным людям.",
           "MongoDB по флагу, рядом с основной базой.",
-          "Уведомления почтой, через SMTP или Graph API, с песочницей, которая не даёт тестовому стенду писать никому снаружи; другой сервис просит письмо командой шины.",
-          "Сервис, сгенерированный в готовое решение, сам добавляется в All.sln на любой ОС, без скрипта.",
-          "Решение поспевает за шаблоном: dotskit добавляет в него сервисы и флаги и обновляет его до новой версии, сохраняя правки команды."
+          "Контейнеры работают с файловой системой только для чтения.",
+          "Тестовые серверы запускаются одной командой, одинаково на машине разработчика и в CI.",
+          "Покрытие по запросу, с отчётом по каждому сервису.",
+          "Решение генерируется с --Solution; -M false по-прежнему работает."
         ]
       }
     },

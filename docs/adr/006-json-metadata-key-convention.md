@@ -1,4 +1,4 @@
-# ADR-006: JSON Metadata Key Convention
+# ADR-006: JSON metadata keys
 
 **Status:** Accepted, 2026-10-06
 

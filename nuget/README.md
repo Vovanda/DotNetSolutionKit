@@ -77,7 +77,7 @@ Dotted names, running locally and the rest of the details:
 Version 2 targets .NET 8. To install a given version:
 
 ```bash
-dotnet new install SawKing.DotNetSolutionKit::2.6.2
+dotnet new install SawKing.DotNetSolutionKit::2.8.0
 ```
 
 Do not apply version 2 with `--force` over a solution generated from version 1: namespaces, project references,

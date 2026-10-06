@@ -72,12 +72,14 @@ then:
 
 - inside the template: `template.yml` is green on the last commit of `dev`;
 - outside it: `full-dev` in DotNetSolutionKit.Samples is regenerated from that commit, and its CI is green;
+- the life of a solution: the branch `lifecycle` of the samples is built from that commit - a solution made
+  with the template alone two minors back, then described, upgraded and grown by `dotskit` - and its CI is green;
 - the batch is finished: nothing begun and left undone is in `dev`.
 
 Before the release, one commit on `dev` takes the label off: `2.8.0-rc` becomes `2.8.0`, and so does its
 entry of notes; [promote.yml](.github/workflows/promote.yml) refuses a version that still has it, and the
 site shows no labelled version. The minor version grows by exactly one from release to release. The notes
-have a headline about what matters most to a user of the template, and lines checked against the commits
+have a headline naming the change a user of the template gains most from, and lines checked against the commits
 since the last release. After the release, `dev` takes the next minor with the label.
 
 The release is then one pull request from `dev` into `master`.
@@ -85,9 +87,10 @@ The release is then one pull request from `dev` into `master`.
 Merged into `master`, it makes [release.yml](.github/workflows/release.yml) tag `v<version>`, wait for
 `template.yml` on that commit and publish: the GitHub release with the version's notes
 (`scripts/release-notes.sh <version>` prints the same text), the package
-`DotNetSolutionKit.Templates.csproj` packs, attached to the release, on nuget.org as
-`SawKing.DotNetSolutionKit` and in GitHub Packages. A version on nuget.org cannot be deleted, only
-unlisted. DotNetSolutionKit.Samples regenerates its release branches from the new tag within a day.
+`DotNetSolutionKit.Templates.csproj` packs, on nuget.org as `SawKing.DotNetSolutionKit`, and the tool
+`dotskit` of the same version, packed from `tool/DotsKit` as `SawKing.DotsKit.Tool`; both are attached to the
+release and published on nuget.org, the tool first, and in GitHub Packages. The nuget.org key
+(`NUGET_API_KEY`) must cover both package IDs. A version on nuget.org cannot be deleted, only unlisted. DotNetSolutionKit.Samples regenerates its release branches from the new tag within a day.
 
 A patch version is only for a fix that cannot wait for the next release. If `dev` can be released as it is -
 what is new in it is finished or behind a flag - the fix goes into `dev` and `dev` is released. If it

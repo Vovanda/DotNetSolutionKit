@@ -145,4 +145,4 @@ workflows the solution ships with.
 
 The generated solutions are published in
 [DotNetSolutionKit.Samples](https://github.com/sawking-tech/DotNetSolutionKit.Samples). They are regenerated
-after every release and every change to the working branch, and their CI runs on GitHub.
+after every release, and once a day when the working branch has moved, and their CI runs on GitHub.
