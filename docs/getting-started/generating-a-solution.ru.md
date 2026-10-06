@@ -23,12 +23,17 @@ dotnet new install /path/to/DotNetSolutionKit/template --force
 dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders --Solution
 ```
 
-Каждый следующий сервис генерируется без `--Solution`: создаётся только папка сервиса,
-а `Common` берётся уже существующий:
+Каждый следующий сервис добавляется из корня решения:
 
 ```bash
 dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 ```
+
+Он генерирует папку сервиса и, спросив разрешения запустить команду (`--allow-scripts yes` запускает без
+вопроса), добавляет проекты сервиса в `All.sln`, в папку решения по последнему сегменту имени сервиса. Файлы,
+которые уже есть в решении, он не трогает: `Common` не получает ничего нового, поэтому сервис берёт только те
+флаги, часть которых в `Common` уже есть, а база данных, способ развёртывания и имена передаются заново такими,
+какие они у решения.
 
 Сервис, сгенерированный без `--Solution`, не трогает корневой `src/Directory.Packages.props`. В решении, сгенерированном этой версией
 шаблона, там уже есть все версии, нужные сервису, с любыми `-H` и `--Messaging`; флаги, которые добавляют
@@ -36,14 +41,6 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 сборка останавливается с `NU1010` и называет пакеты без версии; скопируйте их строки `PackageVersion`
 из [`Directory.Packages.props`](../../template/src/Directory.Packages.props) шаблона, а для флага - из его
 файла в [`src/package-versions/`](../../template/src/package-versions).
-
-Затем добавьте новые проекты в общий файл решения:
-
-```bash
-cd src/services
-chmod +x manual-add-projects.sh # on Linux and macOS
-./manual-add-projects.sh
-```
 
 <a id="parameters"></a>
 ## Параметры
