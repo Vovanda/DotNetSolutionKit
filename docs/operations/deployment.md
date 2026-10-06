@@ -53,9 +53,12 @@ deploy/build-images.sh
 deploy/compose/compose.sh up -d --wait
 ```
 
-`compose.sh` runs `docker compose` over `deploy/compose/infrastructure.yml` and every
+`compose.sh` runs `docker compose` over every `deploy/compose/infra/*.yml` and every
 `src/services/*/deploy/compose.yml`, with `deploy/compose/.env`; any `docker compose` command works through
-it (`logs -f`, `down`, `ps`).
+it (`logs -f`, `down`, `ps`). Each part of the infrastructure is a file of its own - the database, RabbitMQ,
+and what a flag brings (ClickHouse, MongoDB, MailHog, object storage) - so a part added later, the
+template's or your own, is a new file in `infra/`, and `bluegreen.sh` reads the list of the infrastructure
+from these files.
 
 - PostgreSQL, and RabbitMQ when a service uses the bus, start first; a service starts once they report
   healthy.

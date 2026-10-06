@@ -566,6 +566,34 @@
           "exclude": ["src/package-versions/mssql.props"]
         },
         {
+          "condition": "(Database == \"mssql\")",
+          "exclude": ["deploy/compose/infra/postgres.yml"]
+        },
+        {
+          "condition": "(Database != \"mssql\")",
+          "exclude": ["deploy/compose/infra/sqlserver.yml"]
+        },
+        {
+          "condition": "(Messaging == \"none\")",
+          "exclude": ["deploy/compose/infra/rabbitmq.yml"]
+        },
+        {
+          "condition": "(!ClickHouse)",
+          "exclude": ["deploy/compose/infra/clickhouse.yml"]
+        },
+        {
+          "condition": "(!NotifyEmail)",
+          "exclude": ["deploy/compose/infra/mailhog.yml"]
+        },
+        {
+          "condition": "(!MongoDB)",
+          "exclude": ["deploy/compose/infra/mongo.yml"]
+        },
+        {
+          "condition": "(!Storage)",
+          "exclude": ["deploy/compose/infra/s3.yml"]
+        },
+        {
           "condition": "(!HierarchyRules)",
           "exclude": [
             "src/common/NamespaceRoot.ProductName.Common/Domain/IHierarchicalEntity.cs",

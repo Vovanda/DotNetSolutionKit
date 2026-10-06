@@ -55,9 +55,12 @@ deploy/build-images.sh
 deploy/compose/compose.sh up -d --wait
 ```
 
-`compose.sh` запускает `docker compose` над `deploy/compose/infrastructure.yml` и всеми
+`compose.sh` запускает `docker compose` над всеми `deploy/compose/infra/*.yml` и всеми
 `src/services/*/deploy/compose.yml` с `deploy/compose/.env`; через него работает любая команда
-`docker compose` (`logs -f`, `down`, `ps`).
+`docker compose` (`logs -f`, `down`, `ps`). Каждая часть инфраструктуры - отдельный файл: база данных,
+RabbitMQ и то, что приносит флаг (ClickHouse, MongoDB, MailHog, объектное хранилище). Часть, добавленная
+позже, шаблоном или вами, - новый файл в `infra/`, а `bluegreen.sh` берёт список инфраструктуры из этих
+файлов.
 
 - Первыми стартуют PostgreSQL и, если какой-либо сервис использует шину, RabbitMQ; сервис стартует,
   когда они сообщат, что здоровы.

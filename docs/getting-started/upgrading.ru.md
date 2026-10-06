@@ -176,6 +176,14 @@ fixture, которая держит состояние между тестам�
 `<Import Project="package-versions/*.props" />` перед `</Project>`, а в `Dockerfile` - строку
 `COPY src/package-versions/ src/package-versions/` после строки, которая копирует `Directory.Packages.props`.
 
+### Каждая часть инфраструктуры - отдельный файл
+
+`deploy/compose/infrastructure.yml` разделён на `deploy/compose/infra/<часть>.yml` - база данных, RabbitMQ и
+то, что приносит флаг, - а `compose.sh` и `bluegreen.sh` берут все файлы этой папки; список инфраструктуры
+`bluegreen.sh` теперь читает из них, а не перечисляет сам. Чтобы взять изменение, скопируйте
+`deploy/compose/infra/`, `compose.sh` и `bluegreen.sh` из решения, сгенерированного v2.8 с теми же флагами,
+перенесите в `infra/` сервисы, которые вы сами добавили в `infrastructure.yml`, и удалите этот файл.
+
 ## Не генерируйте поверх старого решения
 
 `dotnet new ... --force` поверх решения, сгенерированного из `v1`, перезаписывает файлы, которые изменила
