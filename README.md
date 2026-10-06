@@ -1,4 +1,4 @@
-# DotNetSolutionKit
+# DotNetSolutionKit (dotskit)
 
 [![NuGet](https://img.shields.io/nuget/v/SawKing.DotNetSolutionKit?label=nuget&color=1f9d4c)](https://www.nuget.org/packages/SawKing.DotNetSolutionKit)
 
@@ -12,10 +12,11 @@ Site: [dnsk.sawking.tech](https://dnsk.sawking.tech/). Documentation, in English
 > changed, and the overwritten solution will not build. Use v2 for new solutions; port changes into
 > existing ones by hand, using [what changed in v2](docs/getting-started/upgrading.md).
 
-A `dotnet new` template for microservices on .NET 8 and PostgreSQL or SQL Server. It generates shared `Common` libraries
-and services split into domain, application, infrastructure and API projects, with the host, errors,
-validation, persistence, domain events, background jobs and tests already wired, and optional parts behind
-flags. What it gives a solution in full - the principles, the economics, the cost:
+**DotNetSolutionKit (dotskit)** is a configurable `dotnet new` template and lifecycle toolkit for standardized .NET solutions.
+
+It provides ready-to-use architectural building blocks, modules, and integrations with infrastructure services that can be combined through flags to create different solution variants tailored to a team's needs and infrastructure. It generates microservice solutions based on DDD and Clean Architecture, with CI, deployment, and testing, adds services, connects modules to them, and upgrades solutions to new template versions while preserving the team's code. The generated solution remains an ordinary .NET project owned by the team, allowing them to focus on the architecture of the solution they are building and its business logic.
+
+What it gives a solution in full - the principles, the economics, the cost:
 [what the template gives](docs/getting-started/what-it-gives.md).
 
 ## Install and generate
