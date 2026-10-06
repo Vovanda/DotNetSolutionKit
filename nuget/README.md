@@ -1,10 +1,8 @@
-# DotNetSolutionKit
+# DotNetSolutionKit (dotskit)
 
-A `dotnet new` template for microservices on .NET 8 and PostgreSQL or SQL Server. It generates a solution with shared
-`Common` libraries and services split into domain, application, infrastructure and API projects. The host,
-errors, validation, persistence, domain events, background jobs and tests are wired in every service; the
-message bus, secrets, feature flags, object storage, ClickHouse, MongoDB, email, an API gateway, deployment files and CI are
-switched on by flags.
+**DotNetSolutionKit (dotskit)** is a configurable `dotnet new` template and lifecycle toolkit for standardized .NET solutions.
+
+It provides ready-to-use architectural building blocks, modules, and integrations with infrastructure services that can be combined through flags to create different solution variants tailored to a team's needs and infrastructure. It generates microservice solutions based on DDD and Clean Architecture, with CI, deployment, and testing, adds services, connects modules to them, and upgrades solutions to new template versions while preserving the team's code. The generated solution remains an ordinary .NET project owned by the team, allowing them to focus on the architecture of the solution they are building and its business logic.
 
 **Site and documentation, in English and Russian: [dnsk.sawking.tech](https://dnsk.sawking.tech/)**
 
