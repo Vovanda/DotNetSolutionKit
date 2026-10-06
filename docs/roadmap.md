@@ -42,7 +42,8 @@ gantt
     dotskit upgrade - to the tool's version, one major at a time, the team's changes kept (#100) :done, s30, after s29, 3000ms
 
     section Next
-    3.0 on .NET 8 - Common split by capability, references made exact by dotskit upgrade from 2.x :s15, after s30, 3000ms
+    2.9 - dotskit upgrade adds the project references and using lines of types the template moved (#117) :s32, after s30, 1500ms
+    3.0 on .NET 8 - Common split by capability, a 2.x solution upgraded by dotskit :s15, after s32, 3000ms
     4.0 on .NET 10; 3.x stays on .NET 8 until 10 November 2026 :s31, after s15, 3000ms
 ```
 
@@ -51,14 +52,15 @@ Work goes into `dev`, and a release reaches `master` about once a week ([CONTRIB
 Everything in Now goes into 2.8, on .NET 8, and 2.8 is released when `dotskit` is whole: it adds services
 and flags to a solution, describes a solution made without it, and upgrades a solution to its version,
 merging the template's changes with the team's. 3.0 stays on .NET 8 and splits `Common` into a project per capability, so a service carries only the
-packages it uses; a 2.x solution is upgraded to it by `dotskit`, its projects' references made exact automatically. 4.0
+packages it uses; a 2.x solution is upgraded to it by `dotskit`, which since 2.9 adds the project references and `using` lines of the types the template moved. 4.0
 moves to .NET 10. Support for .NET 8 ends on 10 November 2026: 3.0 and 4.0 are out before it, and 3.x then
 takes fixes only.
 
 | Version | What changes for a solution |
 |---|---|
 | 2.8 | `dotskit` keeps a solution up with the template: `dotskit new` adds a service or a flag and keeps the team's changes, `dotskit init` describes a solution made without it, `dotskit upgrade` brings a solution to its version; a service added with the template alone puts itself into `All.sln`, without a script; email and MongoDB come as projects of their own, `Capabilities.Notifications` and `Capabilities.Mongo` in `src/capabilities` |
-| 3.0 | The shared code is laid out by what it is. `src/framework` - the systems the template brings as a way of working, always there and used as they are: the three-phase domain events ([ADR-001](adr/001-three-phase-domain-events.md)) and the testing system ([ADR-005](adr/005-testing-a-service.md)). `src/capabilities` - what a flag turns on, a project per flag, configured and not changed: feature flags, MongoDB, email, ClickHouse, object storage, the audit journal; a flag that is off leaves its project out whole. `src/common` - what the services of the product share and the team changes to its needs: the contracts, the database context base, the web pipeline. A namespace names its kind (`NamespaceRoot.ProductName.Capabilities.Mongo`), and `dotskit upgrade` rewrites the team's `using` lines for the types that moved. The secret store becomes the configuration store. `-M` is gone (`--Solution` since 2.8), flags are written in lower case (`--api-gateway`), the package is `SawKing.DotsKit.Templates`. `dotskit upgrade` takes a solution of the last 2.x there: it records which project references which before, moves each reference to the project a type went to, and reports what needs a person |
+| 2.9 | `dotskit upgrade` builds the solution after the merge and adds the project references and `using` lines a moved type needs, from an index of where each type of the template lives; what is left is listed by project (#117) |
+| 3.0 | The shared code is laid out by what it is. `src/framework` - the systems the template brings as a way of working, always there and used as they are: the three-phase domain events ([ADR-001](adr/001-three-phase-domain-events.md)) and the testing system ([ADR-005](adr/005-testing-a-service.md)). `src/capabilities` - what a flag turns on, a project per flag, configured and not changed: feature flags, MongoDB, email, ClickHouse, object storage, the audit journal; a flag that is off leaves its project out whole. `src/common` - what the services of the product share and the team changes to its needs: the contracts, the database context base, the web pipeline. A namespace names its kind (`NamespaceRoot.ProductName.Capabilities.Mongo`). The secret store becomes the configuration store. `-M` is gone (`--Solution` since 2.8), flags are written in lower case (`--api-gateway`), the package is `SawKing.DotsKit.Templates`. `dotskit upgrade` takes a solution of the last 2.x there, and its repair of 2.9 adds the references and `using` lines of the types that moved |
 | 4.0 | .NET 10 |
 
 ## Reducing lock-in
