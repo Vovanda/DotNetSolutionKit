@@ -55,8 +55,8 @@ mindmap
 - [What the template gives](getting-started/what-it-gives.md): what a solution gets, the principles, the cost and the risks
 - [Generating a solution](getting-started/generating-a-solution.md): install, parameters, dotted names,
   running locally
-- [dotskit](getting-started/dotskit.md): the tool that makes a solution and adds services and flags to it,
-  keeping the team's changes
+- [dotskit](getting-started/dotskit.md): the tool that makes a solution, adds services and flags to it,
+  describes a solution made without it and upgrades a solution, keeping the team's changes
 - [Versions of the template](getting-started/upgrading.md): v1 and v2, what changed, how to update
 - [Working with AI agents](getting-started/working-with-ai-agents.md): the rules and skills a solution gets
 
@@ -106,7 +106,7 @@ Where the template departs from a common practice, and why.
 - [ADR-003: The API document is read from the built application](adr/003-api-schema-generation.md)
 - [ADR-004: The product version is set by hand](adr/004-product-version-by-hand.md)
 - [ADR-005: How a service is tested](adr/005-testing-a-service.md)
-- [ADR-006: JSON Metadata Key Convention](adr/006-json-metadata-key-convention.md)
+- [ADR-006: JSON metadata keys](adr/006-json-metadata-key-convention.md)
 
 ## [Roadmap](roadmap.md)
 

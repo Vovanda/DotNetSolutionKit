@@ -36,7 +36,8 @@ every [release](https://github.com/sawking-tech/DotNetSolutionKit/releases) also
 To try the template from a clone: `dotnet new install /path/to/DotNetSolutionKit/template`.
 
 From 2.8 the tool [dotskit](docs/getting-started/dotskit.md) does the same with shorter commands, adds a flag
-to a service generated earlier, and keeps the team's changes by a three-way merge:
+to a service generated earlier, and upgrades a solution to a newer version of the template, keeping the
+team's changes by a three-way merge:
 
 ```bash
 dotnet tool install -g SawKing.DotsKit.Tool
@@ -44,6 +45,8 @@ dotnet tool install -g SawKing.DotsKit.Tool
 dotskit new -N MyCompany -P MyProduct -S Orders   # in an empty folder: the solution and its first service
 dotskit new -S Billing --Storage true             # in the solution: one more service
 dotskit new -S Orders --MongoDB true              # in the solution: a flag for a service it has
+dotskit init                                      # in a solution made without dotskit: describe it in its manifest
+dotskit upgrade                                   # in the solution: bring it to the tool's version of the template
 ```
 
 What the generated solutions look like:

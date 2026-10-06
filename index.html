@@ -132,6 +132,8 @@
       <div class="cols">
         <p lang="en"><b>A new service in one command.</b> <code>dotnet new</code> adds it to the solution with its layers, references, tests and deployment files in place.</p>
         <p lang="ru"><b>Новый сервис одной командой.</b> <code>dotnet new</code> добавляет его в решение сразу со слоями, ссылками, тестами и файлами деплоя.</p>
+        <p lang="en"><b>A solution that keeps up.</b> <code>dotskit</code> adds a service or a flag to an existing solution and upgrades it to a new version of the template, keeping the team's changes.</p>
+        <p lang="ru"><b>Решение не отстаёт.</b> <code>dotskit</code> добавляет в готовое решение сервис или флаг и обновляет его до новой версии шаблона, сохраняя правки команды.</p>
         <p lang="en"><b>The boring part is done.</b> Errors in one format, validation, authorization, health checks, background jobs and one request ID that follows a call through every service and log.</p>
         <p lang="ru"><b>Рутина уже сделана.</b> Ошибки в одном формате, валидация, авторизация, проверки здоровья, фоновые задачи и один ID запроса, который проходит через все сервисы и логи.</p>
         <p lang="en"><b>Only what you need.</b> A message bus, secrets from Infisical or Vault, object storage, ClickHouse, MongoDB, email, an audit journal, an API gateway - each is a flag, switched on when you need it.</p>
@@ -158,6 +160,11 @@
       <p lang="en">Every next service:</p>
       <p lang="ru">Каждый следующий сервис:</p>
       <p class="hero__cmd"><code>dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing</code></p>
+      <p lang="en">Or with <a href="docs.html#dotskit">dotskit</a>, the template's tool, which also adds a flag to a service and upgrades a solution to a new version:</p>
+      <p lang="ru">Или через <a href="docs.html#dotskit">dotskit</a>, инструмент шаблона, который также добавляет флаг сервису и обновляет решение до новой версии:</p>
+      <p class="hero__cmd"><code>dotnet tool install -g SawKing.DotsKit.Tool</code></p>
+      <p class="hero__cmd"><code>dotskit new -N MyCompany -P MyProduct -S Orders</code></p>
+      <p class="hero__cmd"><code>dotskit upgrade</code></p>
     </div>
   </section>
 
@@ -209,6 +216,7 @@
             <tr><td><code>--Audit</code></td><td><code>false</code></td><td><span lang="en"><a href="docs.html#audit">Audit journal</a> of entity changes, through the outbox; with <code>--Messaging outbox</code>.</span><span lang="ru"><a href="docs.html#audit">Журнал аудита</a> изменений сущностей, через outbox; с <code>--Messaging outbox</code>.</span></td></tr>
             <tr><td><code>--ApiGateway</code></td><td><code>false</code></td><td><span lang="en">An <a href="docs.html#gateway">API gateway</a> on YARP in place of a service, into a solution already there (without <code>--Solution</code>).</span><span lang="ru"><a href="docs.html#gateway">API-шлюз</a> на YARP вместо сервиса, в уже существующее решение (без <code>--Solution</code>).</span></td></tr>
             <tr><td><code>--Deploy</code></td><td><code>compose</code></td><td><span lang="en"><a href="docs.html#deployment">Deployment files</a>: <code>compose</code>, <code>k8s</code> or <code>none</code>.</span><span lang="ru"><a href="docs.html#deployment">Файлы развёртывания</a>: <code>compose</code>, <code>k8s</code> или <code>none</code>.</span></td></tr>
+            <tr><td><code>--Agent</code></td><td><code>claude</code></td><td><span lang="en"><a href="docs.html#agents">Rules and skills for an AI agent</a>: <code>claude</code>, <code>opencode</code> or <code>none</code>; with <code>--Solution</code>.</span><span lang="ru"><a href="docs.html#agents">Правила и скиллы для ИИ-агента</a>: <code>claude</code>, <code>opencode</code> или <code>none</code>; с <code>--Solution</code>.</span></td></tr>
             <tr><td><code>--HttpPort</code></td><td><span lang="en">free port</span><span lang="ru">свободный порт</span></td><td><span lang="en">Port in <code>launchSettings.json</code> and on the host under compose.</span><span lang="ru">Порт в <code>launchSettings.json</code> и на хосте под compose.</span></td></tr>
           </tbody>
         </table>

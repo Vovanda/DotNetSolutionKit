@@ -55,8 +55,8 @@ mindmap
 - [Что даёт шаблон](getting-started/what-it-gives.md): что получает решение, принципы, цена и риски
 - [Генерация решения](getting-started/generating-a-solution.md): установка, параметры, имена с точками,
   локальный запуск
-- [dotskit](getting-started/dotskit.md): инструмент, который создаёт решение и добавляет в него сервисы и флаги,
-  сохраняя правки команды
+- [dotskit](getting-started/dotskit.md): инструмент, который создаёт решение, добавляет в него сервисы и флаги,
+  описывает решение, сделанное без него, и обновляет решение, сохраняя правки команды
 - [Версии шаблона](getting-started/upgrading.md): v1 и v2, что изменилось, как обновиться
 - [Работа с ИИ-агентами](getting-started/working-with-ai-agents.md): правила и скиллы, которые получает решение
 
@@ -106,7 +106,7 @@ mindmap
 - [ADR-003: Документ API читается из собранного приложения](adr/003-api-schema-generation.md)
 - [ADR-004: Версия продукта задаётся вручную](adr/004-product-version-by-hand.md)
 - [ADR-005: Как тестируется сервис](adr/005-testing-a-service.md)
-- [ADR-006: JSON Metadata Key Convention](adr/006-json-metadata-key-convention.md)
+- [ADR-006: ключи метаданных в JSON](adr/006-json-metadata-key-convention.md)
 
 ## [Дорожная карта](roadmap.md)
 
