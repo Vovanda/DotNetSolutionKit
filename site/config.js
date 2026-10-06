@@ -66,6 +66,7 @@ window.SITE = {
       ["adr-003", "docs/adr/003-api-schema-generation", ["ADR-003: The API document from the built application", "ADR-003: документ API из собранного приложения"], true],
       ["adr-004", "docs/adr/004-product-version-by-hand", ["ADR-004: The product version by hand", "ADR-004: версия продукта вручную"], true],
       ["adr-005", "docs/adr/005-testing-a-service", ["ADR-005: How a service is tested", "ADR-005: как тестируется сервис"], true],
+      ["adr-006", "docs/adr/006-json-metadata-key-convention", ["ADR-006: JSON Metadata Key Convention", "ADR-006: JSON Metadata Key Convention"], true],
     ]},
   ],
 };

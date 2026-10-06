@@ -90,6 +90,9 @@ Migrations: `/ef-migration`. A new service: `/scaffold-service`.
 - Time comes from `IDomainExecutionContext.TimeProvider`, never `DateTime.UtcNow`.
 - Side effects of a change (a bus message, a job) go into domain event handlers, never inline in a
   service: [domain events](https://dnsk.sawking.tech/docs.html#domain-events).
+- A key added to an `appsettings*.json` gets `"_comment_<Key>"` right after it: what goes there, and
+  `REQUIRED` first when the service does not start without it. A key starting with `_` is metadata, which
+  the options binder ignores: [JSON metadata keys](https://dnsk.sawking.tech/docs.html#adr-006).
 - Configuration is read through typed options validated at startup, never `IConfiguration["Key"]` in a
   service: [settings](https://dnsk.sawking.tech/docs.html#settings).
 - Before writing a file of a kind the solution already has (an entity configuration, a validator, a
