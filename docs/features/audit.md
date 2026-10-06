@@ -1,8 +1,9 @@
 # Audit journal
 
 Generated with `--Audit` together with `--Messaging outbox`, off by default. Without the outbox the flag
-does nothing: an entry has to commit with the change it describes, and only the outbox writes a message in
-the same transaction. Pass both with `-M false`, and again to each service generated later.
+does nothing, and the generation says so: an entry has to commit with the change it describes, and only
+the outbox writes a message in the same transaction. Pass both with `-M false`, and again to each service
+generated later.
 
 ## What is recorded
 

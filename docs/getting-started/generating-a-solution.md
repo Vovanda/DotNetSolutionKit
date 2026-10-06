@@ -66,8 +66,8 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--MongoDB` | `false` | [MongoDB](../features/mongodb.md) beside the main database: the client, the service's database, readiness. |
 | `--Notify` | none | Channels of [notifications](../features/notifications.md): `email` - through SMTP or Graph API, with a sandbox outside Production; with `--Messaging` other services ask for it by a bus command. |
 | `--TestFramework` | `nunit` | Test framework of the service's tests, `nunit` or `xunit` (v3); per service. `Common`'s own tests stay on NUnit. See [testing](../architecture/testing.md). |
-| `--Audit` | `false` | [Audit journal](../features/audit.md) of entity changes; takes effect only with `--Messaging outbox`. |
-| `--ApiGateway` | `false` | An [API gateway](../features/api-gateway.md) on YARP in place of a service. With `-M true` only. |
+| `--Audit` | `false` | [Audit journal](../features/audit.md) of entity changes; takes effect only with `--Messaging outbox`; without it the generation says it was not applied. |
+| `--ApiGateway` | `false` | An [API gateway](../features/api-gateway.md) on YARP in place of a service. With `-M true` only; with `-M false` the generation says it was not applied. |
 | `--Deploy` | `compose` | [Deployment files](../operations/deployment.md): `compose`, `k8s` or `none`. One value for the solution: pass the same with `-M true`. |
 | `--Agent` | `claude` | [Rules and skills for an AI agent](working-with-ai-agents.md): `claude`, `opencode` or `none`. With `-M false`. |
 | `--HttpPort` | free port | Port in `launchSettings.json` and on the host under compose; without it, a free port from 5000-5999 on the generating machine, so services generated one after another do not share a port. |
