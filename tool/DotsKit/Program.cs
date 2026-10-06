@@ -39,7 +39,7 @@ try
     var folder = Folders.RealPath(Directory.GetCurrentDirectory());
     var code = args[0] switch
     {
-        "new" => await new NewCommand(planner, execution, git, ToolVersion.Current).RunAsync(options, folder, cts.Token),
+        "new" => await new NewCommand(planner, execution, git, ToolVersion.Current, TemplateSource.SourcesFolder is not null).RunAsync(options, folder, cts.Token),
         "upgrade" => await new UpgradeCommand(planner, execution, git, terminal, ToolVersion.Current,
             TemplateSource.SourcesFolder is not null).RunAsync(options, folder, cts.Token),
         "init" => await new InitCommand(staging, projects, terminal, ToolVersion.Current, TemplateSource.SourcesFolder is not null).RunAsync(options, folder, cts.Token),

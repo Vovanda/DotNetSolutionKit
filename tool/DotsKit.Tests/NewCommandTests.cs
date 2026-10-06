@@ -22,7 +22,7 @@ internal sealed class NewCommandTests
         public List<string> Lines { get; } = [];
 
         public NewCommand Command() =>
-            new(new Planner(this), new PlanExecution(new PlanReport(new Terminal(this)), new Writer(this), new Builder(), new Terminal(this)), new Git(this), ToolVersion);
+            new(new Planner(this), new PlanExecution(new PlanReport(new Terminal(this)), new Writer(this), new Builder(), new Terminal(this)), new Git(this), ToolVersion, onSources: false);
 
         private sealed class Planner(Fakes fakes) : IPlanner
         {
@@ -83,7 +83,7 @@ internal sealed class NewCommandTests
         return root;
     }
 
-    private static string ThisVersion => TemplateSource.Current(ToolVersion);
+    private static string ThisVersion => ToolVersion;
 
     [Test]
     public async Task Should_Refuse_When_TheSolutionHasNoManifest()

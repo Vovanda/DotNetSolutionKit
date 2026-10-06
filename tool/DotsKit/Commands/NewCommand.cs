@@ -10,8 +10,11 @@ namespace DotsKit.Commands;
 /// adds the service, or joins the flags to a service it has. Whether to make or to add is read from the
 /// folder; <c>--Solution</c> changes nothing.
 /// </summary>
-internal sealed class NewCommand(IPlanner planner, PlanExecution execution, IGit git, string toolVersion)
+/// <param name="onSources">The tool runs against the template's sources: it generates with them, as version "source".</param>
+internal sealed class NewCommand(IPlanner planner, PlanExecution execution, IGit git, string toolVersion, bool onSources)
 {
+    private string Target => onSources ? TemplateSource.SourcesVersion : toolVersion;
+
     public async Task<ExitCode> RunAsync(Options options, string folder, CancellationToken ct)
     {
         var command = TemplateArgs.Parse(options.TemplateArgs);
@@ -41,7 +44,7 @@ internal sealed class NewCommand(IPlanner planner, PlanExecution execution, IGit
     {
         var manifest = Manifest.Load(root)
             ?? throw new InvalidOperationException($"{Layout.ManifestPath} is missing: describe the solution first, dotskit init.");
-        var version = TemplateSource.Current(toolVersion);
+        var version = Target;
         if (manifest.Template != version)
             throw new InvalidOperationException(TemplateVersions.IsNewer(manifest.Template, version)
                 ? $"The solution is of the template {manifest.Template}, newer than dotskit {version}: update the tool, dotnet tool update -g SawKing.DotsKit.Tool."
@@ -56,7 +59,7 @@ internal sealed class NewCommand(IPlanner planner, PlanExecution execution, IGit
     {
         var service = Ports.Assign(command.ServicePart(), current);
         if (current is null)
-            return new Manifest { Template = TemplateSource.Current(toolVersion), Solution = command.SolutionPart().ToArgs(), Services = [] }.WithService(service);
+            return new Manifest { Template = Target, Solution = command.SolutionPart().ToArgs(), Services = [] }.WithService(service);
         RefuseOtherSolutionValues(current, command);
         return current.WithService(service);
     }

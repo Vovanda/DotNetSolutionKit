@@ -61,9 +61,6 @@ internal sealed class TemplateSource(IProcessRunner runner) : ITemplateSource
     /// <summary>The folder of the template's sources, when DOTSKIT_TEMPLATE_SOURCE names one.</summary>
     public static string? SourcesFolder => Environment.GetEnvironmentVariable(SourcesVariable) is { Length: > 0 } folder ? folder : null;
 
-    /// <summary>The version this run generates with: the tool's own, or the sources'.</summary>
-    public static string Current(string toolVersion) => SourcesFolder is null ? toolVersion : SourcesVersion;
-
     private readonly Dictionary<string, ITemplate> _templates = new(StringComparer.Ordinal);
 
     public ITemplate Of(string version)
