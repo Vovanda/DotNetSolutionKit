@@ -40,6 +40,27 @@ several pull requests going at once and work on one while the checks of another 
   which promote.yml starts once master has moved; it writes the notes of the released versions from
   `version.json` into `index.html`, so the site describes the released version.
 
+## Definition of done
+
+A task is done when its issue's own "Done when" holds and so does every line here that applies to it.
+
+- `template.yml` is green on the pull request.
+- A change in behaviour comes with its test, in the same commit: what a generated solution does - in the
+  template's tests or `template.yml`.
+- A change to the template is checked on a generated solution: the flags it touches generated on and off,
+  the solution built with `-warnaserror`, its tests passed.
+- A change a user of the template sees is in the docs, in English and in Russian (`<name>.ru.md`, listed in
+  `site/config.js`), in the README and in `docs/roadmap.md`, and adds a line to the `-rc` entry of
+  `version.json`. A breaking one waits for the next major version and is described in
+  [upgrading](docs/getting-started/upgrading.md).
+- A change in what a generated solution gets, or in how it is generated, is in the skills the solution
+  ships, `scaffold-service` first.
+- A change to a workflow ran on a temporary branch first, for each case it handles.
+- What a text says about the code - a doc, a comment, a commit message - is checked against the code; no
+  name of a client or of its product appears anywhere.
+- Before the pull request, an agent that knows only the issue and the diff reviewed it, and each finding is
+  fixed or answered.
+
 ## Releases
 
 The template follows semantic versioning. Its version and release notes are in `version.json`, in the same
