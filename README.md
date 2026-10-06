@@ -37,7 +37,7 @@ To try the template from a clone: `dotnet new install /path/to/DotNetSolutionKit
 What the generated solutions look like:
 [DotNetSolutionKit.Samples](https://github.com/sawking-tech/DotNetSolutionKit.Samples), a branch each for a
 single service, a gateway with services and the full kit, regenerated from every release with their CI
-running, and `nightly`, generated from `dev`, where the next release is built. The [samples page](https://dnsk.sawking.tech/samples.html)
+running, and `full-dev`, generated from `dev`, where the next release is built. The [samples page](https://dnsk.sawking.tech/samples.html)
 shows their files and how their CI ran.
 
 | Parameter | Default | What it does |
