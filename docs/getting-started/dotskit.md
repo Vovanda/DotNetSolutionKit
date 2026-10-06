@@ -177,7 +177,7 @@ project.
 The upgrade does the mechanical part: the text of the files, moves and removals, the package versions, the
 build. Whether the team's own code should change with the template's - a handler of its own beside one the
 template changed - is the team's to decide, and its tests show it. Adding the project references and `using`
-lines for types the template moves between projects comes with 3.0, the first version that moves them.
+lines for types the template moves between projects comes in 2.9, before 3.0 moves the first of them.
 
 ## Options
 
