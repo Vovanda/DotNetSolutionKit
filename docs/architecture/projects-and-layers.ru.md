@@ -1,7 +1,8 @@
 # Проекты и слои
 
-Сгенерированное решение состоит из двух частей: общих проектов `Common` в `src/common`, которые
-генерируются один раз, и папки на каждый сервис в `src/services`.
+Сгенерированное решение состоит из трёх частей: общих проектов `Common` в `src/common`, которые
+генерируются один раз; проекта на каждую возможность, которую приносит флаг, в `src/capabilities`; и папки на
+каждый сервис в `src/services`.
 
 Кто на кого ссылается; стрелка указывает на проект, на который ссылаются:
 
@@ -19,6 +20,11 @@ flowchart BT
         CW --> CA
         CW --> CI
     end
+    subgraph capabilities [src/capabilities]
+        CN["Capabilities.Notifications, with --Notify email"]
+        CM["Capabilities.Mongo, with --MongoDB"] --> C
+        CM --> CC
+    end
     subgraph service ["src/services/#lt;Service#gt;"]
         D["#lt;Service#gt;"] --> C
         A["#lt;Service#gt;.Application"] --> D
@@ -31,6 +37,8 @@ flowchart BT
         I --> CA
         I --> CI
         I --> CC
+        I -.-> CN
+        I -.-> CM
         API["#lt;Service#gt;.API"] --> A
         API --> I
         API --> CW
@@ -51,6 +59,10 @@ flowchart BT
 | `Common.Web` | Веб-слой сервиса: pipeline, ошибки, валидация, Swagger, аутентификация, права, здоровье | `Common`, `Common.Contracts`, `Common.Application`, `Common.Infrastructure` |
 | `Common.Testing` | Тестовая инфраструктура для тестов сервисов: контексты, тестовые базы, заглушки, проверки правил; без тестового фреймворка | все перечисленные выше |
 | `Common.Tests` | Тесты `Common` | все перечисленные выше, `Common.Testing` |
+| `Capabilities.Notifications` | Почта `--Notify email`: порт, транспорты SMTP и Graph, песочница. На него ссылается сервис с флагом, поэтому MailKit и Graph SDK есть только у этого сервиса | ничего из `Common` |
+| `Capabilities.Notifications.Tests` | Тесты почты | `Capabilities.Notifications`, `Common.Testing` |
+| `Capabilities.Mongo` | MongoDB `--MongoDB`: хранилище, его настройки, проверка здоровья. На него ссылается сервис с флагом, поэтому драйвер есть только у этого сервиса | `Common`, `Common.Contracts` |
+| `Capabilities.Mongo.Tests` | Тесты MongoDB | `Capabilities.Mongo`, `Common`, `Common.Testing` |
 
 ## Сервис
 

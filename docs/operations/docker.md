@@ -5,7 +5,7 @@ One `Dockerfile` at the solution root builds every service:
 ```bash
 docker build --provenance=false \
   --build-arg SERVICE=MyCompany.MyProduct.Orders \
-  --build-arg GIT_SHA=$(git log -1 --format=%h -- src/common src/services/MyCompany.MyProduct.Orders '*.props' version.json) \
+  --build-arg GIT_SHA=$(git log -1 --format=%h -- src/common src/capabilities src/services/MyCompany.MyProduct.Orders '*.props' version.json) \
   -t orders .
 ```
 
@@ -14,7 +14,7 @@ docker build --provenance=false \
 ```mermaid
 flowchart LR
     subgraph common_stage [stage common]
-        P[Directory.Build.props, version.json,<br/>Directory.Packages.props, package-versions/] --> CB[build src/common]
+        P[Directory.Build.props, version.json,<br/>Directory.Packages.props, package-versions/] --> CB[build src/common, src/capabilities]
     end
     subgraph service_stage [stage service]
         CB --> SF["copy src/services/SERVICE"] --> PUB[dotnet publish]

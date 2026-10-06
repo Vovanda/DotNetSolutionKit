@@ -19,10 +19,10 @@ using NamespaceRoot.ProductName.Common.Infrastructure.Persistence;
 using NamespaceRoot.ProductName.Common.Infrastructure.ClickHouse;
 //#endif
 //#if (MongoDB)
-using NamespaceRoot.ProductName.Common.Infrastructure.Mongo;
+using NamespaceRoot.ProductName.Capabilities.Mongo;
 //#endif
 //#if (NotifyEmail)
-using NamespaceRoot.ProductName.Common.Infrastructure.Notifications;
+using NamespaceRoot.ProductName.Capabilities.Notifications;
 //#endif
 //#if (Storage)
 using NamespaceRoot.ProductName.Common.Infrastructure.Storage;

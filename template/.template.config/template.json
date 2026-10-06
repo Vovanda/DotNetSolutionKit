@@ -133,7 +133,7 @@
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "false",
-      "description": "MongoDB beside the main database: the client, the service's database and readiness in Common, registered in the service"
+      "description": "MongoDB beside the main database: Capabilities.Mongo - the client, the service's database, readiness - referenced by the service"
     },
     "Notify": {
       "type": "parameter",
@@ -144,7 +144,7 @@
       "choices": [
         { "choice": "email", "description": "Email through SMTP or Graph API, with a sandbox outside Production; with Messaging, other services ask for it by a bus command" }
       ],
-      "description": "Notifications and their channels, in Common, registered in the service; more than one channel may be given"
+      "description": "Notifications and their channels, each a project of src/capabilities the service references; more than one channel may be given"
     },
     "NotifyEmail": {
       "type": "computed",
@@ -319,6 +319,21 @@
   },
 
   "SpecialCustomOperations": {
+    "**/*.sln": {
+      "operations": [
+        {
+          "type": "conditional",
+          "configuration": {
+            "if": [ "#if" ],
+            "else": [ "#else" ],
+            "elseif": [ "#elseif" ],
+            "endif": [ "#endif" ],
+            "trim": true,
+            "wholeLine": true
+          }
+        }
+      ]
+    },
     "**/.env.example": {
       "operations": [
         {
@@ -420,18 +435,15 @@
         {
           "condition": "(!MongoDB)",
           "exclude": [
-            "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Mongo/**",
-            "src/common/NamespaceRoot.ProductName.Common.Tests/Tests/Mongo/**",
-            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/Mongo*.cs"
+            "src/capabilities/NamespaceRoot.ProductName.Capabilities.Mongo/**",
+            "src/capabilities/NamespaceRoot.ProductName.Capabilities.Mongo.Tests/**"
           ]
         },
         {
           "condition": "(!NotifyEmail)",
           "exclude": [
-            "src/common/NamespaceRoot.ProductName.Common.Application/Notifications/**",
-            "src/common/NamespaceRoot.ProductName.Common.Infrastructure/Notifications/**",
-            "src/common/NamespaceRoot.ProductName.Common.Tests/Tests/Notifications/**",
-            "src/common/NamespaceRoot.ProductName.Common.Tests/Integration/Smtp*.cs"
+            "src/capabilities/NamespaceRoot.ProductName.Capabilities.Notifications/**",
+            "src/capabilities/NamespaceRoot.ProductName.Capabilities.Notifications.Tests/**"
           ]
         },
         {
