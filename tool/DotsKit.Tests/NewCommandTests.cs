@@ -21,8 +21,8 @@ internal sealed class NewCommandTests
         public int Written { get; private set; }
         public List<string> Lines { get; } = [];
 
-        public NewCommand Command() => new(new Planner(this), new PlanReport(new Terminal(this)), new Writer(this), new Git(this),
-            new Builder(), new Terminal(this), ToolVersion);
+        public NewCommand Command() =>
+            new(new Planner(this), new PlanExecution(new PlanReport(new Terminal(this)), new Writer(this), new Builder(), new Terminal(this)), new Git(this), ToolVersion);
 
         private sealed class Planner(Fakes fakes) : IPlanner
         {

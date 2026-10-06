@@ -10,6 +10,8 @@ internal sealed class PlanReport(ITerminal terminal)
     {
         ShowFiles(plan.Changes);
         ShowMembership(plan);
+        foreach (var line in plan.Packages ?? [])
+            terminal.Info($"  package   {line}");
         terminal.Info($"  manifest  {Layout.ManifestPath}");
         ShowCounts(plan.Changes);
     }

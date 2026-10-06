@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using DotsKit.PackageUpdates;
 
 namespace DotsKit;
 
@@ -20,13 +21,31 @@ internal sealed record Manifest
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
+    // Each field is explained in place by a _comment_<field> key, the notation of the template's appsettings.json:
+    // written on every write, skipped on reading, since they have no setter.
+
+    [JsonPropertyName("_comment_template")]
+    public string TemplateComment => "The version of DotNetSolutionKit the solution is generated with; dotskit upgrade moves it to the tool's";
+
     public required string Template { get; init; }
+
+    [JsonPropertyName("_comment_solution")]
+    public string SolutionComment => "The template's arguments of Common and the root: the names, the database, the deployment, the flags the services share";
 
     /// <summary>The arguments Common and the root files are generated with, without a service's name.</summary>
     public required List<string> Solution { get; init; }
 
+    [JsonPropertyName("_comment_services")]
+    public string ServicesComment => "Each service by its own arguments; dotskit new adds one or joins flags to one";
+
     /// <summary>Each service by its arguments, its name (-S) among them.</summary>
     public required List<List<string>> Services { get; init; }
+
+    [JsonPropertyName("_comment_packages")]
+    public string PackagesComment => "How much of the template's package versions an upgrade brings";
+
+    /// <summary>How much of the template's package versions the solution takes; the template's default when the manifest has none.</summary>
+    public PackagePolicy Packages { get; init; } = new();
 
     public static Manifest? Load(string root)
     {
@@ -44,6 +63,8 @@ internal sealed record Manifest
             { Services.Count: 0 } => "lists no service",
             _ when !Generation.TemplateVersions.IsVersion(manifest.Template) => $"has no version of the template, but \"{manifest.Template}\"",
             _ when manifest.Services.Any(s => !TemplateArgs.Parse(s).HasService) => "has a service with no -S",
+            _ when manifest.Packages is null => "has packages set to null",
+            _ when manifest.Packages.Problem is { } packages => packages,
             _ => null,
         };
         return problem is null ? manifest! : throw new InvalidOperationException($"{Layout.ManifestPath} {problem}: put it back from git.");
@@ -81,6 +102,12 @@ internal sealed record Manifest
             Services = [.. services.Select(s => s.ToArgs())],
         };
     }
+
+    /// <summary>
+    /// The manifest with a service added and the solution left as it is: a service the template alone generated
+    /// changed nothing outside its folder, so the base it was generated from has the solution unwidened.
+    /// </summary>
+    public Manifest WithServiceAsItIs(TemplateArgs service) => WithService(service) with { Solution = Solution };
 
     public Manifest WithTemplate(string version) => this with { Template = version };
 

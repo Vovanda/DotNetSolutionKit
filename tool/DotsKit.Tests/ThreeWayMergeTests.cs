@@ -25,7 +25,7 @@ internal sealed class ThreeWayMergeTests
         }
 
         public async Task<Change?> MergeAsync(bool force = false) =>
-            (await new ThreeWayMerge(new GitMergeFile(new ProcessRunner())).ComputeAsync(Solution, Base, New, force, CancellationToken.None)).SingleOrDefault();
+            (await new ThreeWayMerge(new GitMergeFile(new ProcessRunner())).ComputeAsync(Solution, Base, New, force, null, CancellationToken.None)).SingleOrDefault();
     }
 
     /// <summary>A merger that fails as git merge-file does when it cannot merge at all.</summary>
@@ -42,7 +42,7 @@ internal sealed class ThreeWayMergeTests
         trees.Put(trees.Base, "a\n").Put(trees.Solution, "a\nsolution\n").Put(trees.New, "a\ntemplate\n");
 
         var refused = await Should.ThrowAsync<InvalidOperationException>(() =>
-            new ThreeWayMerge(new FailingMerger()).ComputeAsync(trees.Solution, trees.Base, trees.New, false, CancellationToken.None));
+            new ThreeWayMerge(new FailingMerger()).ComputeAsync(trees.Solution, trees.Base, trees.New, false, null, CancellationToken.None));
 
         refused.Message.ShouldContain(File);
     }

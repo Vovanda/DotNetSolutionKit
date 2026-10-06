@@ -42,8 +42,10 @@ internal static partial class SolutionReader
         ElementOf(files.Read(ServicePath(Markers.ApiProject, prefix, folder)), Markers.ServiceVersionElement);
 
     /// <summary>
-    /// The manifest of the solution: the solution's own parameters, then each service joined to it, the way
-    /// dotskit new joins them - the solution takes what a service brings outside its folder.
+    /// The manifest of the solution: the solution's own parameters as its root and Common have them, then each
+    /// service. The solution is not widened by its services, as dotskit new widens it: the template alone made the
+    /// root with the first command and left it so, and the manifest is the base the files were generated from.
+    /// The next dotskit new widens it, and brings what a service's flag needs outside its folder as new.
     /// </summary>
     /// <param name="given">What the command names itself: -N and -P where the name of All.sln does not tell them apart.</param>
     public static Manifest Read(ISolutionFiles files, string prefix, string version, TemplateArgs given)
@@ -53,7 +55,7 @@ internal static partial class SolutionReader
             throw new InvalidOperationException($"{Layout.ServicesFolder} has no service of the template: dotskit new -S <Service> adds one.");
         var solution = Solution(files, prefix, Names(files, prefix, given), services[0]);
         var manifest = new Manifest { Template = version, Solution = solution.ToArgs(), Services = [] };
-        return services.Aggregate(manifest, (m, folder) => m.WithService(Service(files, prefix, folder)));
+        return services.Aggregate(manifest, (m, folder) => m.WithServiceAsItIs(Service(files, prefix, folder)));
     }
 
     /// <summary>The service folders with the one the solution was made with first, where the solution tells it (<see cref="Markers.FirstServiceScript"/>).</summary>

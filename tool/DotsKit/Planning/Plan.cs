@@ -7,7 +7,8 @@ namespace DotsKit.Planning;
 /// <param name="Root">The solution's root, where the changes go.</param>
 /// <param name="Next">The manifest the solution will have.</param>
 /// <param name="Changes">The files, All.sln aside: it changes by its projects, in <paramref name="Membership"/>.</param>
-internal sealed record Plan(string Root, Manifest Next, IReadOnlyList<Change> Changes, MembershipChange Membership)
+/// <param name="Packages">What changes in the package versions and what the solution's policy holds, a line each.</param>
+internal sealed record Plan(string Root, Manifest Next, IReadOnlyList<Change> Changes, MembershipChange Membership, IReadOnlyList<string>? Packages = null)
 {
     public bool HasConflicts => Changes.Any(c => c.Kind == ChangeKind.Conflict);
 }

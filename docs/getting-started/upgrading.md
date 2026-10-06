@@ -144,6 +144,11 @@ nothing updates it any more.
 
 ## From v2.7 to v2.8
 
+`dotskit upgrade` makes the template's part of these changes in a solution of v2.7 and keeps the team's own
+([dotskit](dotskit.md#upgrading-a-solution)): `dotnet tool install -g SawKing.DotsKit.Tool`, then in the
+solution `dotskit init` and `dotskit upgrade`. What touches the team's own code stays a step by hand: the
+attributes of its own tests, and a service it added to `infrastructure.yml`, which moves into `infra/`.
+
 ### A service's tests carry one set of attributes
 
 A service's and the gateway's test projects get `TestFramework.cs`, the one file that knows the test

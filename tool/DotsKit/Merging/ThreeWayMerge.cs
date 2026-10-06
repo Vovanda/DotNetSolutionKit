@@ -11,13 +11,21 @@ internal sealed class ThreeWayMerge(ITextMerger merger)
 {
     /// <param name="baseDir">What the template gave before; null when the solution is new.</param>
     /// <param name="preferTemplate">--force: in a conflict take the template's side; the solution's lines stay in git history.</param>
-    public async Task<List<Change>> ComputeAsync(string solution, string? baseDir, string newDir, bool preferTemplate, CancellationToken ct)
+    /// <param name="renames">The files the template moved, new path to old (<see cref="IRenames"/>); none for a new solution.</param>
+    public async Task<List<Change>> ComputeAsync(string solution, string? baseDir, string newDir, bool preferTemplate,
+        IReadOnlyDictionary<string, string>? renames, CancellationToken ct)
     {
         var paths = new SortedSet<string>(Folders.RelativeFiles(newDir), StringComparer.Ordinal);
         if (baseDir is not null)
             paths.UnionWith(Folders.RelativeFiles(baseDir));
 
         var changes = new List<Change>();
+        foreach (var (to, from) in Moves(solution, renames))
+        {
+            paths.Remove(to);
+            paths.Remove(from);
+            changes.AddRange(await MoveAsync(solution, baseDir!, newDir, from, to, preferTemplate, ct));
+        }
         foreach (var path in paths)
         {
             var decision = MergeRule.Decide(path, FileText.Read(baseDir, path), FileText.Read(newDir, path), FileText.Read(solution, path));
@@ -31,6 +39,34 @@ internal sealed class ThreeWayMerge(ITextMerger merger)
                 changes.Add(change);
         }
         return changes;
+    }
+
+    /// <summary>The moves the solution follows: it has the file at the old path and nothing at the new one.</summary>
+    private static IEnumerable<KeyValuePair<string, string>> Moves(string solution, IReadOnlyDictionary<string, string>? renames) =>
+        (renames ?? new Dictionary<string, string>())
+            .Where(r => File.Exists(Path.Combine(solution, r.Value)) && !File.Exists(Path.Combine(solution, r.Key)))
+            .OrderBy(r => r.Key, StringComparer.Ordinal);
+
+    /// <summary>
+    /// A file the template moved: decided as one file - the old base, the new template, the solution's copy at the old
+    /// path - written at the new path, the old path deleted. The team's changes go with the file.
+    /// </summary>
+    private async Task<IEnumerable<Change>> MoveAsync(string solution, string baseDir, string newDir, string from, string to, bool preferTemplate, CancellationToken ct)
+    {
+        var own = FileText.Read(solution, from)!;
+        var moved = $"moved from {from} by the template";
+        var decision = MergeRule.Decide(to, FileText.Read(baseDir, from), FileText.Read(newDir, to), own);
+        var change = decision switch
+        {
+            MergeRule.Final { Change: null } => new Change(to, ChangeKind.Add, own, moved),
+            MergeRule.Final { Change: { } final } => final with { Reason = $"{moved}; {final.Reason}" },
+            MergeRule.NeedsMerge merge => await MergeAsync(to, merge with { Reason = $"{moved}; {merge.Reason}" }, preferTemplate, ct),
+            _ => throw new InvalidOperationException($"Unknown decision for {to}"),
+        };
+        // Kept with no content: the file stays where it was, as it is.
+        return change is { Kind: ChangeKind.Kept, Content: null }
+            ? [change with { Path = from }]
+            : [change, new Change(from, ChangeKind.Delete, null, $"moved to {to} by the template")];
     }
 
     private async Task<Change> MergeAsync(string path, MergeRule.NeedsMerge merge, bool preferTemplate, CancellationToken ct)
