@@ -46,10 +46,8 @@ public sealed class ReceiptStore(IMongoStore mongo) : IReceiptStore
 пропускается.
 
 ```bash
-docker run -d --name tests-mongo -p 27017:27017 \
-  -e MONGO_INITDB_ROOT_USERNAME=tester -e MONGO_INITDB_ROOT_PASSWORD=test-do-not-use mongo:7.0
-TEST_MONGO='mongodb://tester:test-do-not-use@localhost:27017/?authSource=admin' \
-  dotnet test --filter "FullyQualifiedName~Mongo"
+eval "$(bash tests/servers/up.sh)"     # тестовые серверы, среди них MongoDB (tests/servers/mongo.sh)
+dotnet test --filter "FullyQualifiedName~Mongo"
 ```
 
 `Common.Tests` так проверяет ядро: записанный документ читается таким же, вместе с `Guid`, готовность

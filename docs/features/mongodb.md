@@ -46,10 +46,8 @@ port, as for any other port. The driver is tested against a real server: `MongoT
 afterwards. Without the variable the test is skipped.
 
 ```bash
-docker run -d --name tests-mongo -p 27017:27017 \
-  -e MONGO_INITDB_ROOT_USERNAME=tester -e MONGO_INITDB_ROOT_PASSWORD=test-do-not-use mongo:7.0
-TEST_MONGO='mongodb://tester:test-do-not-use@localhost:27017/?authSource=admin' \
-  dotnet test --filter "FullyQualifiedName~Mongo"
+eval "$(bash tests/servers/up.sh)"     # the test servers, MongoDB among them (tests/servers/mongo.sh)
+dotnet test --filter "FullyQualifiedName~Mongo"
 ```
 
 `Common.Tests` checks the core this way: a document written reads back as it was, its `Guid` included, and

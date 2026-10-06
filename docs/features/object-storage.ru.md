@@ -44,11 +44,8 @@ public class InvoiceFiles(IS3ObjectStorage storage)
 например с контейнером SeaweedFS:
 
 ```bash
-docker run -d --name tests-s3 -p 18333:8333 -e AWS_ACCESS_KEY_ID=tester \
-  -e AWS_SECRET_ACCESS_KEY=test-do-not-use chrislusf/seaweedfs server -s3 -dir=/data
-echo "s3.bucket.create -name tests" | docker exec -i tests-s3 weed shell -master=localhost:9333
-TEST_S3='ServiceUrl=http://localhost:18333;Bucket=tests;AccessKey=tester;SecretKey=test-do-not-use' \
-  dotnet test --filter "FullyQualifiedName~S3ObjectStorage"
+eval "$(bash tests/servers/up.sh)"     # тестовые серверы, среди них хранилище и его бакет (tests/servers/s3.sh)
+dotnet test --filter "FullyQualifiedName~S3ObjectStorage"
 ```
 
 Тест сохраняет, читает, перечисляет, копирует и удаляет, перечисляет пустой префикс и сообщает об

@@ -44,11 +44,8 @@ start. MinIO, the usual choice, no longer publishes images. The credentials and 
 example to a SeaweedFS container:
 
 ```bash
-docker run -d --name tests-s3 -p 18333:8333 -e AWS_ACCESS_KEY_ID=tester \
-  -e AWS_SECRET_ACCESS_KEY=test-do-not-use chrislusf/seaweedfs server -s3 -dir=/data
-echo "s3.bucket.create -name tests" | docker exec -i tests-s3 weed shell -master=localhost:9333
-TEST_S3='ServiceUrl=http://localhost:18333;Bucket=tests;AccessKey=tester;SecretKey=test-do-not-use' \
-  dotnet test --filter "FullyQualifiedName~S3ObjectStorage"
+eval "$(bash tests/servers/up.sh)"     # the test servers, the storage and its bucket among them (tests/servers/s3.sh)
+dotnet test --filter "FullyQualifiedName~S3ObjectStorage"
 ```
 
 It stores, reads, lists, copies and deletes, lists an empty prefix and reports a missing object.

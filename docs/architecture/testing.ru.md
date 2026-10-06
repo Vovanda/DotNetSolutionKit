@@ -93,24 +93,21 @@ NUnit. `Common.Testing`, на который ссылаются оба, от т�
 поэтому обычному `dotnet test` база не нужна:
 
 ```bash
-docker run -d --name tests-pg -p 15433:5432 -e POSTGRES_PASSWORD=test-do-not-use postgres:16-alpine
-TEST_POSTGRES='Host=localhost;Port=15433;Database=postgres;Username=postgres;Password=test-do-not-use' \
-  dotnet test --filter "TestCategory=Integration"
+eval "$(bash tests/servers/up.sh)"     # все тестовые серверы решения и их переменные TEST_*
+dotnet test --filter "TestCategory=Integration"
+bash tests/servers/up.sh down          # убирает контейнеры
 
 dotnet test --filter "TestCategory!=Integration"   # everything else
 ```
 
+Каждый сервер - скрипт в `tests/servers/`: `postgres.sh` и по одному на флаг, которому нужен сервер, с
+командами `start`, `ready`, `logs` и `down`. `up.sh` запускает все скрипты, которые там находит, и CI
+запускает те же скрипты, поэтому флаг, добавленный позже, приносит свой скрипт и ничего общего не меняет.
+
 Решение, сгенерированное с `--Database mssql`, читает вместо неё `TEST_SQLSERVER`, а тесты сервиса берут
 `SqlServerDbTestExecutionContext` вместо `PostgresDbTestExecutionContext`. Схема сервиса один раз за прогон
 мигрируется в шаблонную базу, с неё снимается backup, и каждый тест восстанавливает его под своим именем:
-на SQL Server это быстрее, чем мигрировать базу каждого теста:
-
-```bash
-docker run -d --name tests-mssql -p 1433:1433 -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD=Test-do-not-use-1 \
-  mcr.microsoft.com/mssql/server:2022-latest
-TEST_SQLSERVER='Server=localhost,1433;User Id=sa;Password=Test-do-not-use-1;TrustServerCertificate=true' \
-  dotnet test --filter "TestCategory=Integration"
-```
+на SQL Server это быстрее, чем мигрировать базу каждого теста. SQL Server для них поднимает `up.sh`.
 
 Такие fixture'ы есть в `Common.Tests/Integration`: для номеров из последовательности и для объектного
 хранилища.

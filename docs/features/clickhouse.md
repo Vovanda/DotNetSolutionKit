@@ -59,10 +59,8 @@ writer port, as for any other port. The SQL is tested against a real server: `Cl
 afterwards; the test creates its tables with `ExecuteAsync`. Without the variable the test is skipped.
 
 ```bash
-docker run -d --name tests-ch -p 18123:8123 -e CLICKHOUSE_USER=tester -e CLICKHOUSE_PASSWORD=test-do-not-use \
-  -e CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1 clickhouse/clickhouse-server:24.8-alpine
-TEST_CLICKHOUSE='Host=localhost;Port=18123;Username=tester;Password=test-do-not-use' \
-  dotnet test --filter "FullyQualifiedName~ClickHouse"
+eval "$(bash tests/servers/up.sh)"     # the test servers, ClickHouse among them (tests/servers/clickhouse.sh)
+dotnet test --filter "FullyQualifiedName~ClickHouse"
 ```
 
 `Common.Tests` checks the core this way: a table that fits passes, a missing column and a missing table

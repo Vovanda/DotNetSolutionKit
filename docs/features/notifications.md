@@ -96,6 +96,6 @@ named by `TEST_SMTP` and `TEST_SMTP_API`, that a message arrives at its recipien
 sandbox address elsewhere.
 
 ```bash
-docker run -d --name tests-smtp -p 1025:1025 -p 8025:8025 mailhog/mailhog:v1.0.1
-TEST_SMTP=localhost:1025 TEST_SMTP_API=http://localhost:8025/ dotnet test --filter "FullyQualifiedName~Smtp"
+eval "$(bash tests/servers/up.sh)"     # the test servers, MailHog among them (tests/servers/mailhog.sh)
+dotnet test --filter "FullyQualifiedName~Smtp"
 ```
