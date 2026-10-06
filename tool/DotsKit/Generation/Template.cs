@@ -20,7 +20,11 @@ internal interface ITemplateSource
 /// The package comes from nuget.org by version; a folder of the template's sources stands in for it when the
 /// tool runs against the template being developed (<see cref="TemplateSource.SourcesFolder"/>).
 /// </summary>
-internal sealed class DotnetNewTemplate(string package, IProcessRunner runner) : ITemplate
+/// <param name="runsScripts">
+/// The version has the post-action that adds a service to All.sln by a command, and takes --allow-scripts for it;
+/// a version without one refuses the option (<see cref="TemplateVersions.AddsServiceToSolution"/>).
+/// </param>
+internal sealed class DotnetNewTemplate(string package, bool runsScripts, IProcessRunner runner) : ITemplate
 {
     private const string ShortName = "DotNetSolutionKit";
 
@@ -31,10 +35,11 @@ internal sealed class DotnetNewTemplate(string package, IProcessRunner runner) :
     {
         await InstallOnceAsync(ct);
         Directory.CreateDirectory(root);
-        // --allow-scripts yes: the post-action that adds a service to All.sln runs a command.
-        List<string> command = ["new", ShortName, .. args.ToArgs(), "--output", root, "--allow-scripts", "yes", "--debug:custom-hive", _hive];
+        List<string> command = ["new", ShortName, .. args.ToArgs(), "--output", root, .. ScriptsAllowed(), "--debug:custom-hive", _hive];
         await runner.RunCheckedAsync("dotnet", command, root, ct);
     }
+
+    private string[] ScriptsAllowed() => runsScripts ? ["--allow-scripts", "yes"] : [];
 
     private async Task InstallOnceAsync(CancellationToken ct)
     {
@@ -64,7 +69,7 @@ internal sealed class TemplateSource(IProcessRunner runner) : ITemplateSource
     public ITemplate Of(string version)
     {
         if (!_templates.TryGetValue(version, out var template))
-            _templates[version] = template = new DotnetNewTemplate(PackageOf(version), runner);
+            _templates[version] = template = new DotnetNewTemplate(PackageOf(version), TemplateVersions.AddsServiceToSolution(version), runner);
         return template;
     }
 

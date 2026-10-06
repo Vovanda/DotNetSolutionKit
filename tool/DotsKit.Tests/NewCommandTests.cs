@@ -103,8 +103,18 @@ internal sealed class NewCommandTests
 
         var refused = await Should.ThrowAsync<InvalidOperationException>(() => fakes.Command().RunAsync(Args("-S", "Billing"), Solution("2.7.0"), CancellationToken.None));
 
-        refused.Message.ShouldContain("--version 2.7.0");
+        refused.Message.ShouldContain("dotskit upgrade");
         fakes.Planned.ShouldBe(0);
+    }
+
+    [Test]
+    public async Task Should_NameTheToolUpdate_When_TheSolutionIsNewerThanTheTool()
+    {
+        var fakes = new Fakes();
+
+        var refused = await Should.ThrowAsync<InvalidOperationException>(() => fakes.Command().RunAsync(Args("-S", "Billing"), Solution("2.9.0"), CancellationToken.None));
+
+        refused.Message.ShouldContain("dotnet tool update -g SawKing.DotsKit.Tool");
     }
 
     [Test]

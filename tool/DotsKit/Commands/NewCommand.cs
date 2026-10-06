@@ -40,10 +40,12 @@ internal sealed class NewCommand(IPlanner planner, PlanReport report, IPlanWrite
     private async Task<Manifest> LoadCheckedAsync(string root, Options options, CancellationToken ct)
     {
         var manifest = Manifest.Load(root)
-            ?? throw new InvalidOperationException($"{Layout.ManifestPath} is missing: dotskit works with a solution it made; one made with the template alone gets described by dotskit init, which comes in a later version.");
+            ?? throw new InvalidOperationException($"{Layout.ManifestPath} is missing: describe the solution first, dotskit init.");
         var version = TemplateSource.Current(toolVersion);
         if (manifest.Template != version)
-            throw new InvalidOperationException($"The solution is of the template {manifest.Template}, dotskit is {version}: use the dotskit of the solution, dotnet tool update -g SawKing.DotsKit.Tool --version {manifest.Template}.");
+            throw new InvalidOperationException(TemplateVersions.IsNewer(manifest.Template, version)
+                ? $"The solution is of the template {manifest.Template}, newer than dotskit {version}: update the tool, dotnet tool update -g SawKing.DotsKit.Tool."
+                : $"The solution is of the template {manifest.Template}, dotskit is {version}: bring the solution to {version} first, dotskit upgrade.");
         if (!options.AllowDirty && !await git.IsCleanAsync(root, ct))
             throw new InvalidOperationException("The git working tree has uncommitted changes: commit or stash them, so what dotskit writes can be seen and undone (--allow-dirty to go on).");
         return manifest;

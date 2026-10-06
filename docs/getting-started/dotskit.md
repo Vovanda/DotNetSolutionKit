@@ -29,6 +29,9 @@ dotskit new -S Billing --Storage true
 
 # in the solution: a flag for a service it has
 dotskit new -S Orders --MongoDB true
+
+# in a solution made without dotskit: describe it in its manifest
+dotskit init
 ```
 
 `dotskit new` reads from the folder whether to make a solution or to add to one: it looks for
@@ -80,6 +83,43 @@ services has it. The solution's names, `--Database`, `--Deploy`, `--TestFramewor
 `--GitHubCiCd` are set by the first command. A later command takes them from the manifest; a command that
 gives one of them another value is refused.
 
+## A solution made without dotskit
+
+`dotskit new` works from the manifest. A solution made with the template alone, or before 2.8, has none, and
+`dotskit init` writes it: it reads the solution, checks the reading and writes `.dotskit/manifest.json`, and
+nothing else, after a yes.
+
+What it reads:
+
+- the version of the template from `DotNetSolutionKitVersion` in `Directory.Build.props`, there since 2.7.0;
+- the names from `src/services/*.All.sln`; where a dot can belong to either name (`Acme.Corp.Shop`), from the
+  image names of `deploy/build-images.sh`, or from `-N` and `-P` given to the command;
+- the database, the deployment, the test framework and the agent by the files only one choice generates;
+- the flags of `Common` and the root by the files each flag adds;
+- each service under `src/services` with its own API project: its flags by the sections of its
+  `appsettings.json` and the lines only a flag writes, its port by `launchSettings.json`.
+
+The check: `init` generates the solution again by what it read, with that version of the template, and
+compares it with the folder - "412 of 420 files of the template reproduced; these differ: ...". A file that
+differs is a change of the team or a wrong reading; the report lists it so a person can tell which before
+anything relies on the manifest. Files the team added are not counted, and `All.sln` is compared by its
+projects. The check installs the template of that version from nuget.org.
+
+| The folder | What `init` does |
+|---|---|
+| empty | writes nothing, and names `dotskit new -N <Company> -P <Product> -S <Service>` |
+| no `src/services/*.All.sln` | writes nothing: not a solution of DotNetSolutionKit |
+| a solution of 2.7 or later, no manifest | reads it, checks it, shows the manifest and the report, writes it after a yes |
+| a solution of 2.0-2.6, which does not say its version | writes nothing, and asks for `--template-version 2.x.y`; the check then shows how well that version reproduces the solution |
+| generated from the template's sources (version `source`) | writes nothing, and asks for the release it came from with `--template-version` |
+| newer than the tool | writes nothing, and names `dotnet tool update -g SawKing.DotsKit.Tool` |
+| of an earlier major version than the tool | writes nothing: the tool describes solutions of its own major version |
+| a service of another version than the solution | writes nothing, names the service and its version, and asks for the version to describe the solution by with `--template-version`; with it, the check shows what differs |
+| with a manifest that lists every service | writes nothing: "the manifest is current: 2.8.0, services Orders, Billing" |
+| with a manifest, and a service under `src/services` it does not list | adds the service, read from its files, after the same check |
+| services, but no `Common` | writes the manifest without the check and says so: the database and the flags read from `Common` are the template's defaults; `dotskit new` takes `Common` for removed by the team and does not add it back |
+| uncommitted changes in git | runs: it writes only `.dotskit/` |
+
 ## Options
 
 | Option | What it does |
@@ -88,6 +128,7 @@ gives one of them another value is refused.
 | `--force` | resolves a conflict with the template's lines; the team's lines stay in git history |
 | `--no-build` | does not build the solution after writing |
 | `--allow-dirty` | runs on a working tree with uncommitted changes |
+| `--template-version 2.x.y` | `init`: the version the solution was made by, where it does not say it |
 
 ## Exit codes
 
@@ -99,8 +140,6 @@ gives one of them another value is refused.
 
 ## Limits of this version
 
-- `dotskit new` works only in a solution made by `dotskit`. A solution made with the template alone gets
-  its manifest from `dotskit init`, which comes in a later version.
-- The solution and the tool must be of the same version. Upgrading a solution to a new version of the
-  template is `dotskit upgrade`, which comes in a later version; until then use the `dotskit` of the
-  solution's version: `dotnet tool update -g SawKing.DotsKit.Tool --version <version>`.
+- `dotskit new` works in a solution with a manifest: made by `dotskit`, or described by `dotskit init`.
+- `dotskit new` needs a manifest of the tool's version: a solution of an earlier version is brought to it by
+  `dotskit upgrade` first.
