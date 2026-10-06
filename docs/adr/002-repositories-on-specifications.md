@@ -3,6 +3,8 @@
 **Status:** Accepted, 2026-01-13 in the first product built on the template; adopted by the template
 2026-10-03
 
+**Author:** Vladimir Savkin, the creator of DotNetSolutionKit
+
 A repository interface in a generated service derives from `ISpecificationRepository<TEntity, TId>`
 (`Common/Domain/Persistence`). The implementation derives from the abstract
 `EntityFrameworkRepository<TEntity, TId, TContext>` (`Common.Infrastructure/Persistence/EntityFramework`).

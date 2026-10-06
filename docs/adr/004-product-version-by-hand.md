@@ -2,6 +2,8 @@
 
 **Status:** Accepted, 2026-10-03
 
+**Author:** Vladimir Savkin, the creator of DotNetSolutionKit
+
 ## Context
 
 A generated solution needs to answer two questions about what is running: which release it is, and which

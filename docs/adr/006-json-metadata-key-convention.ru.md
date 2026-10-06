@@ -2,6 +2,8 @@
 
 **Статус:** принято, 06.10.2026
 
+**Автор:** Владимир Савкин, создатель DotNetSolutionKit
+
 ## Контекст
 
 Шаблон и `dotskit` пишут JSON-файлы: `appsettings*.json`, манифест `.dotskit/manifest.json`, `features.json`,

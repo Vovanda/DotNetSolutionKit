@@ -2,6 +2,8 @@
 
 **Status:** Accepted, 2026-10-03
 
+**Author:** Vladimir Savkin, the creator of DotNetSolutionKit
+
 ## Context
 
 Two styles are common for testing a .NET service.

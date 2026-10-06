@@ -2,6 +2,8 @@
 
 **Status:** Accepted, 2026-10-03
 
+**Author:** Vladimir Savkin, the creator of DotNetSolutionKit
+
 ## Context
 
 The [API diff](../features/api-diff.md) compares the OpenAPI document of a service on both sides of a
