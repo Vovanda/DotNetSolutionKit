@@ -124,6 +124,46 @@ internal sealed class TeamScenarios
     }
 
     [Test]
+    public async Task LineTheTeamChangedWhereTheTemplateChangesIt_IsAMarkedConflict_WithExitCodeTwo()
+    {
+        var solution = await Sandbox.SolutionAsync();
+        var configuration = $"src/services/{Orders}/{Orders}.API/Setup/ApplicationConfiguration.cs";
+        const string template = "busNeedsDatabase: false);";
+        const string teams = "busNeedsDatabase: false); // the team's note";
+        solution.Write(configuration, solution.Read(configuration).Replace(template, teams));
+        await solution.CommitAsync("the team's note on the bus line");
+
+        // The outbox turns this very line into busNeedsDatabase: true.
+        var added = await solution.DotskitAsync("new", "-S", "Orders", "--Messaging", "outbox", "--yes", "--no-build");
+
+        added.Code.ShouldBe((int)ExitCode.Conflicts, added.Output + added.Error);
+        added.Output.ShouldContain(configuration);
+        solution.Read(configuration).ShouldContain("<<<<<<< solution");
+        solution.Read(configuration).ShouldContain(teams);
+        solution.Read(configuration).ShouldContain("busNeedsDatabase: true);");
+    }
+
+    [Test]
+    public async Task LineTheTeamChangedRightBesideWhatTheTemplateAdds_IsAMarkedConflict_NotAMerge()
+    {
+        var solution = await Sandbox.SolutionAsync();
+        const string env = "deploy/compose/.env.example";
+        const string teams = "HANGFIRE_DASHBOARD_PASSWORD=the-teams-own-password";
+        solution.Write(env, solution.Read(env).Replace("HANGFIRE_DASHBOARD_PASSWORD=", teams));
+        await solution.CommitAsync("the team's password line");
+
+        // The template's email block starts on the line right after the team's, with Hangfire on and ClickHouse
+        // off as the sandbox has them: git merge-file takes changes that touch for one place.
+        var added = await solution.DotskitAsync("new", "-S", "Notifications", "--Notify", "email", "--yes", "--no-build");
+
+        added.Code.ShouldBe((int)ExitCode.Conflicts, added.Output + added.Error);
+        added.Output.ShouldContain(env);
+        solution.Read(env).ShouldContain("<<<<<<< solution");
+        solution.Read(env).ShouldContain(teams);
+        solution.Read(env).ShouldContain("SMTP_HOST=mailhog");
+    }
+
+    [Test]
     public async Task AGatewayAsTheFirstService_GivesASolutionThatBuilds()
     {
         var folder = Path.Combine(Folders.NewTemp("scenario-gateway"), "solution");

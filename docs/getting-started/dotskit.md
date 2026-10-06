@@ -57,10 +57,10 @@ What happens to a file:
 |---|---|---|
 | `Add` | the template adds a file the solution does not have | the template's file |
 | `Update` | the team did not change the file | the template's new file, with the line endings of the solution's |
-| `Merge` | both changed it, in different lines | both changes |
+| `Merge` | both changed it, in lines apart | both changes |
 | `Delete` | the template removed a file the team did not change | the file is deleted |
 | `Kept` | one side removed the file and the other changed it, or both changed a binary file | nothing: the solution's file stays |
-| `Conflict` | both changed the same lines | the file with both versions between `<<<<<<< solution` and `>>>>>>> template` |
+| `Conflict` | both changed the same lines, or lines right next to each other | the file with both versions between `<<<<<<< solution` and `>>>>>>> template` |
 
 `All.sln` is changed by `dotnet sln`, project by project, and never merged as text: `dotnet sln add` gives
 a project a new GUID each time.
