@@ -117,7 +117,7 @@
         <p class="hero__line" lang="en">A <code>dotnet new</code> template for .NET 8 and PostgreSQL or SQL Server. It creates the structure of a solution and the projects of its microservices, already wired together. The rest comes with flags.</p>
         <p class="hero__line" lang="ru">Шаблон <code>dotnet new</code> для .NET 8 и PostgreSQL или SQL Server. Создаёт структуру решения и проекты микросервисов, уже связанные между собой. Остальное включается флагами.</p>
         <p class="hero__pkg"><a class="pkg" href="https://www.nuget.org/packages/SawKing.DotNetSolutionKit"><span class="pkg__where">NuGet</span><span class="pkg__id">SawKing.DotNetSolutionKit</span></a></p>
-        <p class="hero__cmd"><code>dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders -M false</code></p>
+        <p class="hero__cmd"><code>dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders --Solution</code></p>
       </div>
     </header>
 
@@ -154,7 +154,7 @@
       <p class="hero__cmd"><code>dotnet new install SawKing.DotNetSolutionKit</code></p>
       <p lang="en">The shared libraries, the solution and the first service:</p>
       <p lang="ru">Общие библиотеки, решение и первый сервис:</p>
-      <p class="hero__cmd"><code>dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders -M false</code></p>
+      <p class="hero__cmd"><code>dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders --Solution</code></p>
       <p lang="en">Every next service:</p>
       <p lang="ru">Каждый следующий сервис:</p>
       <p class="hero__cmd"><code>dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing</code></p>
@@ -191,7 +191,7 @@
             <tr><td><code>-N</code>, <code>--NamespaceRoot</code></td><td><code>MyCompany</code></td><td><span lang="en">Organization name, the root namespace. May be dotted.</span><span lang="ru">Название организации, корневое пространство имён. Может быть с точками.</span></td></tr>
             <tr><td><code>-P</code>, <code>--ProductName</code></td><td><code>Product</code></td><td><span lang="en">Product name. May be dotted.</span><span lang="ru">Название продукта. Может быть с точками.</span></td></tr>
             <tr><td><code>-S</code>, <code>--ServiceNameOrCustom</code></td><td><code>Service</code></td><td><span lang="en">Service name. May be dotted.</span><span lang="ru">Название сервиса. Может быть с точками.</span></td></tr>
-            <tr><td><code>-M</code>, <code>--Minimal</code></td><td><code>true</code></td><td><span lang="en"><code>true</code> generates only the service folder, <code>false</code> the full kit.</span><span lang="ru"><code>true</code> создаёт только папку сервиса, <code>false</code> весь комплект.</span></td></tr>
+            <tr><td><code>--Solution</code></td><td><code>false</code></td><td><span lang="en">Generates the solution: <code>Common</code>, <code>All.sln</code> and the root files, with the first service. Without it, only the service folder, into a solution already there.</span><span lang="ru">Генерирует решение: <code>Common</code>, <code>All.sln</code> и корневые файлы вместе с первым сервисом. Без него - только папка сервиса, в уже существующее решение.</span></td></tr>
             <tr><td><code>-H</code>, <code>--Hangfire</code></td><td><code>true</code></td><td><span lang="en"><a href="docs.html#jobs">Background jobs</a> on Hangfire.</span><span lang="ru"><a href="docs.html#jobs">Фоновые задачи</a> на Hangfire.</span></td></tr>
             <tr><td><code>--Database</code></td><td><code>postgres</code></td><td><span lang="en"><a href="docs.html#persistence:sql-server">Database</a>: <code>postgres</code> or <code>mssql</code> (SQL Server).</span><span lang="ru"><a href="docs.html#persistence:sql-server">СУБД</a>: <code>postgres</code> или <code>mssql</code> (SQL Server).</span></td></tr>
             <tr><td><code>--Messaging</code></td><td><code>none</code></td><td><span lang="en"><a href="docs.html#messaging">Message bus</a>: <code>outbox</code> or <code>direct</code>.</span><span lang="ru"><a href="docs.html#messaging">Шина сообщений</a>: <code>outbox</code> или <code>direct</code>.</span></td></tr>
@@ -207,7 +207,7 @@
             <tr><td><code>--Notify</code></td><td><span lang="en">none</span><span lang="ru">нет</span></td><td><span lang="en">Channels of <a href="docs.html#notifications">notifications</a>: <code>email</code> - through SMTP or Graph API, with a sandbox outside Production; with <code>--Messaging</code> other services ask for it by a bus command.</span><span lang="ru">Каналы <a href="docs.html#notifications">уведомлений</a>: <code>email</code> - через SMTP или Graph API, с песочницей вне Production; с <code>--Messaging</code> другие сервисы просят письмо командой шины.</span></td></tr>
             <tr><td><code>--TestFramework</code></td><td><code>nunit</code></td><td><span lang="en">Test framework of the service's tests: <code>nunit</code> or <code>xunit</code> (v3).</span><span lang="ru">Тестовый фреймворк тестов сервиса: <code>nunit</code> или <code>xunit</code> (v3).</span></td></tr>
             <tr><td><code>--Audit</code></td><td><code>false</code></td><td><span lang="en"><a href="docs.html#audit">Audit journal</a> of entity changes, through the outbox; with <code>--Messaging outbox</code>.</span><span lang="ru"><a href="docs.html#audit">Журнал аудита</a> изменений сущностей, через outbox; с <code>--Messaging outbox</code>.</span></td></tr>
-            <tr><td><code>--ApiGateway</code></td><td><code>false</code></td><td><span lang="en">An <a href="docs.html#gateway">API gateway</a> on YARP in place of a service, with <code>-M true</code>.</span><span lang="ru"><a href="docs.html#gateway">API-шлюз</a> на YARP вместо сервиса, с <code>-M true</code>.</span></td></tr>
+            <tr><td><code>--ApiGateway</code></td><td><code>false</code></td><td><span lang="en">An <a href="docs.html#gateway">API gateway</a> on YARP in place of a service, into a solution already there (without <code>--Solution</code>).</span><span lang="ru"><a href="docs.html#gateway">API-шлюз</a> на YARP вместо сервиса, в уже существующее решение (без <code>--Solution</code>).</span></td></tr>
             <tr><td><code>--Deploy</code></td><td><code>compose</code></td><td><span lang="en"><a href="docs.html#deployment">Deployment files</a>: <code>compose</code>, <code>k8s</code> or <code>none</code>.</span><span lang="ru"><a href="docs.html#deployment">Файлы развёртывания</a>: <code>compose</code>, <code>k8s</code> или <code>none</code>.</span></td></tr>
             <tr><td><code>--HttpPort</code></td><td><span lang="en">free port</span><span lang="ru">свободный порт</span></td><td><span lang="en">Port in <code>launchSettings.json</code> and on the host under compose.</span><span lang="ru">Порт в <code>launchSettings.json</code> и на хосте под compose.</span></td></tr>
           </tbody>

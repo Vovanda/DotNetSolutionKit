@@ -1,6 +1,6 @@
 # Access rules over a tenant tree
 
-Generated with `--HierarchyRules`, off by default. Pass it with `-M false`.
+Generated with `--HierarchyRules`, off by default. Pass it with `--Solution`.
 
 For a product where tenants form a tree (a tenant has child tenants, and they have theirs), the template
 adds the rules that answer whether one tenant may see another, without a query.

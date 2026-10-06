@@ -17,20 +17,20 @@ dotnet new install /path/to/DotNetSolutionKit/template --force
 ## Генерация
 
 Первый запуск генерирует общие проекты `Common`, корневой файл решения и первый сервис.
-Для него передайте `-M false`:
+Для него передайте `--Solution`:
 
 ```bash
-dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders -M false
+dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Orders --Solution
 ```
 
-Каждый следующий сервис генерируется со значением по умолчанию `-M true`: создаётся только папка сервиса,
+Каждый следующий сервис генерируется без `--Solution`: создаётся только папка сервиса,
 а `Common` берётся уже существующий:
 
 ```bash
 dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 ```
 
-`-M true` не трогает корневой `src/Directory.Packages.props`. В решении, сгенерированном этой версией
+Сервис, сгенерированный без `--Solution`, не трогает корневой `src/Directory.Packages.props`. В решении, сгенерированном этой версией
 шаблона, там уже есть все версии, нужные сервису, с любыми `-H` и `--Messaging`; флаги, которые добавляют
 файлы в `Common`, выбираются один раз на решение, см. [параметры](#параметры). В более старом решении
 сборка останавливается с `NU1010` и называет пакеты без версии; скопируйте их строки `PackageVersion`
@@ -53,14 +53,14 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `-N`, `--NamespaceRoot` | `MyCompany` | Название организации, корневое пространство имён. Может содержать точки. |
 | `-P`, `--ProductName` | `Product` | Название продукта. Может содержать точки. |
 | `-S`, `--ServiceNameOrCustom` | `Service` | Название сервиса. Может содержать точки. |
-| `-M`, `--Minimal` | `true` | `true` генерирует только папку сервиса, `false` - полный комплект: проекты `Common` и `All.sln`. |
-| `--Database` | `postgres` | [СУБД](../architecture/persistence.ru.md#sql-server): `postgres` или `mssql` (SQL Server). Одно значение на решение: передайте его с `-M false` и каждому сервису. |
-| `-H`, `--Hangfire` | `true` | [Фоновые задачи](../features/background-jobs.md) на Hangfire. Задаётся для каждого сервиса, в том числе с `-M true`. |
+| `--Solution` | `false` | Генерирует решение: проекты `Common`, `All.sln` и корневые файлы вместе с первым сервисом. Без него - только папка сервиса, в уже существующее решение. `-M false` прежних версий по-прежнему означает то же. |
+| `--Database` | `postgres` | [СУБД](../architecture/persistence.ru.md#sql-server): `postgres` или `mssql` (SQL Server). Одно значение на решение: передайте его с `--Solution` и каждому сервису. |
+| `-H`, `--Hangfire` | `true` | [Фоновые задачи](../features/background-jobs.md) на Hangfire. Задаётся для каждого сервиса, в том числе без `--Solution`. |
 | `--Messaging` | `none` | [Шина сообщений](../features/messaging.md): `outbox` или `direct`. Задаётся для каждого сервиса. |
 | `-I`, `--Infisical` | `false` | [Секреты из Infisical](../features/secrets.md). |
 | `--Vault` | `false` | [Секреты из HashiCorp Vault](../features/secrets.ru.md#hashicorp-vault). |
 | `--DiffApi` | `false` | [Сравнение контракта API](../features/api-diff.md) в pull request. |
-| `--GitHubCiCd` | `false` | [CI на GitHub Actions](../features/ci.md): сборка, тесты на настоящих серверах, покрытие по запросу, поиск секретов. С `-M false`: workflow покрывают все сервисы в `All.sln`. |
+| `--GitHubCiCd` | `false` | [CI на GitHub Actions](../features/ci.md): сборка, тесты на настоящих серверах, покрытие по запросу, поиск секретов. С `--Solution`: workflow покрывают все сервисы в `All.sln`. |
 | `-FF`, `--FeatureFlags` | `false` | [Фича-флаги](../features/feature-flags.md). |
 | `--HierarchyRules` | `false` | [Правила доступа по дереву тенантов](../features/hierarchy-rules.md). |
 | `--Storage` | `false` | [Объектное хранилище](../features/object-storage.md), совместимое с S3. |
@@ -69,13 +69,13 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--Notify` | нет | Каналы [уведомлений](../features/notifications.md): `email` - через SMTP или Graph API, с песочницей вне Production; с `--Messaging` другие сервисы просят письмо командой шины. |
 | `--TestFramework` | `nunit` | Тестовый фреймворк для тестов сервиса, `nunit` или `xunit` (v3); задаётся для каждого сервиса. Собственные тесты `Common` остаются на NUnit. См. [тестирование](../architecture/testing.md). |
 | `--Audit` | `false` | [Журнал аудита](../features/audit.md) изменений сущностей; действует только с `--Messaging outbox`; без него генерация сообщает, что флаг не применён. |
-| `--ApiGateway` | `false` | [API-шлюз](../features/api-gateway.md) на YARP вместо сервиса. Только с `-M true`; с `-M false` генерация сообщает, что флаг не применён. |
-| `--Deploy` | `compose` | [Файлы развёртывания](../operations/deployment.md): `compose`, `k8s` или `none`. Одно значение на решение: с `-M true` передавайте то же самое. |
-| `--Agent` | `claude` | [Правила и скиллы для ИИ-агента](working-with-ai-agents.md): `claude`, `opencode` или `none`. С `-M false`. |
+| `--ApiGateway` | `false` | [API-шлюз](../features/api-gateway.md) на YARP вместо сервиса. Только без `--Solution`; с ним генерация сообщает, что флаг не применён. |
+| `--Deploy` | `compose` | [Файлы развёртывания](../operations/deployment.md): `compose`, `k8s` или `none`. Одно значение на решение: передавайте то же самое каждому следующему сервису. |
+| `--Agent` | `claude` | [Правила и скиллы для ИИ-агента](working-with-ai-agents.md): `claude`, `opencode` или `none`. С `--Solution`. |
 | `--HttpPort` | свободный порт | Порт в `launchSettings.json` и на хосте под compose. Без параметра берётся свободный порт из диапазона 5000-5999 на машине, где идёт генерация, поэтому сервисы, сгенерированные один за другим, не получают один и тот же порт. |
 
 `-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage`, `--ClickHouse`, `--MongoDB`, `--Notify` и `--Audit` добавляют
-файлы в `Common`, поэтому их нужно передать с `-M false`, когда генерируется `Common`. Каждому сервису,
+файлы в `Common`, поэтому их нужно передать с `--Solution`, когда генерируется `Common`. Каждому сервису,
 сгенерированному позже, которому они нужны, передайте `-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--Storage`,
 `--ClickHouse`, `--MongoDB`, `--Notify` и `--Audit` ещё раз: они меняют и код сервиса, и сервис подключает то, что уже есть в
 `Common`. Сервис, сгенерированный без них, обходится без этих частей.
@@ -85,7 +85,7 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 Любой из `-N`, `-P` и `-S` может содержать точки:
 
 ```bash
-dotnet new DotNetSolutionKit -N Acme.Corp -P Shop.Online -S Sales.Orders -M false
+dotnet new DotNetSolutionKit -N Acme.Corp -P Shop.Online -S Sales.Orders --Solution
 ```
 
 Эта команда генерирует `Acme.Corp.Shop.Online.Sales.Orders.API` и остальные проекты под тем же именем.

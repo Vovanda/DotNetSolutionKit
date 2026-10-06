@@ -1,6 +1,6 @@
 # Feature flags
 
-Generated with `--FeatureFlags`, off by default. Pass it with `-M false`, and to each service generated
+Generated with `--FeatureFlags`, off by default. Pass it with `--Solution`, and to each service generated
 later that reads the flags.
 
 A flag answers one question: *is this behaviour on right now?* The answer is kept as data. It ships in

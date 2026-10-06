@@ -14,7 +14,7 @@ round. With `compose` or `k8s`, `deploy/build-images.sh` builds an image per ser
 `dotnet new` does not keep the executable bit, so on Linux and macOS run once:
 `chmod +x deploy/*.sh deploy/*/*.sh`.
 
-Each service keeps its deployment file in its own folder, so a service added later with `-M true` brings
+Each service keeps its deployment file in its own folder, so a service added later brings
 its file along and nothing shared has to be edited. The scripts pick up every service's file.
 
 What runs where, with a gateway; without one, the proxy talks to the services:
@@ -142,6 +142,6 @@ current `kubectl` context; further arguments go to `kubectl apply` (`--namespace
 
 ## Checked
 
-Both were run end to end on a generated solution: compose with two services, one generated later with
-`-M true`, each answering `/ready` with its own commit; Kubernetes on k3s with four replicas of a service
+Both were run end to end on a generated solution: compose with two services, one generated later without
+`--Solution`, each answering `/ready` with its own commit; Kubernetes on k3s with four replicas of a service
 with a dotted name on a fresh database, all ready without a restart.

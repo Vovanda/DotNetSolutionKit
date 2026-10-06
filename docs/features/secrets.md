@@ -1,7 +1,7 @@
 # Secrets from Infisical or Vault
 
 Generated with `-I` for [Infisical](https://infisical.com) or `--Vault` for [HashiCorp Vault](https://www.vaultproject.io),
-off by default. Pass the flag with `-M false`, and to each service generated later that reads secrets.
+off by default. Pass the flag with `--Solution`, and to each service generated later that reads secrets.
 What follows holds for both; [Vault](#hashicorp-vault) has its own section for what differs.
 
 The service reads two folders of an Infisical project, the shared one and its own,

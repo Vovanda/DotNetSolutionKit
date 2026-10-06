@@ -22,10 +22,10 @@ jobs:
       matrix:
         include:
           - name: defaults
-            first: -N Acme -P Shop -S Orders -M false
+            first: -N Acme -P Shop -S Orders --Solution
           - name: every flag, three services
             first: >-
-              -N Acme -P Shop -S Orders -M false --Messaging outbox -I true --DiffApi true --FeatureFlags true
+              -N Acme -P Shop -S Orders --Solution --Messaging outbox -I true --DiffApi true --FeatureFlags true
               --HierarchyRules true --Storage true --ClickHouse true --MongoDB true --Notify email --GitHubCiCd true --Audit true
             # Flags that change a service's code are passed again to a later service, as the docs say.
             # The second service by the short names, so they keep working.
@@ -37,35 +37,35 @@ jobs:
             schemas: true
             layers: Orders
           - name: no background jobs
-            first: -N Acme -P Shop -S Orders -M false -H false
+            first: -N Acme -P Shop -S Orders -M false -H false  # -M false: the hidden name of --Solution in earlier versions
             more: -N Acme -P Shop -S Billing -H false
           - name: direct bus
-            first: -N Acme -P Shop -S Orders -M false --Messaging direct
+            first: -N Acme -P Shop -S Orders --Solution --Messaging direct
           - name: vault
-            first: -N Acme -P Shop -S Orders -M false --Vault true --GitHubCiCd true --FeatureFlags true
+            first: -N Acme -P Shop -S Orders --Solution --Vault true --GitHubCiCd true --FeatureFlags true
             more: -N Acme -P Shop -S Billing --Vault true --FeatureFlags true
             integration: true
           - name: sql server
             first: >-
-              -N Acme -P Shop -S Orders -M false --Database mssql --Messaging outbox -I true --DiffApi true
+              -N Acme -P Shop -S Orders --Solution --Database mssql --Messaging outbox -I true --DiffApi true
               --FeatureFlags true --HierarchyRules true --Audit true --GitHubCiCd true
             more: -N Acme -P Shop -S Billing --Database mssql --Messaging outbox -I true --DiffApi true --FeatureFlags true --Audit true
             integration: true
             schemas: true
           - name: xunit tests
-            first: -N Acme -P Shop -S Orders -M false --TestFramework xunit --Messaging outbox --Audit true
+            first: -N Acme -P Shop -S Orders --Solution --TestFramework xunit --Messaging outbox --Audit true
             more: -N Acme -P Shop -S Billing --TestFramework xunit
             gateway: -N Acme -P Shop -S Gateway --ApiGateway true --TestFramework xunit
             layers: Orders
           - name: dotted names
-            first: -N Acme.Corp -P Retail.Shop -S Sales.Orders -M false --Messaging outbox --DiffApi true
+            first: -N Acme.Corp -P Retail.Shop -S Sales.Orders --Solution --Messaging outbox --DiffApi true
             more: -N Acme.Corp -P Retail.Shop -S Sales.Billing --Messaging outbox --DiffApi true
           - name: kubernetes files
-            first: -N Acme -P Shop -S Orders -M false --Deploy k8s --Agent opencode
+            first: -N Acme -P Shop -S Orders --Solution --Deploy k8s --Agent opencode
             agent: opencode
             more: -N Acme -P Shop -S Billing --Deploy k8s
           - name: no deployment files
-            first: -N Acme -P Shop -S Orders -M false --Deploy none --Agent none
+            first: -N Acme -P Shop -S Orders --Solution --Deploy none --Agent none
             agent: none
 
     steps:
@@ -188,7 +188,7 @@ jobs:
           dotnet pack DotNetSolutionKit.Templates.csproj --configuration Release -o "$RUNNER_TEMP/package"
           dotnet new install "$RUNNER_TEMP"/package/*.nupkg
           mkdir "$RUNNER_TEMP/solution" && cd "$RUNNER_TEMP/solution"
-          dotnet new DotNetSolutionKit -N Acme -P Shop -S Orders -M false --GitHubCiCd true
+          dotnet new DotNetSolutionKit -N Acme -P Shop -S Orders --Solution --GitHubCiCd true
           test -f .github/workflows/ci.yml && test -f tools/gitleaks/.gitleaks.toml
           bash "$GITHUB_WORKSPACE/scripts/check-authorship.sh" . "$(jq -r .version "$GITHUB_WORKSPACE/version.json")"
           bash "$GITHUB_WORKSPACE/scripts/check-agent-files.sh" . claude   # the dot folder survives packing
