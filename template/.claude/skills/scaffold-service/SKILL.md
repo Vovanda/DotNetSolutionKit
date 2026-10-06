@@ -1,9 +1,9 @@
 ---
 name: scaffold-service
-description: Scaffold a new microservice of this solution from the DotNetSolutionKit template, with the flags the solution was generated with.
+description: Scaffold a new microservice of this solution, or add a flag to an existing service - by dotskit when the solution has its manifest, by the DotNetSolutionKit template otherwise.
 ---
 
-Scaffold a new microservice with the DotNetSolutionKit template.
+Scaffold a new microservice, or add a flag to one, with dotskit or the DotNetSolutionKit template.
 
 ## Usage
 `/scaffold-service <ServiceName>` - e.g. `/scaffold-service Notifications`
@@ -15,11 +15,34 @@ Scaffold a new microservice with the DotNetSolutionKit template.
 1. Ask the user (in their language) for the service name and which optional parts it needs. Name the
    service after its area, not after its main aggregate: `-S Basket` with a class `Basket` makes `Basket`
    both a namespace and a type (CS0118); `Baskets` or `Shopping` avoid it.
-2. Find the flags the solution was generated with (Step 1).
-3. Generate the service from the repository root; it adds itself to `All.sln`.
+2. With dotskit (`.dotskit/manifest.json` in the repository root): run `dotskit new` (Step 0); for a new
+   service go on to the first migration (Step 4), for a flag add a migration only if the flag changed the
+   model (`/ef-migration`).
+3. Without it: find the flags the solution was generated with (Step 1) and generate the service from the
+   repository root (Step 2); it adds itself to `All.sln`.
 4. Add the first migration, restore and build.
 
 ---
+
+## Step 0 - With dotskit
+
+`dotskit` is the template's tool (`dotnet tool install -g SawKing.DotsKit.Tool`). With the solution's
+manifest, `.dotskit/manifest.json`, it takes the names, the database and the deployment from it, adds to
+`Common` what a flag of the service needs there, keeps the team's changes in files the template touches,
+and builds the solution:
+
+```bash
+dotskit new -S <ServiceName> [flags]           # a new service
+dotskit new -S <ExistingService> --MongoDB true  # a flag for a service the solution has
+```
+
+It shows every file it will change and asks before writing. An agent's shell has no one to answer: run the
+command first without `--yes` - it lists the files it would change and writes nothing (exit code 1) - show
+that list to the user, and on their yes run the same command with `--yes`. The working tree must be clean:
+commit first, and do not pass `--allow-dirty`. A conflict stops it with exit code 2, marked
+`<<<<<<< solution` / `>>>>>>> template` for a person to resolve. A solution without a manifest gets one
+from `dotskit init`, run the same way. Steps 1 to 3 are the template alone, without the tool.
+[dotskit](https://dnsk.sawking.tech/docs.html#dotskit).
 
 ## Step 1 - The flags of the solution
 
