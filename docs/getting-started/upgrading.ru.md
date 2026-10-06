@@ -167,6 +167,15 @@ fixture, которая держит состояние между тестам�
 провайдера в `DependencyInjection.cs` сервиса, его фабрике `DbContext` для времени разработки и
 `HealthChecks.cs` на вызовы `DatabaseProvider`, как в сервисе, сгенерированном v2.8.
 
+### Версии, которые приносит флаг, лежат в отдельном файле
+
+Строки `PackageVersion` флага переехали из `src/Directory.Packages.props` в `src/package-versions/<флаг>.props`,
+а общий файл подключает их по маске: флаг, добавленный позже, добавляет файл, а не правит общий. Готовое
+решение работает как есть; чтобы взять изменение, скопируйте `src/package-versions/` из решения,
+сгенерированного v2.8 с теми же флагами, уберите эти строки из своего `Directory.Packages.props`, добавьте
+`<Import Project="package-versions/*.props" />` перед `</Project>`, а в `Dockerfile` - строку
+`COPY src/package-versions/ src/package-versions/` после строки, которая копирует `Directory.Packages.props`.
+
 ## Не генерируйте поверх старого решения
 
 `dotnet new ... --force` поверх решения, сгенерированного из `v1`, перезаписывает файлы, которые изменила

@@ -10,7 +10,8 @@ This file is committed: no tokens, keys, credentials or personal data in it.
 
 ```
 src/
-├── Directory.Packages.props        # every package version, one place (central package management)
+├── Directory.Packages.props        # every package version, declared once here or in package-versions/ (central package management)
+├── package-versions/               # the versions a flag brings, a file per flag, imported by Directory.Packages.props
 ├── common/                         # generated once, shared by every service
 │   ├── NamespaceRoot.ProductName.Common                 # domain kernel: Entity, AggregateRoot, events, specifications, exceptions
 │   ├── NamespaceRoot.ProductName.Common.Contracts       # what crosses a service boundary: routes, requests, responses, bus messages

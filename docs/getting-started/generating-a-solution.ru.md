@@ -34,7 +34,8 @@ dotnet new DotNetSolutionKit -N MyCompany -P MyProduct -S Billing
 шаблона, там уже есть все версии, нужные сервису, с любыми `-H` и `--Messaging`; флаги, которые добавляют
 файлы в `Common`, выбираются один раз на решение, см. [параметры](#параметры). В более старом решении
 сборка останавливается с `NU1010` и называет пакеты без версии; скопируйте их строки `PackageVersion`
-из [`Directory.Packages.props`](../../template/src/Directory.Packages.props) шаблона.
+из [`Directory.Packages.props`](../../template/src/Directory.Packages.props) шаблона, а для флага - из его
+файла в [`src/package-versions/`](../../template/src/package-versions).
 
 Затем добавьте новые проекты в общий файл решения:
 
