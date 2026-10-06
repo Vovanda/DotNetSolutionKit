@@ -48,7 +48,7 @@ ls src/common/NamespaceRoot.ProductName.Common.Web/FeatureManagement  # present 
 ls deploy                                                             # compose or k8s
 ```
 
-All parameters: [generating a solution](https://dnsk.sawking.tech/docs.html#generating).
+All parameters: [generating a solution](https://dotskit.sawking.tech/docs.html#generating).
 
 ## Step 2 - Generate
 
@@ -58,7 +58,7 @@ dotnet new DotNetSolutionKit -N NamespaceRoot -P ProductName -S <ServiceName> --
 ```
 
 `-N` and `-P` are this solution's namespace root and product name. An API gateway in place of a service
-is `--ApiGateway true`: [API gateway](https://dnsk.sawking.tech/docs.html#gateway).
+is `--ApiGateway true`: [API gateway](https://dotskit.sawking.tech/docs.html#gateway).
 
 ## Step 3 - Add to All.sln (required)
 
@@ -105,9 +105,9 @@ src/services/NamespaceRoot.ProductName.<ServiceName>/
 ## After scaffolding - checklist
 
 - [ ] The service's settings are filled in for local runs: `appsettings.Secrets.json` next to
-      `appsettings.json` (kept out of git), see [settings](https://dnsk.sawking.tech/docs.html#settings).
+      `appsettings.json` (kept out of git), see [settings](https://dotskit.sawking.tech/docs.html#settings).
 - [ ] The first migration exists and the service starts: a misconfigured service stops at startup, see
-      [startup checks](https://dnsk.sawking.tech/docs.html#startup-checks).
+      [startup checks](https://dotskit.sawking.tech/docs.html#startup-checks).
 - [ ] With a gateway: a route and a cluster for the service in the gateway's `appsettings.json`.
 - [ ] `manual-add-projects.sh` was run; `All.sln` builds.
 
@@ -116,4 +116,4 @@ Then the service's own code: `/add-entity`, `/add-repository`, `/add-service-cla
 
 ---
 
-Part of [DotNetSolutionKit](https://dnsk.sawking.tech/), MIT License, Copyright (c) 2025 Vladimir Savkin.
+Part of [DotNetSolutionKit](https://dotskit.sawking.tech/), MIT License, Copyright (c) 2025 Vladimir Savkin.
