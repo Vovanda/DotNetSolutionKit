@@ -83,7 +83,7 @@ internal sealed class InitCommand(IStaging staging, ISolutionProjects projects, 
         if (options.TemplateVersion is { } named && named != current.Template)
             throw new ArgumentException($"The manifest is {current.Template}: a service it does not list is described by that version, not {named}; dotskit upgrade moves the manifest to another.");
         RefuseServicesOfOtherVersions(files, prefix, unlisted, current.Template, options);
-        return unlisted.Count == 0 ? null : unlisted.Aggregate(current, (m, f) => m.WithService(SolutionReader.Service(files, prefix, f)));
+        return unlisted.Count == 0 ? null : unlisted.Aggregate(current, (m, f) => m.WithServiceAsItIs(SolutionReader.Service(files, prefix, f)));
     }
 
     private ExitCode Current(Manifest manifest)

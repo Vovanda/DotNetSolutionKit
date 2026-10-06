@@ -175,7 +175,7 @@ internal sealed class InitCommandTests
     [Test]
     public async Task ASolutionOfAnEarlierMajor_IsNotDescribed()
     {
-        (await Should.ThrowAsync<InvalidOperationException>(() => new Fakes().RunAsync(Solution("1.4.0")))).Message.ShouldContain("2.x");
+        (await Should.ThrowAsync<InvalidOperationException>(() => new Fakes().RunAsync(Solution("1.4.0")))).Message.ShouldContain("upgrading.md");
     }
 
     [Test]

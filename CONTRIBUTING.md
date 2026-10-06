@@ -94,5 +94,11 @@ what is new in it is finished or behind a flag - the fix goes into `dev` and `de
 cannot, the fix is a pull request into `master` that raises the patch version, as `2.7.1`, with its own
 notes; once released, `master` is merged into `dev`. A gap in patch versions is allowed.
 
+`dotskit` upgrades a solution one major version at a time: dotskit X.y takes every minor of X and the last
+minor of X-1 (`TemplateVersions` in `tool/DotsKit`), and the code it keeps for an older base names in a
+comment the major version that removes it. The template's own packages move by this policy: a patch after
+7 days, a minor version after 30 days, a fix of a vulnerability at once, a major version only with a major
+version of the template, and never a version under a licence the template cannot ship.
+
 A fix of the .NET 8 line is a pull request into `2.x`; `2.x` releases `2.*` versions only, and their GitHub
 release is not marked latest.

@@ -177,6 +177,9 @@ internal sealed class TemplateArgs
     public static TemplateArgs ForService(TemplateArgs solution, TemplateArgs service) =>
         solution.Without([.. WidenedFlags, Notify, Messaging]).JoinedWith(service.Without(Mode));
 
+    /// <summary>The arguments the template of <paramref name="version"/> has a parameter for (<see cref="Generation.TemplateVersions.HasParameter"/>).</summary>
+    public TemplateArgs ForVersion(string version) => new([.. _values.Where(v => Generation.TemplateVersions.HasParameter(version, v.Key))]);
+
     /// <summary>
     /// The arguments in the order the template declares its parameters: the solution's arguments are the same
     /// whatever order its services came in.

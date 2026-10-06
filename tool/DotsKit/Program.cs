@@ -22,11 +22,12 @@ if (args[0] is "--version" or "version")
 var runner = new ProcessRunner();
 var projects = new SolutionProjects(runner);
 var staging = new Staging(new TemplateSource(runner), projects);
-var planner = new Planner(staging, new ThreeWayMerge(new GitMergeFile(runner)), projects);
+var planner = new Planner(staging, new ThreeWayMerge(new GitMergeFile(runner)), projects, new GitRenames(runner));
 var report = new PlanReport(terminal);
 var writer = new PlanWriter(projects);
 var git = new Git(runner);
 var builder = new DotnetBuilder(runner);
+var execution = new PlanExecution(report, writer, builder, terminal);
 
 AppDomain.CurrentDomain.ProcessExit += (_, _) => Folders.RemoveRunFolders();
 
@@ -38,7 +39,9 @@ try
     var folder = Folders.RealPath(Directory.GetCurrentDirectory());
     var code = args[0] switch
     {
-        "new" => await new NewCommand(planner, report, writer, git, builder, terminal, ToolVersion.Current).RunAsync(options, folder, cts.Token),
+        "new" => await new NewCommand(planner, execution, git, ToolVersion.Current).RunAsync(options, folder, cts.Token),
+        "upgrade" => await new UpgradeCommand(planner, execution, git, terminal, ToolVersion.Current,
+            TemplateSource.SourcesFolder is not null).RunAsync(options, folder, cts.Token),
         "init" => await new InitCommand(staging, projects, terminal, ToolVersion.Current, TemplateSource.SourcesFolder is not null).RunAsync(options, folder, cts.Token),
         _ => throw new ArgumentException($"Unknown command {args[0]}.\n{Options.Usage}"),
     };

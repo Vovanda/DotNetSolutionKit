@@ -39,7 +39,7 @@ gantt
     dotskit new - a service or a flag added to a solution, the team's changes kept by a three-way merge :done, s27, after s26, 2000ms
     email and MongoDB in projects of their own - a service carries only its flags' packages (#98) :done, s28, after s25, 800ms
     dotskit init - a manifest for a solution made without the tool, checked against it (#99) :done, s29, after s27, 1500ms
-    dotskit upgrade - to the tool's version, one major at a time, the team's changes kept (#100) :s30, after s29, 3000ms
+    dotskit upgrade - to the tool's version, one major at a time, the team's changes kept (#100) :done, s30, after s29, 3000ms
 
     section Next
     3.0 on .NET 8 - Common split by capability, references made exact by dotskit upgrade from 2.x :s15, after s30, 3000ms

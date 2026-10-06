@@ -4,12 +4,13 @@ namespace DotsKit;
 internal sealed class Options
 {
     public const string Usage = """
-        dotskit - makes a solution with DotNetSolutionKit and adds services and modules to it, keeping your changes.
+        dotskit - makes a solution with DotNetSolutionKit, adds services and flags to it and upgrades it, keeping your changes.
 
           dotskit new -N MyCompany -P MyProduct -S Orders   in a folder with no solution: make one with this service
           dotskit new -S Billing --Storage true             in a solution: add a service; it takes the solution's names
           dotskit new -S Orders --MongoDB true              in a solution: add a flag to a service it has
           dotskit init                                      in a solution made without dotskit: describe it in its manifest
+          dotskit upgrade                                   in a solution: bring it to this version of the template
 
         Every command shows what it will change and asks before writing.
           --yes                     write without asking (CI)

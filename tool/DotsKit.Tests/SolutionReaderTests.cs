@@ -53,8 +53,7 @@ internal sealed class SolutionReaderTests
     {
         var manifest = Read(Solution().With("deploy/compose/.env.example", "HANGFIRE_DASHBOARD_PASSWORD=").With(".claude/rules.md"));
 
-        // Hangfire is on by default, and a service with it widens the solution, as dotskit new does.
-        manifest.Solution.ShouldBe(["--NamespaceRoot", "Acme", "--ProductName", "Shop", "--Hangfire", "true"]);
+        manifest.Solution.ShouldBe(["--NamespaceRoot", "Acme", "--ProductName", "Shop"]);
         manifest.Services.ShouldBe([["--ServiceNameOrCustom", "Orders", "--HttpPort", "5000"]]);
     }
 
@@ -109,7 +108,7 @@ internal sealed class SolutionReaderTests
     }
 
     [Test]
-    public void AServiceFlag_IsReadFromItsSectionOfAppSettings_AndWidensTheSolution()
+    public void AServiceFlag_IsReadFromItsSectionOfAppSettings_AndTheSolutionsFromCommon()
     {
         var files = Solution().WithService("Acme.Shop.Billing", 5001, "HangfireSettings", "S3", "MongoDB", "Email")
             .With("src/common/Acme.Shop.Common.Infrastructure/Storage/DependencyInjection.cs")
@@ -138,7 +137,8 @@ internal sealed class SolutionReaderTests
         manifest.FindService("Billing")!["Messaging"].ShouldBe("outbox");
         manifest.FindService("Stock")!["Messaging"].ShouldBe("direct");
         manifest.FindService("Orders")!["Messaging"].ShouldBe("none");
-        manifest.SolutionArgs["Messaging"].ShouldBe("outbox");
+        // The root was made by the first command, without a bus, and the services generated later left it so.
+        manifest.SolutionArgs["Messaging"].ShouldBe("none");
     }
 
     [Test]
