@@ -44,6 +44,9 @@ gets; nothing comes the other way.
 - Before writing a file of a kind the repository already has (a template parameter and its conditions, a
   doc page, a workflow step), open two or three neighbours of that kind and follow
   them.
+- A JSON file the template generates or `dotskit` writes explains its fields by metadata keys, `_comment_<Key>`
+  after the field ([ADR-006](docs/adr/006-json-metadata-key-convention.md)); a field left empty on purpose always has one, and
+  `template.yml` checks it.
 - A file of the template that is XML (.csproj, .props) never has two hyphens inside a comment: MSBuild skips
   an invalid file it imports by mask without an error.
 - The language of a script follows its work: shell for a script that mostly runs commands (dotnet, git),

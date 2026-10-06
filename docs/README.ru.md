@@ -104,6 +104,7 @@ mindmap
 - [ADR-003: Документ API читается из собранного приложения](adr/003-api-schema-generation.md)
 - [ADR-004: Версия продукта задаётся вручную](adr/004-product-version-by-hand.md)
 - [ADR-005: Как тестируется сервис](adr/005-testing-a-service.md)
+- [ADR-006: JSON Metadata Key Convention](adr/006-json-metadata-key-convention.md)
 
 ## [Дорожная карта](roadmap.md)
 

@@ -104,6 +104,7 @@ Where the template departs from a common practice, and why.
 - [ADR-003: The API document is read from the built application](adr/003-api-schema-generation.md)
 - [ADR-004: The product version is set by hand](adr/004-product-version-by-hand.md)
 - [ADR-005: How a service is tested](adr/005-testing-a-service.md)
+- [ADR-006: JSON Metadata Key Convention](adr/006-json-metadata-key-convention.md)
 
 ## [Roadmap](roadmap.md)
 

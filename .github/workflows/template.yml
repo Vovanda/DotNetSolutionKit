@@ -94,6 +94,11 @@ jobs:
           if [ -n "${{ matrix.gateway }}" ]; then dotnet new DotNetSolutionKit ${{ matrix.gateway }} --allow-scripts yes; fi
           dotnet sln src/services/*.All.sln list
 
+      # Every field of a JSON file left empty on purpose says what goes there (docs/adr/006).
+      - name: JSON metadata keys
+        working-directory: ${{ runner.temp }}/solution
+        run: python3 "$GITHUB_WORKSPACE/scripts/check-json-metadata.py" .
+
       # The files that carry the template's authorship carry it, and the solution says it comes from the sources.
       - name: Authorship and version
         working-directory: ${{ runner.temp }}/solution
