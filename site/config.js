@@ -22,6 +22,7 @@ window.SITE = {
     { group: ["Getting started", "С чего начать"], docs: [
       ["gives", "docs/getting-started/what-it-gives", ["What the template gives", "Что даёт шаблон"], true],
       ["generating", "docs/getting-started/generating-a-solution", ["Generating a solution", "Генерация решения"], true],
+      ["dotskit", "docs/getting-started/dotskit", ["dotskit", "dotskit"], true],
       ["upgrading", "docs/getting-started/upgrading", ["Versions of the template", "Версии шаблона"], true],
       ["agents", "docs/getting-started/working-with-ai-agents", ["Working with AI agents", "Работа с ИИ-агентами"], true],
       ["overview", "docs/README", ["The documentation at a glance", "Обзор документации"], true],

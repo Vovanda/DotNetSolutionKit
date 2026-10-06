@@ -1,0 +1,94 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace DotsKit;
+
+/// <summary>
+/// What a solution was generated from: the version of the template, the arguments of the solution - the
+/// names, the database, the deployment and the flags Common and the root were generated with - and each
+/// service with its own arguments. Kept in <c>.dotskit/manifest.json</c> and committed: it is how the tool
+/// rebuilds what the template gave, the base of every merge. Which command made the solution is not kept:
+/// a solution is its parts, whatever order they came in.
+/// </summary>
+internal sealed record Manifest
+{
+    private static readonly JsonSerializerOptions Json = new()
+    {
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    };
+
+    public required string Template { get; init; }
+
+    /// <summary>The arguments Common and the root files are generated with, without a service's name.</summary>
+    public required List<string> Solution { get; init; }
+
+    /// <summary>Each service by its arguments, its name (-S) among them.</summary>
+    public required List<List<string>> Services { get; init; }
+
+    public static Manifest? Load(string root)
+    {
+        var path = Path.Combine(root, Layout.ManifestPath);
+        return File.Exists(path) ? Parse(File.ReadAllText(path)) : null;
+    }
+
+    /// <summary>A manifest from its text, refused with the reason when the solution could not be rebuilt from it.</summary>
+    public static Manifest Parse(string text)
+    {
+        var manifest = JsonSerializer.Deserialize<Manifest>(text, Json);
+        var problem = manifest switch
+        {
+            null => "is empty",
+            { Services.Count: 0 } => "lists no service",
+            _ when !Generation.TemplateVersions.IsVersion(manifest.Template) => $"has no version of the template, but \"{manifest.Template}\"",
+            _ when manifest.Services.Any(s => !TemplateArgs.Parse(s).HasService) => "has a service with no -S",
+            _ => null,
+        };
+        return problem is null ? manifest! : throw new InvalidOperationException($"{Layout.ManifestPath} {problem}: put it back from git.");
+    }
+
+    /// <summary>The manifest as text, with LF line endings on every OS, so a team on two OSes writes the same file.</summary>
+    public string Serialize() => JsonSerializer.Serialize(this, Json).ReplaceLineEndings("\n") + "\n";
+
+    [JsonIgnore]
+    public TemplateArgs SolutionArgs => TemplateArgs.Parse(Solution);
+
+    [JsonIgnore]
+    public IReadOnlyList<TemplateArgs> ServiceArgs => [.. Services.Select(TemplateArgs.Parse)];
+
+    public TemplateArgs? FindService(string name) => ServiceArgs.FirstOrDefault(s => IsNamed(s, name));
+
+    private static bool IsNamed(TemplateArgs service, string name) =>
+        string.Equals(service.Service, name, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// The manifest with a service added, or with the flags of a service it has joined to its own. The solution
+    /// takes what the service brings that lives outside a service folder (<see cref="TemplateArgs.WidenBy"/>).
+    /// </summary>
+    public Manifest WithService(TemplateArgs service)
+    {
+        var existing = FindService(service.Service);
+        // A service keeps the name it has: -S orders is Orders.
+        var merged = existing is null ? service : existing.JoinedWith(service).With(TemplateArgs.ServiceName, existing.Service);
+        var services = ServiceArgs.Select(s => IsNamed(s, service.Service) ? merged : s).ToList();
+        if (existing is null)
+            services.Add(merged);
+        return this with
+        {
+            Solution = SolutionArgs.WidenBy(merged).InTemplateOrder().ToArgs(),
+            Services = [.. services.Select(s => s.ToArgs())],
+        };
+    }
+
+    public Manifest WithTemplate(string version) => this with { Template = version };
+
+    /// <summary>
+    /// The parameters of the whole solution a command names with another value than the solution has, the
+    /// template's default counting as a value: a service cannot change them, and dropping them would be silent.
+    /// </summary>
+    public IReadOnlyList<string> OtherSolutionValues(TemplateArgs command) =>
+        [.. TemplateArgs.SolutionOnly.Where(n => command.Has(n)
+            && !string.Equals(SolutionArgs[n], command[n], StringComparison.OrdinalIgnoreCase))];
+}

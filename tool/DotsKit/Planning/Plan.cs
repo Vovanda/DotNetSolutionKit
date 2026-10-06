@@ -1,0 +1,13 @@
+using DotsKit.Merging;
+using DotsKit.Solutions;
+
+namespace DotsKit.Planning;
+
+/// <summary>What a command will do to a solution, shown before anything is written.</summary>
+/// <param name="Root">The solution's root, where the changes go.</param>
+/// <param name="Next">The manifest the solution will have.</param>
+/// <param name="Changes">The files, All.sln aside: it changes by its projects, in <paramref name="Membership"/>.</param>
+internal sealed record Plan(string Root, Manifest Next, IReadOnlyList<Change> Changes, MembershipChange Membership)
+{
+    public bool HasConflicts => Changes.Any(c => c.Kind == ChangeKind.Conflict);
+}
