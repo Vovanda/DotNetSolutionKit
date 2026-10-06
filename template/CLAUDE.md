@@ -19,6 +19,7 @@ src/
 │   ├── NamespaceRoot.ProductName.Common.Infrastructure  # EF Core base classes, interceptors, repositories, schema guard, MassTransit
 │   ├── NamespaceRoot.ProductName.Common.Web             # web pipeline: errors, validation, Swagger, authentication, permissions
 │   └── NamespaceRoot.ProductName.Common.Testing         # test infrastructure for the services' tests
+├── capabilities/                   # a project per capability the solution uses (email, MongoDB), referenced by the services that use it
 └── services/
     ├── NamespaceRoot.ProductName.All.sln                # every project; the entry point
     └── NamespaceRoot.ProductName.<Service>/

@@ -73,10 +73,11 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--Agent` | `claude` | [Rules and skills for an AI agent](working-with-ai-agents.md): `claude`, `opencode` or `none`. With `--Solution`. |
 | `--HttpPort` | free port | Port in `launchSettings.json` and on the host under compose; without it, a free port from 5000-5999 on the generating machine, so services generated one after another do not share a port. |
 
-`-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage`, `--ClickHouse`, `--MongoDB`, `--Notify` and `--Audit` add files to `Common`, so they have to be
-passed with `--Solution`, when `Common` is generated. Pass `-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--Storage`, `--ClickHouse`, `--MongoDB`, `--Notify` and `--Audit` again to
+`-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage`, `--ClickHouse` and `--Audit` add files to `Common`,
+and `--MongoDB` and `--Notify` add a project to `src/capabilities`, so they have to be passed with `--Solution`,
+when the shared code is generated. Pass `-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--Storage`, `--ClickHouse`, `--MongoDB`, `--Notify` and `--Audit` again to
 each service generated later that should use them: they change the service's code too, and the service
-then wires what `Common` already has. A service generated without them leaves them out.
+then wires what `Common` and `src/capabilities` already have. A service generated without them leaves them out.
 
 ## Dotted names
 

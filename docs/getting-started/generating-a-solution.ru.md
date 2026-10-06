@@ -74,11 +74,12 @@ chmod +x manual-add-projects.sh # on Linux and macOS
 | `--Agent` | `claude` | [Правила и скиллы для ИИ-агента](working-with-ai-agents.md): `claude`, `opencode` или `none`. С `--Solution`. |
 | `--HttpPort` | свободный порт | Порт в `launchSettings.json` и на хосте под compose. Без параметра берётся свободный порт из диапазона 5000-5999 на машине, где идёт генерация, поэтому сервисы, сгенерированные один за другим, не получают один и тот же порт. |
 
-`-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage`, `--ClickHouse`, `--MongoDB`, `--Notify` и `--Audit` добавляют
-файлы в `Common`, поэтому их нужно передать с `--Solution`, когда генерируется `Common`. Каждому сервису,
+`-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--HierarchyRules`, `--Storage`, `--ClickHouse` и `--Audit` добавляют файлы в `Common`,
+а `--MongoDB` и `--Notify` - проект в `src/capabilities`, поэтому их нужно передать с `--Solution`, когда
+генерируется общий код. Каждому сервису,
 сгенерированному позже, которому они нужны, передайте `-I`, `--Vault`, `--DiffApi`, `--FeatureFlags`, `--Storage`,
 `--ClickHouse`, `--MongoDB`, `--Notify` и `--Audit` ещё раз: они меняют и код сервиса, и сервис подключает то, что уже есть в
-`Common`. Сервис, сгенерированный без них, обходится без этих частей.
+`Common` и `src/capabilities`. Сервис, сгенерированный без них, обходится без этих частей.
 
 ## Имена с точками
 

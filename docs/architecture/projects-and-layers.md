@@ -1,7 +1,7 @@
 # Projects and layers
 
-A generated solution has two parts: the shared `Common` projects under `src/common`, generated once, and
-one folder per service under `src/services`.
+A generated solution has three parts: the shared `Common` projects under `src/common`, generated once; a
+project per capability a flag brings under `src/capabilities`; and one folder per service under `src/services`.
 
 Who references whom; an arrow points at the project referenced:
 
@@ -19,6 +19,11 @@ flowchart BT
         CW --> CA
         CW --> CI
     end
+    subgraph capabilities [src/capabilities]
+        CN["Capabilities.Notifications, with --Notify email"]
+        CM["Capabilities.Mongo, with --MongoDB"] --> C
+        CM --> CC
+    end
     subgraph service ["src/services/#lt;Service#gt;"]
         D["#lt;Service#gt;"] --> C
         A["#lt;Service#gt;.Application"] --> D
@@ -31,6 +36,8 @@ flowchart BT
         I --> CA
         I --> CI
         I --> CC
+        I -.-> CN
+        I -.-> CM
         API["#lt;Service#gt;.API"] --> A
         API --> I
         API --> CW
@@ -51,6 +58,10 @@ flowchart BT
 | `Common.Web` | The web layer of a service: pipeline, errors, validation, Swagger, authentication, permissions, health | `Common`, `Common.Contracts`, `Common.Application`, `Common.Infrastructure` |
 | `Common.Testing` | Test infrastructure for the services' tests: the test contexts, the test databases, stubs, rule checks; no test framework | all of the above |
 | `Common.Tests` | The tests of `Common` | all of the above, `Common.Testing` |
+| `Capabilities.Notifications` | Email of `--Notify email`: the port, the SMTP and Graph transports, the sandbox. A service with the flag references it, so only that service carries MailKit and the Graph SDK | nothing of `Common` |
+| `Capabilities.Notifications.Tests` | The tests of email | `Capabilities.Notifications`, `Common.Testing` |
+| `Capabilities.Mongo` | MongoDB of `--MongoDB`: the store, its options, its health check. A service with the flag references it, so only that service carries the driver | `Common`, `Common.Contracts` |
+| `Capabilities.Mongo.Tests` | The tests of MongoDB | `Capabilities.Mongo`, `Common`, `Common.Testing` |
 
 ## A service
 
